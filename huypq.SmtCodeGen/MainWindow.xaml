@@ -1,0 +1,68 @@
+﻿<Window x:Class="huypq.SmtCodeGen.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:huypq.SmtCodeGen"
+        mc:Ignorable="d"
+        WindowState="Maximized"
+        Title="MainWindow" d:DesignWidth="1000">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <local:DatabaseTree DataContext="{Binding DatabaseTreeVM}" Margin="0 0 5 0"/>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Margin="0 0 0 30">
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Save" Width="150" FontWeight="Bold" Margin="5" Click="SaveButton_Click"/>
+                    <Button Content="Load" Width="150" FontWeight="Bold" Margin="5" Click="LoadButton_Click"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <TextBlock Width="120" Text="View Path: "/>
+                    <TextBox Text="{Binding ViewPath, UpdateSourceTrigger=PropertyChanged}" Width="400"/>
+                    <Button Content="Open" Tag="View" Click="OpenButton_Click"/>
+                    <Button Content="Gen" Tag="View" Click="GenerateButton_Click"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <TextBlock Width="120" Text="ViewModel Path: "/>
+                    <TextBox Text="{Binding ViewModelPath, UpdateSourceTrigger=PropertyChanged}" Width="400"/>
+                    <Button Content="Open" Tag="ViewModel" Click="OpenButton_Click"/>
+                    <Button Content="Gen" Tag="ViewModel" Click="GenerateButton_Click"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <TextBlock Width="120" Text="Text Path: "/>
+                    <TextBox Text="{Binding TextPath, UpdateSourceTrigger=PropertyChanged}" Width="400"/>
+                    <Button Content="Open" Tag="Text" Click="OpenButton_Click"/>
+                    <Button Content="Gen" Tag="Text" Click="GenerateButton_Click"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <TextBlock Width="120" Text="Controller Path: "/>
+                    <TextBox Text="{Binding ControllerPath, UpdateSourceTrigger=PropertyChanged}" Width="400"/>
+                    <Button Content="Open" Tag="Controller" Click="OpenButton_Click"/>
+                    <Button Content="Gen" Tag="Controller" Click="GenerateButton_Click"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <TextBlock Width="120" Text="Dto Path: "/>
+                    <TextBox Text="{Binding DtoPath, UpdateSourceTrigger=PropertyChanged}" Width="400"/>
+                    <Button Content="Open" Tag="Dto" Click="OpenButton_Click"/>
+                    <Button Content="Gen" Tag="Dto" Click="GenerateButton_Click"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <TextBlock Width="120" Text="Entity Path: "/>
+                    <TextBox Text="{Binding EntityPath, UpdateSourceTrigger=PropertyChanged}" Width="400"/>
+                    <Button Content="Open" Tag="Entity" Click="OpenButton_Click"/>
+                    <Button Content="Gen" Tag="Entity" Click="GenerateButton_Click"/>
+                </StackPanel>
+                <Button Content="GenAll" Tag="All" Width="150" Margin="5" HorizontalAlignment="Left" FontWeight="Bold" Click="GenerateButton_Click"/>
+            </StackPanel>
+            <ListBox Grid.Row="1" ItemsSource="{Binding Messages}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        </Grid>
+        <GridSplitter Width="5" VerticalAlignment="Stretch" HorizontalAlignment="Right"/>
+    </Grid>
+</Window>
