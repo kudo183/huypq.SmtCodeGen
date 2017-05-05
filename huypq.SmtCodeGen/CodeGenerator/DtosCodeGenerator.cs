@@ -13,7 +13,7 @@ namespace huypq.SmtCodeGen
             {
                 results.Add(table.TableName, new StringBuilder());
             }
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#DtoTemplate.cs")))
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#DtoTemplate.txt")))
             {
                 foreach (var table in tables)
                 {
@@ -48,7 +48,18 @@ namespace huypq.SmtCodeGen
                     }
                     else
                     {
-                        result.AppendLine(line.Replace("<EntityName>", table.TableName));
+                        if (table.TableName == "SmtUser")
+                        {
+                            result.AppendLine(line.Replace("IDto", "IUserDto").Replace("<EntityName>", table.TableName));
+                        }
+                        else if (table.TableName == "SmtUserClaim")
+                        {
+                            result.AppendLine(line.Replace("IDto", "IUserClaimDto").Replace("<EntityName>", table.TableName));
+                        }
+                        else
+                        {
+                            result.AppendLine(line.Replace("<EntityName>", table.TableName));
+                        }
                     }
                 }
             }

@@ -1,0 +1,49 @@
+using huypq.SmtWpfClient;
+using huypq.SmtWpfClient.Abstraction;
+using Shared;
+using SimpleDataGrid;
+using SimpleDataGrid.ViewModel;
+
+namespace Client.ViewModel
+{
+    public partial class <EntityName>ViewModel : BaseViewModel<<EntityName>Dto>
+    {
+        partial void InitFilterPartial();
+        partial void LoadReferenceDataPartial();
+        partial void ProcessDtoBeforeAddToEntitiesPartial(<EntityName>Dto dto);
+        partial void ProcessNewAddedDtoPartial(<EntityName>Dto dto);
+
+        <DeclareHeaderFilters>
+
+        public <EntityName>ViewModel() : base()
+        {
+            <InitHeaderFilters>
+
+            InitFilterPartial();
+
+            <AddHeaderFiltersToHeaderFilterCollection>
+        }
+
+        public override void LoadReferenceData()
+        {
+            <LoadReferenceDatas>
+
+            LoadReferenceDataPartial();
+        }
+
+        protected override void ProcessDtoBeforeAddToEntities(<EntityName>Dto dto)
+        {
+            <SetDtosReferenceDataSource>
+
+            ProcessDtoBeforeAddToEntitiesPartial(dto);
+        }
+
+        protected override void ProcessNewAddedDto(<EntityName>Dto dto)
+        {
+            <SetDtosDefaultValue>
+
+            ProcessNewAddedDtoPartial(dto);
+            ProcessDtoBeforeAddToEntities(dto);
+        }
+    }
+}

@@ -13,7 +13,7 @@ namespace huypq.SmtCodeGen
             {
                 results.Add(table.TableName, new StringBuilder());
             }
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#ControllerTemplate.cs")))
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#ControllerTemplate.txt")))
             {
                 foreach (var table in tables)
                 {

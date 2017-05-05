@@ -11,7 +11,7 @@ namespace huypq.SmtCodeGen
             var result = new StringBuilder();
             var classKeyword = " class ";
             var className = "";
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#TextManagerTemplate.cs")))
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#TextManagerTemplate.txt")))
             {
                 var indexOfClass = line.IndexOf(classKeyword);
                 if (indexOfClass != -1)

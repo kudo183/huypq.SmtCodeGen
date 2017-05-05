@@ -1,0 +1,29 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using huypq.SmtMiddleware;
+using huypq.SmtMiddleware.Entities;
+using Server.Entities;
+
+namespace Server.Entities
+{
+    public partial class TestContext : DbContext, IDbContext<SmtTenant, SmtUser, SmtUserClaim>
+    {
+	    public TestContext(DbContextOptions<TestContext> options) : base(options)
+        {
+            ChangeTracker.AutoDetectChangesEnabled = false;
+            ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            <ModelBuilderConfix>
+        }
+		
+		public DbSet<SmtTable> SmtTable { get; set; }
+        public DbSet<SmtDeletedItem> SmtDeletedItem { get; set; }
+		public DbSet<SmtTenant> SmtTenant { get; set; }
+        public DbSet<SmtUser> SmtUser { get; set; }
+        public DbSet<SmtUserClaim> SmtUserClaim { get; set; }
+        <DbSetProperties>
+    }
+}

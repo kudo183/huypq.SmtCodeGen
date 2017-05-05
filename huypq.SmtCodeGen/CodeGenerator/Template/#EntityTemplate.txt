@@ -1,0 +1,19 @@
+using System.Collections.Generic;
+using huypq.SmtMiddleware;
+
+namespace Server.Entities
+{
+    public partial class <EntityName> : IEntity
+    {
+        public <EntityName>()
+        {
+            <InitEntityCollectionNavigationProperties>
+        }
+
+        <EntityProperties>
+
+        <EntityNavigationProperties>
+		
+		<EntityCollectionNavigationProperties>
+    }
+}

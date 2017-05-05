@@ -1,0 +1,42 @@
+using huypq.SmtMiddleware;
+using Server.Entities;
+using huypq.SmtMiddleware.Entities;
+using Shared;
+
+namespace Server.Controllers
+{
+    public partial class <EntityName>Controller : SmtEntityBaseController<SqlDbContext, <EntityName>, <EntityName>Dto>
+    {
+        partial void ConvertToDtoPartial(ref <EntityName>Dto dto, <EntityName> entity);
+        partial void ConvertToEntityPartial(ref <EntityName> entity, <EntityName>Dto dto);
+
+        public override <EntityName>Dto ConvertToDto(<EntityName> entity)
+        {
+            var dto = new <EntityName>Dto()
+			{
+				<InitDtoProperties>
+            };
+
+            ConvertToDtoPartial(ref dto, entity);
+
+            return dto;
+        }
+
+        public override <EntityName> ConvertToEntity(<EntityName>Dto dto)
+        {
+            var entity = new <EntityName>()
+            {
+				<InitEntityProperties>
+			};
+
+            ConvertToEntityPartial(ref entity, dto);
+
+            return entity;
+        }
+		
+		public override string GetControllerName()
+        {
+            return nameof(<EntityName>Controller);
+        }
+    }
+}

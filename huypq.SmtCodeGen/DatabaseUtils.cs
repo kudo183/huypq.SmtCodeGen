@@ -126,7 +126,7 @@ namespace huypq.SmtCodeGen
                     }
                 }
 
-                tables.Add(new DbTable()
+                var t = new DbTable()
                 {
                     TableName = table.Name,
                     Columns = new ObservableCollection<DbTableColumn>(columns),
@@ -135,7 +135,20 @@ namespace huypq.SmtCodeGen
                     RequiredMaxLengths = new ObservableCollection<RequiredMaxLength>(requiredMaxLengths),
                     DefaultValues = new ObservableCollection<DefaultValue>(defaultValues),
                     HasColumnTypes = new ObservableCollection<HasColumnType>(hasColumnTypes)
-                });
+                };
+                if (table.Name == "SmtDeletedItem"
+                    || table.Name == "SmtTable"
+                    || table.Name == "SmtTenant"
+                    || table.Name == "SmtUser"
+                    || table.Name == "SmtUserClaim")
+                {
+                    t.IsSelected = false;
+                }
+                else
+                {
+                    t.IsSelected = true;
+                }
+                tables.Add(t);
             }
 
             foreach (var table in tables)

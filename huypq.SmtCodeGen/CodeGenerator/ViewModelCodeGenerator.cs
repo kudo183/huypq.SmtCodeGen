@@ -13,7 +13,7 @@ namespace huypq.SmtCodeGen
             {
                 results.Add(table.TableName, new StringBuilder());
             }
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#ViewModelTemplate.cs")))
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#ViewModelTemplate.txt")))
             {
                 foreach (var table in tables)
                 {
@@ -95,7 +95,7 @@ namespace huypq.SmtCodeGen
                     sb.AppendFormat("{0}TextManager.{1}_{2}, HeaderComboBoxFilterModel.ComboBoxFilter,{3}", tab1, tableName, item.ColumnName, Constant.LineEnding);
                     sb.AppendFormat("{0}nameof({1}Dto.{2}),{3}", tab1, tableName, item.ColumnName, Constant.LineEnding);
                     sb.AppendFormat("{0}typeof({1}),{2}", tab1, item.DataType, Constant.LineEnding);
-                    sb.AppendFormat("{0}nameof({1}Dto.TenHienThi),{2}", tab1, item.ForeignKeyTableName, Constant.LineEnding);
+                    sb.AppendFormat("{0}nameof({1}Dto.DisplayName),{2}", tab1, item.ForeignKeyTableName, Constant.LineEnding);
                     sb.AppendFormat("{0}nameof({1}Dto.ID)){2}", tab1, item.ForeignKeyTableName, Constant.LineEnding);
                     sb.AppendLine(baseTab + "{");
                     sb.AppendFormat("{0}AddCommand = new SimpleCommand(\"{1}AddCommand\",{2}", tab1, item.ColumnName, Constant.LineEnding);
@@ -162,7 +162,7 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in foreignKeys)
             {
-                sb.AppendFormat("{0}dto.{1}DataSources = ReferenceDataManager<{2}Dto>.Instance.Get();{3}",
+                sb.AppendFormat("{0}dto.{1}DataSource = ReferenceDataManager<{2}Dto>.Instance.Get();{3}",
                     baseTab, item.ColumnName, item.ForeignKeyTableName, Constant.LineEnding);
             }
 

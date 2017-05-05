@@ -13,7 +13,7 @@ namespace huypq.SmtCodeGen
             {
                 results.Add(table.TableName, new StringBuilder());
             }
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#ViewTemplate.xaml.cs")))
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#ViewTemplate.xaml.cs.txt")))
             {
                 foreach (var table in tables)
                 {
@@ -36,7 +36,7 @@ namespace huypq.SmtCodeGen
             {
                 results.Add(table.TableName, new StringBuilder());
             }
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#ViewTemplate.xaml")))
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#ViewTemplate.xaml.txt")))
             {
                 foreach (var table in tables)
                 {

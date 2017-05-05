@@ -46,18 +46,7 @@ namespace huypq.SmtCodeGen
                 isExpanded = value; OnPropertyChanged();
             }
         }
-
-        public DbTable()
-        {
-            Columns = new ObservableCollection<DbTableColumn>();
-            ForeignKeys = new ObservableCollection<ForeignKey>();
-            Indexes = new ObservableCollection<Index>();
-            RequiredMaxLengths = new ObservableCollection<RequiredMaxLength>();
-            DefaultValues = new ObservableCollection<DefaultValue>();
-            HasColumnTypes = new ObservableCollection<HasColumnType>();
-            ReferencesToThisTable = new ObservableCollection<Reference>();
-        }
-
+        
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

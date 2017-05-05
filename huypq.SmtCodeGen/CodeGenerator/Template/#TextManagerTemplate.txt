@@ -1,0 +1,65 @@
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Windows;
+
+namespace Client
+{
+    public static partial class TextManager
+    {
+        static partial void InitDefaultLanguageDataPartial();
+
+        static readonly Dictionary<string, string> _dic = new Dictionary<string, string>();
+        public static string Language;
+
+        static TextManager()
+        {
+            if (System.ComponentModel.DesignerProperties.GetIsInDesignMode(new DependencyObject()) == true)
+            {
+                InitDefaultLanguageData();
+                return;
+            }
+
+            var language = Language;
+            if (string.IsNullOrEmpty(language) == true)
+            {
+                language = Thread.CurrentThread.CurrentUICulture.Name.ToLower();
+            }
+
+            var fileName = language + ".txt";
+            var di = new System.IO.DirectoryInfo("text");
+            var filePath = System.IO.Path.Combine(di.FullName, fileName);
+            if (System.IO.File.Exists(fileName) == true)
+            {
+                foreach (var line in System.IO.File.ReadLines(fileName))
+                {
+                    var texts = line.Split(new[] { "\t\t" }, System.StringSplitOptions.None);
+                    _dic.Add(texts[0], texts[1]);
+                }
+            }
+            else
+            {
+                InitDefaultLanguageData();
+            }
+        }
+
+        <TextStaticProperties>
+
+        public static string GetText([CallerMemberName] string textKey = null)
+        {
+            string text;
+            if (_dic.TryGetValue(textKey, out text) == true)
+            {
+                return text;
+            }
+            return "[no text]";
+        }
+
+        private static void InitDefaultLanguageData()
+        {
+            <InitDefaultTextData>
+
+            InitDefaultLanguageDataPartial();
+        }
+    }
+}

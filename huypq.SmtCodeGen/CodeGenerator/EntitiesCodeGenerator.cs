@@ -11,7 +11,7 @@ namespace huypq.SmtCodeGen
             var result = new StringBuilder();
             var classKeyword = " class ";
             var contextName = "";
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#DbContextTemplate.cs")))
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#DbContextTemplate.txt")))
             {
                 var indexOfClass = line.IndexOf(classKeyword);
                 if (indexOfClass != -1)
@@ -50,7 +50,7 @@ namespace huypq.SmtCodeGen
             {
                 results.Add(table.TableName, new StringBuilder());
             }
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#EntityTemplate.cs")))
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#EntityTemplate.txt")))
             {
                 foreach (var table in tables)
                 {
@@ -77,7 +77,22 @@ namespace huypq.SmtCodeGen
                     }
                     else
                     {
-                        result.AppendLine(line.Replace("<EntityName>", table.TableName));
+                        if (table.TableName == "SmtUser")
+                        {
+                            result.AppendLine(line.Replace("IEntity", "IUser").Replace("<EntityName>", table.TableName));
+                        }
+                        else if (table.TableName == "SmtTenant")
+                        {
+                            result.AppendLine(line.Replace("IEntity", "ITenant").Replace("<EntityName>", table.TableName));
+                        }
+                        else if (table.TableName == "SmtUserClaim")
+                        {
+                            result.AppendLine(line.Replace("IEntity", "IUserClaim").Replace("<EntityName>", table.TableName));
+                        }
+                        else
+                        {
+                            result.AppendLine(line.Replace("<EntityName>", table.TableName));
+                        }
                     }
                 }
             }

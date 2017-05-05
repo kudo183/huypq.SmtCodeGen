@@ -1,0 +1,17 @@
+using huypq.SmtWpfClient.Abstraction;
+using Shared;
+
+namespace Client.View
+{
+    public partial class <EntityName>View : BaseView<<EntityName>Dto>
+    {
+        partial void InitUIPartial();
+
+        public <EntityName>View() : base()
+        {
+            InitializeComponent();
+
+            InitUIPartial();
+        }
+    }
+}

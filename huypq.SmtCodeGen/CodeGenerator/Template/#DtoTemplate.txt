@@ -1,0 +1,49 @@
+using huypq.SmtShared;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
+namespace Shared
+{
+    [ProtoBuf.ProtoContract]
+    public partial class <EntityName>Dto : IDto, INotifyPropertyChanged
+    {
+        <PrivateFields>
+
+		<PublicProperties>
+
+		[ProtoBuf.ProtoMember(100)]
+        public int State { get; set; }
+        
+		public void SetCurrentValueAsOriginalValue()
+        {
+			<SetCurrentValueAsOriginalValue>
+		}
+
+		public void Update(object obj)
+        {
+			var dto = obj as <EntityName>Dto;
+            if (dto == null)
+            {
+                return;
+            }
+			
+			<Update>
+		}
+
+		public bool HasChange()
+        {
+			<HasChange>
+        }
+		
+		<ReferenceDataSource>
+		
+        public event PropertyChangedEventHandler PropertyChanged;
+        public virtual void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            RaiseDependentPropertyChanged(name);
+        }
+
+        partial void RaiseDependentPropertyChanged(string basePropertyName);
+    }
+}
