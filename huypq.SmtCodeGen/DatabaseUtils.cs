@@ -158,6 +158,10 @@ namespace huypq.SmtCodeGen
                 {
                     table.ReferencesToThisTable = new ObservableCollection<Reference>(reference);
                 }
+                else
+                {
+                    table.ReferencesToThisTable = new ObservableCollection<Reference>();
+                }
             }
             return tables;
         }
