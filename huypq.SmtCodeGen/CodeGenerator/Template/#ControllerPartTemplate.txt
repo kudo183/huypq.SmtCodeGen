@@ -1,0 +1,24 @@
+using huypq.SmtMiddleware;
+using huypq.SmtShared.Constant;
+using QueryBuilder;
+using Server.Entities;
+using Shared;
+using System.Collections.Generic;
+
+namespace Server.Controllers
+{
+    public partial class <EntityName>Controller : SmtEntityBaseController<SqlDbContext, <EntityName>, <EntityName>Dto>
+    {
+        public override SmtActionResult ActionInvoker(string actionName, Dictionary<string, object> parameter)
+        {
+            switch (actionName)
+            {
+                case ControllerAction.SmtEntityBase.GetAll:
+                    return GetAll(ConvertRequestBody<QueryExpression>(parameter["body"] as System.IO.Stream), GetQuery());
+                case ControllerAction.SmtEntityBase.GetUpdate:
+                    return GetUpdate(ConvertRequestBody<QueryExpression>(parameter["body"] as System.IO.Stream), GetQuery());
+            }
+            return base.ActionInvoker(actionName, parameter);
+        }
+    }
+}

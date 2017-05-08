@@ -41,6 +41,41 @@ namespace huypq.SmtCodeGen
             {
                 FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, result.Key + "Controller.cs"), result.Value.ToString());
             }
+
+            GenControllersPartialClass(tables, outputPath);
+        }
+
+        private static void GenControllersPartialClass(IEnumerable<DbTable> tables, string outputPath)
+        {
+            var referencedTable = tables.Where(p => p.ReferencesToThisTable.Count > 0);
+            if (referencedTable.Count() == 0)
+            {
+                return;
+            }
+
+            var results = new Dictionary<string, StringBuilder>();
+            foreach (var table in referencedTable)
+            {
+                results.Add(table.TableName, new StringBuilder());
+            }
+
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#ControllerPartTemplate.txt")))
+            {
+                foreach (var table in referencedTable)
+                {
+                    var result = results[table.TableName];
+                    result.AppendLine(line.Replace("<EntityName>", table.TableName));
+                }
+            }
+
+            foreach (var result in results)
+            {
+                var filePath = System.IO.Path.Combine(outputPath, result.Key + "Controller.part.cs");
+                if (System.IO.File.Exists(filePath) == false)
+                {
+                    FileUtils.WriteAllTextInUTF8(filePath, result.Value.ToString());
+                }
+            }
         }
 
         private static string InitEntityProperties(IEnumerable<DbTableColumn> columns, string baseTab)
