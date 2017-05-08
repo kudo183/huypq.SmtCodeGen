@@ -141,6 +141,7 @@
     <Resource Include="CodeGenerator\Template\#ViewModelTemplate.txt" />
     <Resource Include="CodeGenerator\Template\#ViewTemplate.xaml.cs.txt" />
     <Resource Include="CodeGenerator\Template\#ViewTemplate.xaml.txt" />
+    <Resource Include="CodeGenerator\Template\#DtoPartTemplate.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

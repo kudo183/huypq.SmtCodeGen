@@ -95,7 +95,7 @@ namespace huypq.SmtCodeGen
                     sb.AppendFormat("{0}TextManager.{1}_{2}, HeaderComboBoxFilterModel.ComboBoxFilter,{3}", tab1, tableName, item.ColumnName, Constant.LineEnding);
                     sb.AppendFormat("{0}nameof({1}Dto.{2}),{3}", tab1, tableName, item.ColumnName, Constant.LineEnding);
                     sb.AppendFormat("{0}typeof({1}),{2}", tab1, item.DataType, Constant.LineEnding);
-                    sb.AppendFormat("{0}nameof({1}Dto.DisplayName),{2}", tab1, item.ForeignKeyTableName, Constant.LineEnding);
+                    sb.AppendFormat("{0}nameof({1}Dto.DisplayText),{2}", tab1, item.ForeignKeyTableName, Constant.LineEnding);
                     sb.AppendFormat("{0}nameof({1}Dto.ID)){2}", tab1, item.ForeignKeyTableName, Constant.LineEnding);
                     sb.AppendLine(baseTab + "{");
                     sb.AppendFormat("{0}AddCommand = new SimpleCommand(\"{1}AddCommand\",{2}", tab1, item.ColumnName, Constant.LineEnding);
