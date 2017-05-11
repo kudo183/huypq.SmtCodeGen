@@ -100,7 +100,7 @@ namespace huypq.SmtCodeGen
                     sb.AppendLine(baseTab + "{");
                     sb.AppendFormat("{0}AddCommand = new SimpleCommand(\"{1}AddCommand\",{2}", tab1, item.ColumnName, Constant.LineEnding);
                     sb.AppendLine(tab2 + "() => base.ProccessHeaderAddCommand(");
-                    sb.AppendFormat("{0}new View.{1}View(), \"{1}\", ReferenceDataManager<{1}Dto>.Instance.Update)),{2}", tab2, item.ForeignKeyTableName, Constant.LineEnding);
+                    sb.AppendFormat("{0}new View.{1}View(), \"{1}\", ReferenceDataManager<{1}Dto>.Instance.LoadOrUpdate)),{2}", tab2, item.ForeignKeyTableName, Constant.LineEnding);
                     sb.AppendFormat("{0}ItemSource = ReferenceDataManager<{1}Dto>.Instance.Get(){2}", tab1, item.ForeignKeyTableName, Constant.LineEnding);
                     sb.AppendLine(baseTab + "};");
                 }
@@ -144,7 +144,7 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in foreignKeys)
             {
-                sb.AppendFormat("{0}ReferenceDataManager<{1}Dto>.Instance.Update();{2}", baseTab, item.ForeignKeyTableName, Constant.LineEnding);
+                sb.AppendFormat("{0}ReferenceDataManager<{1}Dto>.Instance.LoadOrUpdate();{2}", baseTab, item.ForeignKeyTableName, Constant.LineEnding);
             }
 
             return sb.ToString(0, sb.Length - Constant.LineEnding.Length);

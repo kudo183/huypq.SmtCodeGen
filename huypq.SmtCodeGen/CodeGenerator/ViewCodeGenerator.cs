@@ -75,6 +75,10 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columns)
             {
+                if (item.ColumnName == "TenantID")
+                {
+                    continue;
+                }
                 if (item.IsIdentity == true)
                 {
                     sb.AppendFormat("{0}<SimpleDataGrid:DataGridTextColumnExt Width=\"80\" Header=\"{1}\" IsReadOnly=\"True\" Binding=\"{{Binding {1}, Mode=OneWay}}\"/>{2}", baseTab, item.ColumnName, Constant.LineEnding);
@@ -90,7 +94,14 @@ namespace huypq.SmtCodeGen
                 else
                 {
                     var columnType = GetDataGridColumnTypeFromProperty(item);
-                    sb.AppendFormat("{0}<SimpleDataGrid:{1} Header=\"{2}\" Binding=\"{{Binding {2}, UpdateSourceTrigger=PropertyChanged}}\"/>{3}", baseTab, columnType, item.ColumnName, Constant.LineEnding);
+                    if (item.ColumnName == "CreateTime" || item.ColumnName == "LastUpdateTime")
+                    {
+                        sb.AppendFormat("{0}<SimpleDataGrid:{1} Header=\"{2}\" IsReadOnly=\"True\" Binding=\"{{Binding {2}, UpdateSourceTrigger=PropertyChanged, Converter={{x:Static converter:LongToDateTimeStringConverter.Instance}}}}\"/>{3}", baseTab, columnType, item.ColumnName, Constant.LineEnding);
+                    }
+                    else
+                    {
+                        sb.AppendFormat("{0}<SimpleDataGrid:{1} Header=\"{2}\" Binding=\"{{Binding {2}, UpdateSourceTrigger=PropertyChanged}}\"/>{3}", baseTab, columnType, item.ColumnName, Constant.LineEnding);
+                    }
                 }
             }
 
