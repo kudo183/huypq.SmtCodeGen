@@ -129,9 +129,9 @@ namespace huypq.SmtCodeGen
             }
         }
 
-        private ObservableCollection<DbTable> dbTables;
+        private List<DbTable> dbTables;
 
-        public ObservableCollection<DbTable> DbTables
+        public List<DbTable> DbTables
         {
             get { return dbTables; }
             set
@@ -151,7 +151,6 @@ namespace huypq.SmtCodeGen
 
         public DatabaseTreeVM()
         {
-            DbTables = new ObservableCollection<DbTable>();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

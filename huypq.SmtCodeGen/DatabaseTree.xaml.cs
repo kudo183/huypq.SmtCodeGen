@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace huypq.SmtCodeGen
 {
@@ -17,7 +17,7 @@ namespace huypq.SmtCodeGen
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
             var vm = DataContext as DatabaseTreeVM;
-            vm.DbTables = new ObservableCollection<DbTable>(DatabaseUtils.FromDB(vm.DBName));
+            vm.DbTables = new List<DbTable>(DatabaseUtils.FromDB(vm.DBName));
         }
 
         private void btnSelectAll_Click(object sender, RoutedEventArgs e)
