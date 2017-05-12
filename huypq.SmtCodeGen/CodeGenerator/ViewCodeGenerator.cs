@@ -85,11 +85,18 @@ namespace huypq.SmtCodeGen
                 }
                 else if (item.IsForeignKey == true)
                 {
-                    sb.AppendFormat("{0}<SimpleDataGrid:DataGridComboBoxColumnExt Header=\"{1}\"{2}", baseTab, item.ColumnName, Constant.LineEnding);
-                    sb.AppendFormat("{0}SelectedValuePath=\"ID\"{1}", tab1, Constant.LineEnding);
-                    sb.AppendFormat("{0}DisplayMemberPath=\"DisplayText\"{1}", tab1, Constant.LineEnding);
-                    sb.AppendFormat("{0}SelectedValueBinding=\"{{Binding {1}, UpdateSourceTrigger=PropertyChanged}}\"{2}", tab1, item.ColumnName, Constant.LineEnding);
-                    sb.AppendFormat("{0}ItemsSource=\"{{Binding {1}DataSource}}\"/>{2}", tab1, item.ColumnName, Constant.LineEnding);
+                    if (item.IsReferenceToLargeTable)
+                    {
+                        sb.AppendFormat("{0}<SimpleDataGrid:DataGridTextColumnExt Width=\"80\" Header=\"{1}\" IsReadOnly=\"True\" Binding=\"{{Binding {1}, Mode=OneWay}}\"/>{2}", baseTab, item.ColumnName, Constant.LineEnding);
+                    }
+                    else
+                    {
+                        sb.AppendFormat("{0}<SimpleDataGrid:DataGridComboBoxColumnExt Header=\"{1}\"{2}", baseTab, item.ColumnName, Constant.LineEnding);
+                        sb.AppendFormat("{0}SelectedValuePath=\"ID\"{1}", tab1, Constant.LineEnding);
+                        sb.AppendFormat("{0}DisplayMemberPath=\"DisplayText\"{1}", tab1, Constant.LineEnding);
+                        sb.AppendFormat("{0}SelectedValueBinding=\"{{Binding {1}, UpdateSourceTrigger=PropertyChanged}}\"{2}", tab1, item.ColumnName, Constant.LineEnding);
+                        sb.AppendFormat("{0}ItemsSource=\"{{Binding {1}DataSource}}\"/>{2}", tab1, item.ColumnName, Constant.LineEnding);
+                    }
                 }
                 else
                 {

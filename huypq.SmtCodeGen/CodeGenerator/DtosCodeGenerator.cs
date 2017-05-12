@@ -213,11 +213,21 @@ namespace huypq.SmtCodeGen
             var foreignKeys = columns.Where(p => p.IsForeignKey);
             foreach (var item in foreignKeys)
             {
+                if (item.IsReferenceToLargeTable == true)
+                {
+                    continue;
+                }
+
                 sb.AppendFormat("{0}object _{1}DataSource;{2}", baseTab, item.ColumnName, Constant.LineEnding);
             }
             sb.AppendLine();
             foreach (var item in foreignKeys)
             {
+                if (item.IsReferenceToLargeTable == true)
+                {
+                    continue;
+                }
+
                 sb.AppendFormat("{0}[Newtonsoft.Json.JsonIgnore]{1}", baseTab, Constant.LineEnding);
                 sb.AppendFormat("{0}public object {1}DataSource {{ get {{ return _{1}DataSource; }} set {{ _{1}DataSource = value; OnPropertyChanged(); }} }}{2}",
                     baseTab, item.ColumnName, Constant.LineEnding);

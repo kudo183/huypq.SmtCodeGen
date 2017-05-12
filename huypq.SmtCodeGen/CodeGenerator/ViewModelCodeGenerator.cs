@@ -91,18 +91,27 @@ namespace huypq.SmtCodeGen
             {
                 if (item.IsForeignKey == true)
                 {
-                    sb.AppendFormat("{0}_{1}Filter = new HeaderComboBoxFilterModel({2}", baseTab, item.ColumnName, Constant.LineEnding);
-                    sb.AppendFormat("{0}TextManager.{1}_{2}, HeaderComboBoxFilterModel.ComboBoxFilter,{3}", tab1, tableName, item.ColumnName, Constant.LineEnding);
-                    sb.AppendFormat("{0}nameof({1}Dto.{2}),{3}", tab1, tableName, item.ColumnName, Constant.LineEnding);
-                    sb.AppendFormat("{0}typeof({1}),{2}", tab1, item.DataType, Constant.LineEnding);
-                    sb.AppendFormat("{0}nameof({1}Dto.DisplayText),{2}", tab1, item.ForeignKeyTableName, Constant.LineEnding);
-                    sb.AppendFormat("{0}nameof({1}Dto.ID)){2}", tab1, item.ForeignKeyTableName, Constant.LineEnding);
-                    sb.AppendLine(baseTab + "{");
-                    sb.AppendFormat("{0}AddCommand = new SimpleCommand(\"{1}AddCommand\",{2}", tab1, item.ColumnName, Constant.LineEnding);
-                    sb.AppendLine(tab2 + "() => base.ProccessHeaderAddCommand(");
-                    sb.AppendFormat("{0}new View.{1}View(), \"{1}\", ReferenceDataManager<{1}Dto>.Instance.LoadOrUpdate)),{2}", tab2, item.ForeignKeyTableName, Constant.LineEnding);
-                    sb.AppendFormat("{0}ItemSource = ReferenceDataManager<{1}Dto>.Instance.Get(){2}", tab1, item.ForeignKeyTableName, Constant.LineEnding);
-                    sb.AppendLine(baseTab + "};");
+                    if (item.IsReferenceToLargeTable)
+                    {
+                        var filterType = "HeaderTextFilterModel";
+                        sb.AppendFormat("{0}_{1}Filter = new {2}(TextManager.{3}_{1}, nameof({3}Dto.{1}), typeof({4}));{5}",
+                        baseTab, item.ColumnName, filterType, tableName, item.DataType, Constant.LineEnding);
+                    }
+                    else
+                    {
+                        sb.AppendFormat("{0}_{1}Filter = new HeaderComboBoxFilterModel({2}", baseTab, item.ColumnName, Constant.LineEnding);
+                        sb.AppendFormat("{0}TextManager.{1}_{2}, HeaderComboBoxFilterModel.ComboBoxFilter,{3}", tab1, tableName, item.ColumnName, Constant.LineEnding);
+                        sb.AppendFormat("{0}nameof({1}Dto.{2}),{3}", tab1, tableName, item.ColumnName, Constant.LineEnding);
+                        sb.AppendFormat("{0}typeof({1}),{2}", tab1, item.DataType, Constant.LineEnding);
+                        sb.AppendFormat("{0}nameof({1}Dto.DisplayText),{2}", tab1, item.ForeignKeyTableName, Constant.LineEnding);
+                        sb.AppendFormat("{0}nameof({1}Dto.ID)){2}", tab1, item.ForeignKeyTableName, Constant.LineEnding);
+                        sb.AppendLine(baseTab + "{");
+                        sb.AppendFormat("{0}AddCommand = new SimpleCommand(\"{1}AddCommand\",{2}", tab1, item.ColumnName, Constant.LineEnding);
+                        sb.AppendLine(tab2 + "() => base.ProccessHeaderAddCommand(");
+                        sb.AppendFormat("{0}new View.{1}View(), \"{1}\", ReferenceDataManager<{1}Dto>.Instance.LoadOrUpdate)),{2}", tab2, item.ForeignKeyTableName, Constant.LineEnding);
+                        sb.AppendFormat("{0}ItemSource = ReferenceDataManager<{1}Dto>.Instance.Get(){2}", tab1, item.ForeignKeyTableName, Constant.LineEnding);
+                        sb.AppendLine(baseTab + "};");
+                    }
                 }
                 else
                 {
@@ -144,6 +153,11 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in foreignKeys)
             {
+                if (item.IsReferenceToLargeTable == true)
+                {
+                    continue;
+                }
+
                 sb.AppendFormat("{0}ReferenceDataManager<{1}Dto>.Instance.LoadOrUpdate();{2}", baseTab, item.ForeignKeyTableName, Constant.LineEnding);
             }
 
@@ -162,6 +176,11 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in foreignKeys)
             {
+                if (item.IsReferenceToLargeTable == true)
+                {
+                    continue;
+                }
+
                 sb.AppendFormat("{0}dto.{1}DataSource = ReferenceDataManager<{2}Dto>.Instance.Get();{3}",
                     baseTab, item.ColumnName, item.ForeignKeyTableName, Constant.LineEnding);
             }
@@ -181,7 +200,7 @@ namespace huypq.SmtCodeGen
             foreach (var item in columns)
             {
                 sb.AppendFormat("{0}if (_{1}Filter.FilterValue != null){2}", baseTab, item.ColumnName, Constant.LineEnding);
-                sb.AppendFormat("{0}{{{1}",baseTab,Constant.LineEnding);
+                sb.AppendFormat("{0}{{{1}", baseTab, Constant.LineEnding);
                 sb.AppendFormat("{0}dto.{1} = ({2})_{1}Filter.FilterValue;{3}",
                     tab1, item.ColumnName, item.DataType, Constant.LineEnding);
                 sb.AppendFormat("{0}}}{1}", baseTab, Constant.LineEnding);
