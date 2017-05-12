@@ -1,0 +1,15 @@
+using huypq.SmtWpfClient.Abstraction;
+
+namespace Client.View
+{
+    /// <summary>
+    /// Interaction logic for <ViewName>ComplexView.xaml
+    /// </summary>
+    public partial class <ViewName>ComplexView : BaseComplexView
+    {
+        public <ViewName>ComplexView()
+        {
+            InitializeComponent();
+        }
+    }
+}

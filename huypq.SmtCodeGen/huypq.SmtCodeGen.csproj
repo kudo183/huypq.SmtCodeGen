@@ -71,6 +71,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CodeGenerator\ComplexViewCodeGenerator.cs" />
     <Compile Include="CodeGenerator\TextManagerCodeGenerator.cs" />
     <Compile Include="CodeGenerator\ViewCodeGenerator.cs" />
     <Compile Include="CodeGenerator\DtosCodeGenerator.cs" />
@@ -153,6 +154,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="CodeGenerator\Template\#ControllerPartTemplate.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CodeGenerator\Template\#ComplexViewTemplate.xaml.cs.txt" />
+    <Resource Include="CodeGenerator\Template\#ComplexViewTemplate.xaml.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

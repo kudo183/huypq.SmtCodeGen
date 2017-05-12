@@ -86,6 +86,9 @@ namespace huypq.SmtCodeGen
                 case "Entity":
                     GenEntity(vm.EntityPath);
                     break;
+                case "ComplexView":
+                    GenComplexView(vm.ViewPath);
+                    break;
                 case "All":
                     GenAllCode();
                     break;
@@ -190,6 +193,14 @@ namespace huypq.SmtCodeGen
 
             EntitiesCodeGenerator.GenDbContextClass(vm.DatabaseTreeVM.SelectedTables, path);
             EntitiesCodeGenerator.GenEntitiesClass(vm.DatabaseTreeVM.SelectedTables, path);
+        }
+
+        private void GenComplexView(string path)
+        {
+            vm.Messages.Add(string.Format("{0} | Generating Complex View ...", DateTime.Now));
+
+            ComplexViewCodeGenerator.GenComplexViewCode(vm.MasterDetailSelectorVM.MasterDetailList, vm.DatabaseTreeVM.SelectedTables, path);
+            ComplexViewCodeGenerator.GenComplexViewXamlCode(vm.MasterDetailSelectorVM.MasterDetailList, vm.DatabaseTreeVM.SelectedTables, path);
         }
     }
 }
