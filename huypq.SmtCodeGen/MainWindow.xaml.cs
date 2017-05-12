@@ -13,6 +13,7 @@ namespace huypq.SmtCodeGen
     public partial class MainWindow : Window
     {
         MainWindowViewModel vm = new MainWindowViewModel();
+        string defaultSaveFileName = "default.gen";
 
         public MainWindow()
         {
@@ -20,28 +21,22 @@ namespace huypq.SmtCodeGen
 
             DataContext = vm;
 
-            vm.DatabaseTreeVM.DBName = Properties.Settings.Default.DbName;
-            vm.EntityPath = Properties.Settings.Default.EntityPath;
-            vm.ControllerPath = Properties.Settings.Default.ControllerPath;
-            vm.DtoPath = Properties.Settings.Default.DtoPath;
-            vm.ViewPath = Properties.Settings.Default.ViewPath;
-            vm.ViewModelPath = Properties.Settings.Default.ViewModelPath;
-            vm.TextPath = Properties.Settings.Default.TextPath;
-
+            Loaded += MainWindow_Loaded;
             Closed += MainWindow_Closed;
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (System.IO.File.Exists(defaultSaveFileName) == true)
+            {
+                vm.Load(defaultSaveFileName);
+                masterDetailSelector.UpdateUI();
+            }
         }
 
         private void MainWindow_Closed(object sender, EventArgs e)
         {
-            Properties.Settings.Default.DbName = vm.DatabaseTreeVM.DBName;
-            Properties.Settings.Default.EntityPath = vm.EntityPath;
-            Properties.Settings.Default.ControllerPath = vm.ControllerPath;
-            Properties.Settings.Default.DtoPath = vm.DtoPath;
-            Properties.Settings.Default.ViewPath = vm.ViewPath;
-            Properties.Settings.Default.ViewModelPath = vm.ViewModelPath;
-            Properties.Settings.Default.TextPath = vm.TextPath;
-
-            Properties.Settings.Default.Save();
+            vm.Save(defaultSaveFileName);
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
@@ -61,6 +56,7 @@ namespace huypq.SmtCodeGen
             if (ofd.ShowDialog() == true)
             {
                 vm.Load(ofd.FileName);
+                masterDetailSelector.UpdateUI();
             }
         }
 
@@ -98,14 +94,14 @@ namespace huypq.SmtCodeGen
             vm.Messages.Add(string.Format("{0} | Done.", DateTime.Now));
         }
 
-        private void GenAllCode()
+        private void UpdateTableListButton_Click(object sender, RoutedEventArgs e)
         {
-            GenView(vm.ViewPath);
-            GenViewModel(vm.ViewModelPath);
-            GenText(vm.TextPath);
-            GenController(vm.ControllerPath);
-            GenDto(vm.DtoPath);
-            GenEntity(vm.EntityPath);
+            vm.MasterDetailSelectorVM.Tables = vm.DatabaseTreeVM.SelectedTables.Select(p => p.TableName).ToList();
+        }
+
+        private void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            masterDetailSelector.AddView();
         }
 
         private void OpenButton_Click(object sender, RoutedEventArgs e)
@@ -135,6 +131,16 @@ namespace huypq.SmtCodeGen
                     OpenPath(vm.EntityPath);
                     break;
             }
+        }
+
+        private void GenAllCode()
+        {
+            GenView(vm.ViewPath);
+            GenViewModel(vm.ViewModelPath);
+            GenText(vm.TextPath);
+            GenController(vm.ControllerPath);
+            GenDto(vm.DtoPath);
+            GenEntity(vm.EntityPath);
         }
 
         private void OpenPath(string path)

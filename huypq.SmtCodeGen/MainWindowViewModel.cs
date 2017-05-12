@@ -11,6 +11,8 @@ namespace huypq.SmtCodeGen
     {
         public DatabaseTreeVM DatabaseTreeVM { get; set; }
 
+        public MasterDetailSelectorVM MasterDetailSelectorVM { get; set; }
+
         private string viewPath;
 
         public string ViewPath
@@ -25,7 +27,7 @@ namespace huypq.SmtCodeGen
                 }
             }
         }
-        
+
         private string viewModelPath;
 
         public string ViewModelPath
@@ -40,7 +42,7 @@ namespace huypq.SmtCodeGen
                 }
             }
         }
-        
+
         private string textPath;
 
         public string TextPath
@@ -55,7 +57,7 @@ namespace huypq.SmtCodeGen
                 }
             }
         }
-        
+
         private string controllerPath;
 
         public string ControllerPath
@@ -70,7 +72,7 @@ namespace huypq.SmtCodeGen
                 }
             }
         }
-        
+
         private string dtoPath;
 
         public string DtoPath
@@ -85,7 +87,7 @@ namespace huypq.SmtCodeGen
                 }
             }
         }
-        
+
         private string entityPath;
 
         public string EntityPath
@@ -108,6 +110,7 @@ namespace huypq.SmtCodeGen
         public MainWindowViewModel()
         {
             DatabaseTreeVM = new DatabaseTreeVM();
+            MasterDetailSelectorVM = new MasterDetailSelectorVM();
             LanguageNameList = CultureInfo.GetCultures(CultureTypes.AllCultures).OrderBy(p => p.DisplayName, System.StringComparer.OrdinalIgnoreCase);
             Messages = new ObservableCollection<string>();
         }
@@ -130,6 +133,16 @@ namespace huypq.SmtCodeGen
             bw.Write(ControllerPath);
             bw.Write(DtoPath);
             bw.Write(EntityPath);
+            bw.Write(MasterDetailSelectorVM.MasterDetailList.Count);
+            foreach (var item in MasterDetailSelectorVM.MasterDetailList)
+            {
+                bw.Write(item.Levels.Count);
+                foreach (var level in item.Levels)
+                {
+                    bw.Write(level);
+                }
+                bw.Write(item.ViewName);
+            }
             fs.Flush();
             fs.Close();
         }
@@ -145,6 +158,21 @@ namespace huypq.SmtCodeGen
             ControllerPath = br.ReadString();
             DtoPath = br.ReadString();
             EntityPath = br.ReadString();
+            int masterDetailListCount = br.ReadInt32();
+            var masterDetailList = new List<MasterDetail>(masterDetailListCount);
+            for (int i = 0; i < masterDetailListCount; i++)
+            {
+                int levelsCount = br.ReadInt32();
+                var md = new MasterDetail();
+                for (int j = 0; j < levelsCount; j++)
+                {
+                    md.Levels.Add(br.ReadString());
+                }
+                md.ViewName = br.ReadString();
+                md.CanDeleteLevel = (levelsCount > 2);
+                masterDetailList.Add(md);
+            }
+            MasterDetailSelectorVM.MasterDetailList = masterDetailList;
             fs.Flush();
             fs.Close();
         }

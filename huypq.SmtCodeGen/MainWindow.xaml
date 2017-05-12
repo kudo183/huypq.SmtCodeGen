@@ -59,6 +59,14 @@
                     <Button Content="Open" Tag="Entity" Click="OpenButton_Click"/>
                     <Button Content="Gen" Tag="Entity" Click="GenerateButton_Click"/>
                 </StackPanel>
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Master/Detail View"/>
+                        <Button Content="Add" Click="AddButton_Click"/>
+                        <Button Content="Update table list" Click="UpdateTableListButton_Click"/>
+                    </StackPanel>
+                    <local:MasterDetailSelector x:Name="masterDetailSelector" DataContext="{Binding MasterDetailSelectorVM}"/>
+                </StackPanel>
                 <Button Content="GenAll" Tag="All" Width="150" Margin="5" HorizontalAlignment="Left" FontWeight="Bold" Click="GenerateButton_Click"/>
             </StackPanel>
             <ListBox Grid.Row="1" ItemsSource="{Binding Messages}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
