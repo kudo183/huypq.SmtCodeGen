@@ -114,8 +114,8 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in references)
             {
-                sb.AppendFormat("{0}{1}Navigation = new HashSet<{2}>();{3}", baseTab,
-                    DatabaseUtils.UpperFirstLetter(item.PropertyName), DatabaseUtils.UpperFirstLetter(item.ReferenceTableName), Constant.LineEnding);
+                sb.AppendFormat("{0}{1}{2}Navigation = new HashSet<{1}>();{3}", baseTab,
+                    DatabaseUtils.UpperFirstLetter(item.ReferenceTableName), DatabaseUtils.UpperFirstLetter(item.PropertyName), Constant.LineEnding);
             }
 
             return sb.ToString(0, sb.Length - Constant.LineEnding.Length);
@@ -177,7 +177,7 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in references)
             {
-                sb.AppendFormat("{0}public ICollection<{1}> {2}Navigation {{ get; set; }}{3}", baseTab,
+                sb.AppendFormat("{0}public ICollection<{1}> {1}{2}Navigation {{ get; set; }}{3}", baseTab,
                     DatabaseUtils.UpperFirstLetter(item.ReferenceTableName), DatabaseUtils.UpperFirstLetter(item.PropertyName), Constant.LineEnding);
             }
 

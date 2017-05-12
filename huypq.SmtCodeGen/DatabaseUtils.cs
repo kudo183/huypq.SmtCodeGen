@@ -48,7 +48,7 @@ namespace huypq.SmtCodeGen
 
                     dicReferenceTable[item.ReferencedTable].Add(new Reference()
                     {
-                        PropertyName = table.Name + item.Columns[0].Name,
+                        PropertyName = item.Columns[0].Name,
                         ReferenceTableName = table.Name
                     });
                 }
