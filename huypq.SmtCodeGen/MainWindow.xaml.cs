@@ -144,6 +144,7 @@ namespace huypq.SmtCodeGen
             GenController(vm.ControllerPath);
             GenDto(vm.DtoPath);
             GenEntity(vm.EntityPath);
+            GenComplexView(vm.ViewPath);
         }
 
         private void OpenPath(string path)
