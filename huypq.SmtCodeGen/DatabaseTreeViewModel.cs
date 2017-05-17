@@ -24,6 +24,8 @@ namespace huypq.SmtCodeGen
 
         public ObservableCollection<Reference> ReferencesToThisTable { get; set; }
 
+        public int ReferenceLevel { get; set; }
+
         private bool isSelected = true;
 
         public bool IsSelected
@@ -95,7 +97,8 @@ namespace huypq.SmtCodeGen
     {
         public string PropertyName { get; set; }
         public string FK_Name { get; set; }
-
+        public string ForeignKeyTableName { get; set; }
+        
         /// <summary>
         /// Restrict = 0, SetNull = 1, Cascade = 2
         /// </summary>

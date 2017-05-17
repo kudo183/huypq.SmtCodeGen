@@ -45,9 +45,16 @@
                                 </Style>
                             </TextBlock.Style>
                         </TextBlock>
-                        <TextBlock Text=" [" Foreground="Blue" />
+                        <TextBlock Text=" col: " Foreground="Blue" />
                         <TextBlock Text="{Binding Columns.Count}" Foreground="Blue" />
-                        <TextBlock Text="]" Foreground="Blue" />
+                        <TextBlock Text=" ref: " Foreground="Green" />
+                        <TextBlock Text="{Binding ForeignKeys.Count}" Foreground="Green" />
+                        <TextBlock Text=" ref depth: " Foreground="Red" />
+                        <TextBlock Text="{Binding ReferenceLevel}" Foreground="Red" />
+                        <TextBlock Text=" index: " Foreground="Blue" />
+                        <TextBlock Text="{Binding Indexes.Count}" Foreground="Blue" />
+                        <TextBlock Text=" ref to: " Foreground="Green" />
+                        <TextBlock Text="{Binding ReferencesToThisTable.Count}" Foreground="Green" />
                     </StackPanel>
                 </HierarchicalDataTemplate>
                 <DataTemplate DataType="{x:Type local:DbTableColumn}">

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 
 namespace huypq.SmtCodeGen
@@ -164,15 +165,19 @@ namespace huypq.SmtCodeGen
                     table.ReferencesToThisTable = new ObservableCollection<Reference>();
                 }
             }
+
+            CalculateReferenceLevel(tables);
+
             return tables;
         }
 
         public static string UpperFirstLetter(string text)
         {
-            if (string.IsNullOrEmpty(text) == true)
-                return text;
+            return text;
+            //if (string.IsNullOrEmpty(text) == true)
+            //    return text;
 
-            return text[0].ToString().ToUpper() + text.Substring(1);
+            //return text[0].ToString().ToUpper() + text.Substring(1);
         }
 
         private static List<Index> GetIndexes(Microsoft.SqlServer.Management.Smo.Table table)
@@ -240,12 +245,48 @@ namespace huypq.SmtCodeGen
                 foreignKeys.Add(new ForeignKey()
                 {
                     PropertyName = item.Columns[0].Name,
+                    ForeignKeyTableName = item.ReferencedTable,
                     FK_Name = item.Name,
                     DeleteAction = action
                 });
             }
 
             return foreignKeys;
+        }
+
+        private static void CalculateReferenceLevel(List<DbTable> tables)
+        {
+            var temp = new List<DbTable>(tables);
+            
+            int level = 0;
+            var previousLevelTables = new List<DbTable>();
+            var removedTables = new List<DbTable>();
+            while (temp.Count > 0)
+            {                
+                for (int i = 0; i < temp.Count; i++)
+                {
+                    bool isOnlyReferenceToPreviousLevel = true;
+
+                    foreach (var f in temp[i].ForeignKeys)
+                    {
+                        if (previousLevelTables.Any(p => p.TableName == f.ForeignKeyTableName) == false)
+                        {
+                            isOnlyReferenceToPreviousLevel = false;
+                        }
+                    }
+
+                    if (isOnlyReferenceToPreviousLevel == true)
+                    {
+                        temp[i].ReferenceLevel = level;
+                        removedTables.Add(temp[i]);
+                        temp.RemoveAt(i);
+                        i--;
+                    }
+                }
+                previousLevelTables.AddRange(removedTables);
+                removedTables.Clear();
+                level++;
+            }
         }
     }
 }

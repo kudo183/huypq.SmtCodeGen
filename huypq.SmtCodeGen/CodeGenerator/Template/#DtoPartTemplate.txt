@@ -1,6 +1,6 @@
 ﻿namespace Shared
 {
-    public partial class <EntityName>Dto
+    public partial class <EntityName>Dto : huypq.SmtShared.IDisplayText
     {
         partial void RaiseDependentPropertyChanged(string basePropertyName)
         {
