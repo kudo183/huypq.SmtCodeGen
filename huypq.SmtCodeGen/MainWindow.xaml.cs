@@ -27,10 +27,19 @@ namespace huypq.SmtCodeGen
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            vm.DatabaseTreeVM.PropertyChanged += DatabaseTreeVM_PropertyChanged;
             if (System.IO.File.Exists(defaultSaveFileName) == true)
             {
                 vm.Load(defaultSaveFileName);
                 masterDetailSelector.UpdateUI();
+            }
+        }
+
+        private void DatabaseTreeVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(DatabaseTreeVM.DbTables))
+            {
+                vm.MasterDetailSelectorVM.Tables = vm.DatabaseTreeVM.SelectedTables.Select(p => p.TableName).ToList();
             }
         }
 
@@ -95,11 +104,6 @@ namespace huypq.SmtCodeGen
             }
 
             vm.Messages.Add(string.Format("{0} | Done.", DateTime.Now));
-        }
-
-        private void UpdateTableListButton_Click(object sender, RoutedEventArgs e)
-        {
-            vm.MasterDetailSelectorVM.Tables = vm.DatabaseTreeVM.SelectedTables.Select(p => p.TableName).ToList();
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)

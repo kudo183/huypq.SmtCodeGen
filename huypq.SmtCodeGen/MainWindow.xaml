@@ -63,7 +63,6 @@
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Complex View: "/>
                         <Button Content="Add" Click="AddButton_Click"/>
-                        <Button Content="Update table list" Click="UpdateTableListButton_Click"/>
                         <Button Content="Open" Tag="View" Click="OpenButton_Click"/>
                         <Button Content="Gen" Tag="ComplexView" Click="GenerateButton_Click"/>
                     </StackPanel>
