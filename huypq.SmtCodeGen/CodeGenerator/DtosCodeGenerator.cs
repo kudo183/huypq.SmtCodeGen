@@ -6,6 +6,12 @@ namespace huypq.SmtCodeGen
 {
     public static class DtosCodeGenerator
     {
+        private const string DtoTemplateFileName = "#DtoTemplate.txt";
+        private const string DtoFileNameSubFix = "Dto.cs";
+
+        private const string DtoPartTemplateFileName = "#DtoPartTemplate.txt";
+        private const string DtoPartFileNameSubFix = "Dto.part.cs";
+
         public static void GenDtosClass(IEnumerable<DbTable> tables, string outputPath)
         {
             var results = new Dictionary<string, StringBuilder>();
@@ -14,7 +20,7 @@ namespace huypq.SmtCodeGen
                 results.Add(table.TableName, new StringBuilder());
             }
 
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#DtoTemplate.txt")))
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, DtoTemplateFileName)))
             {
                 foreach (var table in tables)
                 {
@@ -25,41 +31,41 @@ namespace huypq.SmtCodeGen
                     var baseTab = trimmedEnd.Substring(0, trimmedEnd.Length - trimmed.Length);
                     if (trimmed == "<PrivateFields>")
                     {
-                        result.AppendLine(PrivateFields(table.Columns, baseTab));
+                        result.Append(PrivateFields(table.Columns, baseTab));
                     }
                     else if (trimmed == "<PublicProperties>")
                     {
-                        result.AppendLine(PublicProperties(table.Columns, baseTab));
+                        result.Append(PublicProperties(table.Columns, baseTab));
                     }
                     else if (trimmed == "<SetCurrentValueAsOriginalValue>")
                     {
-                        result.AppendLine(SetCurrentValueAsOriginalValue(table.Columns, baseTab));
+                        result.Append(SetCurrentValueAsOriginalValue(table.Columns, baseTab));
                     }
                     else if (trimmed == "<Update>")
                     {
-                        result.AppendLine(Update(table.Columns, baseTab));
+                        result.Append(Update(table.Columns, baseTab));
                     }
                     else if (trimmed == "<HasChange>")
                     {
-                        result.AppendLine(HasChange(table.Columns, baseTab));
+                        result.Append(HasChange(table.Columns, baseTab));
                     }
                     else if (trimmed == "<ReferenceDataSource>")
                     {
-                        result.AppendLine(ReferenceDataSource(table.Columns, baseTab));
+                        result.Append(ReferenceDataSource(table.Columns, baseTab));
                     }
                     else
                     {
                         if (table.TableName == "SmtUser")
                         {
-                            result.AppendLine(line.Replace("IDto", "IUserDto").Replace("<EntityName>", table.TableName));
+                            result.AppendLineEx(line.Replace("IDto", "IUserDto").Replace("<EntityName>", table.TableName));
                         }
                         else if (table.TableName == "SmtUserClaim")
                         {
-                            result.AppendLine(line.Replace("IDto", "IUserClaimDto").Replace("<EntityName>", table.TableName));
+                            result.AppendLineEx(line.Replace("IDto", "IUserClaimDto").Replace("<EntityName>", table.TableName));
                         }
                         else
                         {
-                            result.AppendLine(line.Replace("<EntityName>", table.TableName));
+                            result.AppendLineEx(line.Replace("<EntityName>", table.TableName));
                         }
                     }
                 }
@@ -67,7 +73,7 @@ namespace huypq.SmtCodeGen
 
             foreach (var result in results)
             {
-                FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, result.Key + "Dto.cs"), result.Value.ToString());
+                FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, result.Key + DtoFileNameSubFix), result.Value.ToString());
             }
 
             GenDtosPartialClass(tables, outputPath);
@@ -87,18 +93,18 @@ namespace huypq.SmtCodeGen
                 results.Add(table.TableName, new StringBuilder());
             }
 
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#DtoPartTemplate.txt")))
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, DtoPartTemplateFileName)))
             {
                 foreach (var table in referencedTable)
                 {
                     var result = results[table.TableName];
-                    result.AppendLine(line.Replace("<EntityName>", table.TableName));
+                    result.AppendLineEx(line.Replace("<EntityName>", table.TableName));
                 }
             }
 
             foreach (var result in results)
             {
-                var filePath = System.IO.Path.Combine(outputPath, result.Key + "Dto.part.cs");
+                var filePath = System.IO.Path.Combine(outputPath, result.Key + DtoPartFileNameSubFix);
                 if (System.IO.File.Exists(filePath) == false)
                 {
                     FileUtils.WriteAllTextInUTF8(filePath, result.Value.ToString());
@@ -117,15 +123,15 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columns)
             {
-                sb.AppendFormat("{0}{1} o{2};{3}", baseTab, item.DataType, item.ColumnName, Constant.LineEnding);
+                sb.AppendLineExWithTabAndFormat(baseTab, "{0} o{1};", item.DataType, item.ColumnName);
             }
             sb.AppendLine();
             foreach (var item in columns)
             {
-                sb.AppendFormat("{0}{1} _{2};{3}", baseTab, item.DataType, item.ColumnName, Constant.LineEnding);
+                sb.AppendLineExWithTabAndFormat(baseTab, "{0} _{1};", item.DataType, item.ColumnName);
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length);
+            return sb.ToString();
         }
 
         private static string PublicProperties(IEnumerable<DbTableColumn> columns, string baseTab)
@@ -140,13 +146,12 @@ namespace huypq.SmtCodeGen
             var i = 1;
             foreach (var item in columns)
             {
-                sb.AppendFormat("{0}[ProtoBuf.ProtoMember({1})]{2}", baseTab, i, Constant.LineEnding);
-                sb.AppendLine(string.Format("{0}public {1} {2} {{ get {{ return _{2}; }} set {{ _{2} = value; OnPropertyChanged(); }} }}",
-                    baseTab, item.DataType, item.ColumnName));
+                sb.AppendLineExWithTabAndFormat(baseTab, "[ProtoBuf.ProtoMember({0})]", i);
+                sb.AppendLineExWithTabAndFormat(baseTab, "public {0} {1} {{ get {{ return _{1}; }} set {{ _{1} = value; OnPropertyChanged(); }} }}", item.DataType, item.ColumnName);
                 i++;
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length);
+            return sb.ToString();
         }
 
         private static string SetCurrentValueAsOriginalValue(IEnumerable<DbTableColumn> columns, string baseTab)
@@ -160,10 +165,10 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columns)
             {
-                sb.AppendFormat("{0}o{1} = {1};{2}", baseTab, item.ColumnName, Constant.LineEnding);
+                sb.AppendLineExWithTabAndFormat(baseTab, "o{0} = {0};", item.ColumnName);
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length);
+            return sb.ToString();
         }
 
         private static string Update(IEnumerable<DbTableColumn> columns, string baseTab)
@@ -177,10 +182,10 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columns)
             {
-                sb.AppendFormat("{0}{1} = dto.{1};{2}", baseTab, item.ColumnName, Constant.LineEnding);
+                sb.AppendLineExWithTabAndFormat(baseTab, "{0} = dto.{0};", item.ColumnName);
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length);
+            return sb.ToString();
         }
 
         private static string HasChange(IEnumerable<DbTableColumn> columns, string baseTab)
@@ -192,13 +197,17 @@ namespace huypq.SmtCodeGen
 
             var sb = new StringBuilder();
 
-            sb.AppendFormat("{0}return{1}", baseTab, Constant.LineEnding);
+            sb.AppendLineExWithTab(baseTab, "return");
             foreach (var item in columns)
             {
-                sb.AppendFormat("{0}(o{1} != {1})||{2}", baseTab, item.ColumnName, Constant.LineEnding);
+                sb.AppendLineExWithTabAndFormat(baseTab, "(o{0} != {0})||", item.ColumnName);
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length - "||".Length) + ";";
+            var l = "||".Length + Constant.LineEnding.Length;
+            sb.Remove(sb.Length - l, l);
+
+            sb.AppendLineEx(";");
+            return sb.ToString();
         }
 
         private static string ReferenceDataSource(IEnumerable<DbTableColumn> columns, string baseTab)
@@ -218,9 +227,9 @@ namespace huypq.SmtCodeGen
                     continue;
                 }
 
-                sb.AppendFormat("{0}object _{1}DataSource;{2}", baseTab, item.ColumnName, Constant.LineEnding);
+                sb.AppendLineExWithTabAndFormat(baseTab, "object _{0}DataSource;", item.ColumnName);
             }
-            sb.AppendLine();
+            sb.AppendLineEx();
             foreach (var item in foreignKeys)
             {
                 if (item.IsReferenceToLargeTable == true)
@@ -228,20 +237,19 @@ namespace huypq.SmtCodeGen
                     continue;
                 }
 
-                sb.AppendFormat("{0}[Newtonsoft.Json.JsonIgnore]{1}", baseTab, Constant.LineEnding);
-                sb.AppendFormat("{0}public object {1}DataSource {{ get {{ return _{1}DataSource; }} set {{ _{1}DataSource = value; OnPropertyChanged(); }} }}{2}",
-                    baseTab, item.ColumnName, Constant.LineEnding);
+                sb.AppendLineExWithTab(baseTab, "[Newtonsoft.Json.JsonIgnore]");
+                sb.AppendLineExWithTabAndFormat(baseTab, "public object {0}DataSource {{ get {{ return _{0}DataSource; }} set {{ _{0}DataSource = value; OnPropertyChanged(); }} }}", item.ColumnName);
             }
 
             var pkName = columns.First(p => p.IsIdentity).ColumnName;
             if (pkName != "ID")
             {
-                sb.AppendLine();
-                sb.AppendFormat("{0}[Newtonsoft.Json.JsonIgnore]{1}", baseTab, Constant.LineEnding);
-                sb.AppendFormat("{0}public int ID {{ get {{ return {1}; }} set {{ {1} = value;}} }}{2}", baseTab, pkName, Constant.LineEnding);
+                sb.AppendLineEx();
+                sb.AppendLineExWithTab(baseTab, "[Newtonsoft.Json.JsonIgnore]");
+                sb.AppendLineExWithTabAndFormat(baseTab, "public int ID {{ get {{ return {0}; }} set {{ {0} = value;}} }}", pkName);
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length);
+            return sb.ToString();
         }
     }
 }

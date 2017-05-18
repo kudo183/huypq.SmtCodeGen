@@ -6,12 +6,15 @@ namespace huypq.SmtCodeGen
 {
     public static class TextManagerCodeGenerator
     {
+        private const string TextManagerTemplateFileName = "#TextManagerTemplate.txt";
+        private const string TextManagerFileNameSubFix = ".cs";
+
         public static void GenTextManagerCode(IEnumerable<DbTable> tables, string outputPath)
         {
             var result = new StringBuilder();
             var classKeyword = " class ";
             var className = "";
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#TextManagerTemplate.txt")))
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, TextManagerTemplateFileName)))
             {
                 var indexOfClass = line.IndexOf(classKeyword);
                 if (indexOfClass != -1)
@@ -26,7 +29,7 @@ namespace huypq.SmtCodeGen
                     {
                         className = line.Substring(afterClassKeywordIndex, nextSpaceIndex - afterClassKeywordIndex);
                     }
-                    result.AppendLine(line);
+                    result.AppendLineEx(line);
                     continue;
                 }
 
@@ -35,19 +38,19 @@ namespace huypq.SmtCodeGen
                 var baseTab = trimmedEnd.Substring(0, trimmedEnd.Length - trimmed.Length);
                 if (trimmed == "<TextStaticProperties>")
                 {
-                    result.AppendLine(TextStaticProperties(tables, baseTab));
+                    result.Append(TextStaticProperties(tables, baseTab));
                 }
                 else if (trimmed == "<InitDefaultTextData>")
                 {
-                    result.AppendLine(InitDefaultTextData(tables, baseTab));
+                    result.Append(InitDefaultTextData(tables, baseTab));
                 }
                 else
                 {
-                    result.AppendLine(line);
+                    result.AppendLineEx(line);
                 }
             }
 
-            FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, className + ".cs"), result.ToString());
+            FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, className + TextManagerFileNameSubFix), result.ToString());
         }
 
         private static string TextStaticProperties(IEnumerable<DbTable> tables, string baseTab)
@@ -63,11 +66,11 @@ namespace huypq.SmtCodeGen
             {
                 foreach (var column in table.Columns)
                 {
-                    sb.AppendFormat("{0}public static string {1}_{2} {{ get {{ return GetText(); }} }}{3}", baseTab, table.TableName, column.ColumnName, Constant.LineEnding);
+                    sb.AppendLineExWithTabAndFormat(baseTab, "public static string {0}_{1} {{ get {{ return GetText(); }} }}", table.TableName, column.ColumnName);
                 }
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length);
+            return sb.ToString();
         }
 
         private static string InitDefaultTextData(IEnumerable<DbTable> tables, string baseTab)
@@ -83,11 +86,11 @@ namespace huypq.SmtCodeGen
             {
                 foreach (var column in table.Columns)
                 {
-                    sb.AppendFormat("{0}_dic.Add(\"{1}_{2}\", \"{2}\");{3}", baseTab, table.TableName, column.ColumnName, Constant.LineEnding);
+                    sb.AppendLineExWithTabAndFormat(baseTab, "_dic.Add(\"{0}_{1}\", \"{1}\");", table.TableName, column.ColumnName);
                 }
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length);
+            return sb.ToString();
         }
     }
 }

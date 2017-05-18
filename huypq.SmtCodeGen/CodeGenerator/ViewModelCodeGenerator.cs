@@ -6,6 +6,9 @@ namespace huypq.SmtCodeGen
 {
     public static class ViewModelCodeGenerator
     {
+        private const string ViewModelTemplateFileName = "#ViewModelTemplate.txt";
+        private const string ViewModelFileNameSubFix = "ViewModel.cs";
+
         public static void GenViewModelCode(IEnumerable<DbTable> tables, string outputPath)
         {
             var results = new Dictionary<string, StringBuilder>();
@@ -13,7 +16,7 @@ namespace huypq.SmtCodeGen
             {
                 results.Add(table.TableName, new StringBuilder());
             }
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#ViewModelTemplate.txt")))
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, ViewModelTemplateFileName)))
             {
                 foreach (var table in tables)
                 {
@@ -24,38 +27,38 @@ namespace huypq.SmtCodeGen
                     var baseTab = trimmedEnd.Substring(0, trimmedEnd.Length - trimmed.Length);
                     if (trimmed == "<DeclareHeaderFilters>")
                     {
-                        result.AppendLine(DeclareHeaderFilters(table.Columns, baseTab));
+                        result.Append(DeclareHeaderFilters(table.Columns, baseTab));
                     }
                     else if (trimmed == "<InitHeaderFilters>")
                     {
-                        result.AppendLine(InitHeaderFilters(table.Columns, table.TableName, baseTab));
+                        result.Append(InitHeaderFilters(table.Columns, table.TableName, baseTab));
                     }
                     else if (trimmed == "<AddHeaderFiltersToHeaderFilterCollection>")
                     {
-                        result.AppendLine(AddHeaderFiltersToHeaderFilterCollection(table.Columns, baseTab));
+                        result.Append(AddHeaderFiltersToHeaderFilterCollection(table.Columns, baseTab));
                     }
                     else if (trimmed == "<LoadReferenceDatas>")
                     {
-                        result.AppendLine(LoadReferenceDatas(table.Columns, baseTab));
+                        result.Append(LoadReferenceDatas(table.Columns, baseTab));
                     }
                     else if (trimmed == "<SetDtosReferenceDataSource>")
                     {
-                        result.AppendLine(SetDtosReferenceDataSource(table.Columns, baseTab));
+                        result.Append(SetDtosReferenceDataSource(table.Columns, baseTab));
                     }
                     else if (trimmed == "<SetDtosDefaultValue>")
                     {
-                        result.AppendLine(SetDtosDefaultValue(table.Columns, baseTab));
+                        result.Append(SetDtosDefaultValue(table.Columns, baseTab));
                     }
                     else
                     {
-                        result.AppendLine(line.Replace("<EntityName>", table.TableName));
+                        result.AppendLineEx(line.Replace("<EntityName>", table.TableName));
                     }
                 }
             }
 
             foreach (var result in results)
             {
-                FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, result.Key + "ViewModel.cs"), result.Value.ToString());
+                FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, result.Key + ViewModelFileNameSubFix), result.Value.ToString());
             }
         }
 
@@ -70,11 +73,10 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columns)
             {
-                sb.AppendFormat("{0}HeaderFilterBaseModel _{1}Filter;{2}",
-                    baseTab, item.ColumnName, Constant.LineEnding);
+                sb.AppendLineExWithTabAndFormat(baseTab, "HeaderFilterBaseModel _{0}Filter;", item.ColumnName);
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length);
+            return sb.ToString();
         }
 
         private static string InitHeaderFilters(IEnumerable<DbTableColumn> columns, string tableName, string baseTab)
@@ -94,34 +96,34 @@ namespace huypq.SmtCodeGen
                     if (item.IsReferenceToLargeTable)
                     {
                         var filterType = "HeaderTextFilterModel";
-                        sb.AppendFormat("{0}_{1}Filter = new {2}(TextManager.{3}_{1}, nameof({3}Dto.{1}), typeof({4}));{5}",
-                        baseTab, item.ColumnName, filterType, tableName, item.DataType, Constant.LineEnding);
+                        sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = new {1}(TextManager.{2}_{0}, nameof({2}Dto.{0}), typeof({3}));",
+                        item.ColumnName, filterType, tableName, item.DataType);
                     }
                     else
                     {
-                        sb.AppendFormat("{0}_{1}Filter = new HeaderComboBoxFilterModel({2}", baseTab, item.ColumnName, Constant.LineEnding);
-                        sb.AppendFormat("{0}TextManager.{1}_{2}, HeaderComboBoxFilterModel.ComboBoxFilter,{3}", tab1, tableName, item.ColumnName, Constant.LineEnding);
-                        sb.AppendFormat("{0}nameof({1}Dto.{2}),{3}", tab1, tableName, item.ColumnName, Constant.LineEnding);
-                        sb.AppendFormat("{0}typeof({1}),{2}", tab1, item.DataType, Constant.LineEnding);
-                        sb.AppendFormat("{0}nameof({1}Dto.DisplayText),{2}", tab1, item.ForeignKeyTableName, Constant.LineEnding);
-                        sb.AppendFormat("{0}nameof({1}Dto.ID)){2}", tab1, item.ForeignKeyTableName, Constant.LineEnding);
-                        sb.AppendLine(baseTab + "{");
-                        sb.AppendFormat("{0}AddCommand = new SimpleCommand(\"{1}AddCommand\",{2}", tab1, item.ColumnName, Constant.LineEnding);
-                        sb.AppendLine(tab2 + "() => base.ProccessHeaderAddCommand(");
-                        sb.AppendFormat("{0}new View.{1}View(), \"{1}\", ReferenceDataManager<{1}Dto>.Instance.LoadOrUpdate)),{2}", tab2, item.ForeignKeyTableName, Constant.LineEnding);
-                        sb.AppendFormat("{0}ItemSource = ReferenceDataManager<{1}Dto>.Instance.Get(){2}", tab1, item.ForeignKeyTableName, Constant.LineEnding);
-                        sb.AppendLine(baseTab + "};");
+                        sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = new HeaderComboBoxFilterModel(", item.ColumnName);
+                        sb.AppendLineExWithTabAndFormat(tab1, "TextManager.{0}_{1}, HeaderComboBoxFilterModel.ComboBoxFilter,", tableName, item.ColumnName);
+                        sb.AppendLineExWithTabAndFormat(tab1, "nameof({0}Dto.{1}),", tableName, item.ColumnName);
+                        sb.AppendLineExWithTabAndFormat(tab1, "typeof({0}),", item.DataType);
+                        sb.AppendLineExWithTabAndFormat(tab1, "nameof({0}Dto.DisplayText),", item.ForeignKeyTableName);
+                        sb.AppendLineExWithTabAndFormat(tab1, "nameof({0}Dto.ID))", item.ForeignKeyTableName);
+                        sb.AppendLineExWithTab(baseTab, "{");
+                        sb.AppendLineExWithTabAndFormat(tab1, "AddCommand = new SimpleCommand(\"{0}AddCommand\",", item.ColumnName);
+                        sb.AppendLineExWithTab(tab2, "() => base.ProccessHeaderAddCommand(");
+                        sb.AppendLineExWithTabAndFormat(tab2, "new View.{0}View(), \"{0}\", ReferenceDataManager<{0}Dto>.Instance.LoadOrUpdate)),", item.ForeignKeyTableName);
+                        sb.AppendLineExWithTabAndFormat(tab1, "ItemSource = ReferenceDataManager<{0}Dto>.Instance.Get()", item.ForeignKeyTableName);
+                        sb.AppendLineExWithTab(baseTab, "};");
                     }
                 }
                 else
                 {
                     var filterType = GetFilterTypeFromProperty(item);
-                    sb.AppendFormat("{0}_{1}Filter = new {2}(TextManager.{3}_{1}, nameof({3}Dto.{1}), typeof({4}));{5}",
-                        baseTab, item.ColumnName, filterType, tableName, item.DataType, Constant.LineEnding);
+                    sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = new {1}(TextManager.{2}_{0}, nameof({2}Dto.{0}), typeof({3}));",
+                        item.ColumnName, filterType, tableName, item.DataType);
                 }
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length);
+            return sb.ToString();
         }
 
         private static string AddHeaderFiltersToHeaderFilterCollection(IEnumerable<DbTableColumn> columns, string baseTab)
@@ -135,10 +137,10 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columns)
             {
-                sb.AppendFormat("{0}AddHeaderFilter(_{1}Filter);{2}", baseTab, item.ColumnName, Constant.LineEnding);
+                sb.AppendLineExWithTabAndFormat(baseTab, "AddHeaderFilter(_{0}Filter);", item.ColumnName);
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length);
+            return sb.ToString();
         }
 
         private static string LoadReferenceDatas(IEnumerable<DbTableColumn> columns, string baseTab)
@@ -158,10 +160,10 @@ namespace huypq.SmtCodeGen
                     continue;
                 }
 
-                sb.AppendFormat("{0}ReferenceDataManager<{1}Dto>.Instance.LoadOrUpdate();{2}", baseTab, item.ForeignKeyTableName, Constant.LineEnding);
+                sb.AppendLineExWithTabAndFormat(baseTab, "ReferenceDataManager<{0}Dto>.Instance.LoadOrUpdate();", item.ForeignKeyTableName);
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length);
+            return sb.ToString();
         }
 
         private static string SetDtosReferenceDataSource(IEnumerable<DbTableColumn> columns, string baseTab)
@@ -181,11 +183,11 @@ namespace huypq.SmtCodeGen
                     continue;
                 }
 
-                sb.AppendFormat("{0}dto.{1}DataSource = ReferenceDataManager<{2}Dto>.Instance.Get();{3}",
-                    baseTab, item.ColumnName, item.ForeignKeyTableName, Constant.LineEnding);
+                sb.AppendLineExWithTabAndFormat(baseTab, "dto.{0}DataSource = ReferenceDataManager<{1}Dto>.Instance.Get();",
+                    item.ColumnName, item.ForeignKeyTableName);
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length);
+            return sb.ToString();
         }
 
         private static string SetDtosDefaultValue(IEnumerable<DbTableColumn> columns, string baseTab)
@@ -199,14 +201,13 @@ namespace huypq.SmtCodeGen
             var tab1 = baseTab + Constant.Tab;
             foreach (var item in columns)
             {
-                sb.AppendFormat("{0}if (_{1}Filter.FilterValue != null){2}", baseTab, item.ColumnName, Constant.LineEnding);
-                sb.AppendFormat("{0}{{{1}", baseTab, Constant.LineEnding);
-                sb.AppendFormat("{0}dto.{1} = ({2})_{1}Filter.FilterValue;{3}",
-                    tab1, item.ColumnName, item.DataType, Constant.LineEnding);
-                sb.AppendFormat("{0}}}{1}", baseTab, Constant.LineEnding);
+                sb.AppendLineExWithTabAndFormat(baseTab, "if (_{0}Filter.FilterValue != null)", item.ColumnName);
+                sb.AppendLineExWithTab(baseTab, "{");
+                sb.AppendLineExWithTabAndFormat(tab1, "dto.{0} = ({1})_{0}Filter.FilterValue;", item.ColumnName, item.DataType);
+                sb.AppendLineExWithTab(baseTab, "}");
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length);
+            return sb.ToString();
         }
 
         private static string GetFilterTypeFromProperty(DbTableColumn column)
@@ -216,7 +217,7 @@ namespace huypq.SmtCodeGen
                 return "HeaderComboBoxFilterModel";
             }
             var dataType = column.DataType;
-            if (dataType == "string" || dataType == "int" || dataType == "int?")
+            if (dataType == "int" || dataType == "int?" || dataType == "long" || dataType == "long?")
             {
                 return "HeaderTextFilterModel";
             }

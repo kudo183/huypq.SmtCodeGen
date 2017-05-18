@@ -6,6 +6,12 @@ namespace huypq.SmtCodeGen
 {
     public static class ViewCodeGenerator
     {
+        private const string ViewTemplateFileName = "#ViewTemplate.xaml.cs.txt";
+        private const string ViewFileNameSubFix = "View.xaml.cs";
+
+        private const string ViewXamlTemplateFileName = "#ViewTemplate.xaml.txt";
+        private const string ViewXamlFileNameSubFix = "View.xaml";
+
         public static void GenViewCode(IEnumerable<DbTable> tables, string outputPath)
         {
             var results = new Dictionary<string, StringBuilder>();
@@ -13,19 +19,19 @@ namespace huypq.SmtCodeGen
             {
                 results.Add(table.TableName, new StringBuilder());
             }
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#ViewTemplate.xaml.cs.txt")))
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, ViewTemplateFileName)))
             {
                 foreach (var table in tables)
                 {
                     var result = results[table.TableName];
 
-                    result.AppendFormat("{0}{1}", line.Replace("<EntityName>", table.TableName), Constant.LineEnding);
+                    result.AppendLineEx(line.Replace("<EntityName>", table.TableName));
                 }
             }
 
             foreach (var result in results)
             {
-                FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, result.Key + "View.xaml.cs"), result.Value.ToString());
+                FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, result.Key + ViewFileNameSubFix), result.Value.ToString());
             }
         }
 
@@ -36,7 +42,7 @@ namespace huypq.SmtCodeGen
             {
                 results.Add(table.TableName, new StringBuilder());
             }
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#ViewTemplate.xaml.txt")))
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, ViewXamlTemplateFileName)))
             {
                 foreach (var table in tables)
                 {
@@ -47,18 +53,18 @@ namespace huypq.SmtCodeGen
                     var baseTab = trimmedEnd.Substring(0, trimmedEnd.Length - trimmed.Length);
                     if (trimmed == "<DataGridColumns>")
                     {
-                        result.AppendFormat("{0}{1}", DataGridColumns(table.Columns, baseTab), Constant.LineEnding);
+                        result.Append(DataGridColumns(table.Columns, baseTab));
                     }
                     else
                     {
-                        result.AppendFormat("{0}{1}", line.Replace("<EntityName>", table.TableName), Constant.LineEnding);
+                        result.AppendLineEx(line.Replace("<EntityName>", table.TableName));
                     }
                 }
             }
 
             foreach (var result in results)
             {
-                FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, result.Key + "View.xaml"), result.Value.ToString());
+                FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, result.Key + ViewXamlFileNameSubFix), result.Value.ToString());
             }
         }
 
@@ -82,14 +88,14 @@ namespace huypq.SmtCodeGen
 
                 if (item.ColumnName == "CreateTime" || item.ColumnName == "LastUpdateTime")
                 {
-                    sb.AppendFormat("{0}<SimpleDataGrid:DataGridTextColumnExt Header=\"{1}\" IsReadOnly=\"True\" Binding=\"{{Binding {1}, UpdateSourceTrigger=PropertyChanged, Converter={{x:Static converter:LongToDateTimeStringConverter.Instance}}}}\"/>{2}", baseTab, item.ColumnName, Constant.LineEnding);
+                    sb.AppendLineExWithTabAndFormat(baseTab, "<SimpleDataGrid:DataGridTextColumnExt Header=\"{0}\" IsReadOnly=\"True\" Binding=\"{{Binding {0}, UpdateSourceTrigger=PropertyChanged, Converter={{x:Static converter:LongToDateTimeStringConverter.Instance}}}}\"/>", item.ColumnName);
                     continue;
                 }
 
-                sb.AppendFormat("{0}{1}", GetDataGridColumnFromProperty(item, baseTab), Constant.LineEnding);
+                sb.AppendLineEx(GetDataGridColumnFromProperty(item, baseTab));
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length);
+            return sb.ToString();
         }
 
         private static string GetDataGridColumnFromProperty(DbTableColumn column, string baseTab)
@@ -108,11 +114,11 @@ namespace huypq.SmtCodeGen
                 {
                     var tab1 = baseTab + Constant.Tab;
                     var sb = new StringBuilder();
-                    sb.AppendFormat("{0}<SimpleDataGrid:DataGridComboBoxColumnExt Header=\"{1}\"{2}", baseTab, column.ColumnName, Constant.LineEnding);
-                    sb.AppendFormat("{0}SelectedValuePath=\"ID\"{1}", tab1, Constant.LineEnding);
-                    sb.AppendFormat("{0}DisplayMemberPath=\"DisplayText\"{1}", tab1, Constant.LineEnding);
-                    sb.AppendFormat("{0}SelectedValueBinding=\"{{Binding {1}, UpdateSourceTrigger=PropertyChanged}}\"{2}", tab1, column.ColumnName, Constant.LineEnding);
-                    sb.AppendFormat("{0}ItemsSource=\"{{Binding {1}DataSource}}\"/>", tab1, column.ColumnName);
+                    sb.AppendLineExWithTabAndFormat(baseTab, "<SimpleDataGrid:DataGridComboBoxColumnExt Header=\"{0}\"", column.ColumnName);
+                    sb.AppendLineExWithTab(tab1, "SelectedValuePath=\"ID\"");
+                    sb.AppendLineExWithTab(tab1, "DisplayMemberPath=\"DisplayText\"");
+                    sb.AppendLineExWithTabAndFormat(tab1, "SelectedValueBinding=\"{{Binding {0}, UpdateSourceTrigger=PropertyChanged}}\"", column.ColumnName);
+                    sb.AppendTabAndFormat(tab1, "ItemsSource=\"{{Binding {0}DataSource}}\"/>", column.ColumnName);
                     return sb.ToString();
                 }
             }

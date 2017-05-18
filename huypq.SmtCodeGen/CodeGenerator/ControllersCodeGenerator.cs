@@ -6,6 +6,12 @@ namespace huypq.SmtCodeGen
 {
     public static class ControllersCodeGenerator
     {
+        private const string ControllerTemplateFileName = "#ControllerTemplate.txt";
+        private const string ControllerFileNameSubFix = "Controller.cs";
+
+        private const string ControllerPartTemplateFileName = "#ControllerPartTemplate.txt";
+        private const string ControllerPartFileNameSubFix = "Controller.part.cs";
+
         public static void GenControllersClass(IEnumerable<DbTable> tables, string outputPath)
         {
             var results = new Dictionary<string, StringBuilder>();
@@ -13,7 +19,7 @@ namespace huypq.SmtCodeGen
             {
                 results.Add(table.TableName, new StringBuilder());
             }
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#ControllerTemplate.txt")))
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, ControllerTemplateFileName)))
             {
                 foreach (var table in tables)
                 {
@@ -24,22 +30,22 @@ namespace huypq.SmtCodeGen
                     var baseTab = trimmedEnd.Substring(0, trimmedEnd.Length - trimmed.Length);
                     if (trimmed == "<InitDtoProperties>")
                     {
-                        result.AppendLine(InitDtoProperties(table.Columns, baseTab));
+                        result.Append(InitDtoProperties(table.Columns, baseTab));
                     }
                     else if (trimmed == "<InitEntityProperties>")
                     {
-                        result.AppendLine(InitEntityProperties(table.Columns, baseTab));
+                        result.Append(InitEntityProperties(table.Columns, baseTab));
                     }
                     else
                     {
-                        result.AppendLine(line.Replace("<EntityName>", table.TableName));
+                        result.AppendLineEx(line.Replace("<EntityName>", table.TableName));
                     }
                 }
             }
 
             foreach (var result in results)
             {
-                FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, result.Key + "Controller.cs"), result.Value.ToString());
+                FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, result.Key + ControllerFileNameSubFix), result.Value.ToString());
             }
 
             GenControllersPartialClass(tables, outputPath);
@@ -59,18 +65,18 @@ namespace huypq.SmtCodeGen
                 results.Add(table.TableName, new StringBuilder());
             }
 
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, "#ControllerPartTemplate.txt")))
+            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, ControllerPartTemplateFileName)))
             {
                 foreach (var table in referencedTable)
                 {
                     var result = results[table.TableName];
-                    result.AppendLine(line.Replace("<EntityName>", table.TableName));
+                    result.AppendLineEx(line.Replace("<EntityName>", table.TableName));
                 }
             }
 
             foreach (var result in results)
             {
-                var filePath = System.IO.Path.Combine(outputPath, result.Key + "Controller.part.cs");
+                var filePath = System.IO.Path.Combine(outputPath, result.Key + ControllerPartFileNameSubFix);
                 if (System.IO.File.Exists(filePath) == false)
                 {
                     FileUtils.WriteAllTextInUTF8(filePath, result.Value.ToString());
@@ -89,10 +95,11 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columns)
             {
-                sb.AppendFormat("{0}{1} = dto.{1},{2}", baseTab, item.ColumnName, Constant.LineEnding);
+                sb.AppendLineExWithTabAndFormat(baseTab, "{0} = dto.{0},", item.ColumnName);
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length - ",".Length);
+            sb.Remove(sb.Length - Constant.LineEnding.Length - ",".Length, 1);
+            return sb.ToString();
         }
 
         private static string InitDtoProperties(IEnumerable<DbTableColumn> columns, string baseTab)
@@ -106,10 +113,11 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columns)
             {
-                sb.AppendFormat("{0}{1} = entity.{1},{2}", baseTab, item.ColumnName, Constant.LineEnding);
+                sb.AppendLineExWithTabAndFormat(baseTab, "{0} = entity.{0},", item.ColumnName);
             }
 
-            return sb.ToString(0, sb.Length - Constant.LineEnding.Length - ",".Length);
+            sb.Remove(sb.Length - Constant.LineEnding.Length - ",".Length, 1);
+            return sb.ToString();
         }
     }
 }
