@@ -19,7 +19,7 @@ namespace huypq.SmtCodeGen
                 {
                     var result = results[table.TableName];
 
-                    result.AppendLine(line.Replace("<EntityName>", table.TableName));
+                    result.AppendFormat("{0}{1}", line.Replace("<EntityName>", table.TableName), Constant.LineEnding);
                 }
             }
 
@@ -47,11 +47,11 @@ namespace huypq.SmtCodeGen
                     var baseTab = trimmedEnd.Substring(0, trimmedEnd.Length - trimmed.Length);
                     if (trimmed == "<DataGridColumns>")
                     {
-                        result.AppendLine(DataGridColumns(table.Columns, baseTab));
+                        result.AppendFormat("{0}{1}", DataGridColumns(table.Columns, baseTab), Constant.LineEnding);
                     }
                     else
                     {
-                        result.AppendLine(line.Replace("<EntityName>", table.TableName));
+                        result.AppendFormat("{0}{1}", line.Replace("<EntityName>", table.TableName), Constant.LineEnding);
                     }
                 }
             }
@@ -79,67 +79,59 @@ namespace huypq.SmtCodeGen
                 {
                     continue;
                 }
-                if (item.IsIdentity == true)
+
+                if (item.ColumnName == "CreateTime" || item.ColumnName == "LastUpdateTime")
                 {
-                    sb.AppendFormat("{0}<SimpleDataGrid:DataGridTextColumnExt Width=\"80\" Header=\"{1}\" IsReadOnly=\"True\" Binding=\"{{Binding {1}, Mode=OneWay}}\"/>{2}", baseTab, item.ColumnName, Constant.LineEnding);
+                    sb.AppendFormat("{0}<SimpleDataGrid:DataGridTextColumnExt Header=\"{1}\" IsReadOnly=\"True\" Binding=\"{{Binding {1}, UpdateSourceTrigger=PropertyChanged, Converter={{x:Static converter:LongToDateTimeStringConverter.Instance}}}}\"/>{2}", baseTab, item.ColumnName, Constant.LineEnding);
+                    continue;
                 }
-                else if (item.IsForeignKey == true)
-                {
-                    if (item.IsReferenceToLargeTable)
-                    {
-                        sb.AppendFormat("{0}<SimpleDataGrid:DataGridTextColumnExt Width=\"80\" Header=\"{1}\" IsReadOnly=\"True\" Binding=\"{{Binding {1}, Mode=OneWay}}\"/>{2}", baseTab, item.ColumnName, Constant.LineEnding);
-                    }
-                    else
-                    {
-                        sb.AppendFormat("{0}<SimpleDataGrid:DataGridComboBoxColumnExt Header=\"{1}\"{2}", baseTab, item.ColumnName, Constant.LineEnding);
-                        sb.AppendFormat("{0}SelectedValuePath=\"ID\"{1}", tab1, Constant.LineEnding);
-                        sb.AppendFormat("{0}DisplayMemberPath=\"DisplayText\"{1}", tab1, Constant.LineEnding);
-                        sb.AppendFormat("{0}SelectedValueBinding=\"{{Binding {1}, UpdateSourceTrigger=PropertyChanged}}\"{2}", tab1, item.ColumnName, Constant.LineEnding);
-                        sb.AppendFormat("{0}ItemsSource=\"{{Binding {1}DataSource}}\"/>{2}", tab1, item.ColumnName, Constant.LineEnding);
-                    }
-                }
-                else
-                {
-                    var columnType = GetDataGridColumnTypeFromProperty(item);
-                    if (item.ColumnName == "CreateTime" || item.ColumnName == "LastUpdateTime")
-                    {
-                        sb.AppendFormat("{0}<SimpleDataGrid:{1} Header=\"{2}\" IsReadOnly=\"True\" Binding=\"{{Binding {2}, UpdateSourceTrigger=PropertyChanged, Converter={{x:Static converter:LongToDateTimeStringConverter.Instance}}}}\"/>{3}", baseTab, columnType, item.ColumnName, Constant.LineEnding);
-                    }
-                    else
-                    {
-                        sb.AppendFormat("{0}<SimpleDataGrid:{1} Header=\"{2}\" Binding=\"{{Binding {2}, UpdateSourceTrigger=PropertyChanged}}\"/>{3}", baseTab, columnType, item.ColumnName, Constant.LineEnding);
-                    }
-                }
+
+                sb.AppendFormat("{0}{1}", GetDataGridColumnFromProperty(item, baseTab), Constant.LineEnding);
             }
 
             return sb.ToString(0, sb.Length - Constant.LineEnding.Length);
         }
 
-        private static string GetDataGridColumnTypeFromProperty(DbTableColumn column)
+        private static string GetDataGridColumnFromProperty(DbTableColumn column, string baseTab)
         {
             if (column.IsIdentity == true)
             {
-                return "DataGridTextColumnExt";
+                return string.Format("{0}<SimpleDataGrid:DataGridTextColumnExt Width =\"80\" Header=\"{1}\" IsReadOnly=\"True\" Binding=\"{{Binding {1}, Mode=OneWay}}\"/>", baseTab, column.ColumnName);
             }
             if (column.IsForeignKey == true)
             {
-                return "DataGridComboBoxColumnExt";
+                if (column.IsReferenceToLargeTable)
+                {
+                    return string.Format("{0}<SimpleDataGrid:DataGridTextColumnExt Width=\"80\" Header=\"{1}\" IsReadOnly=\"True\" Binding=\"{{Binding {1}, Mode=OneWay}}\"/>", baseTab, column.ColumnName);
+                }
+                else
+                {
+                    var tab1 = baseTab + Constant.Tab;
+                    var sb = new StringBuilder();
+                    sb.AppendFormat("{0}<SimpleDataGrid:DataGridComboBoxColumnExt Header=\"{1}\"{2}", baseTab, column.ColumnName, Constant.LineEnding);
+                    sb.AppendFormat("{0}SelectedValuePath=\"ID\"{1}", tab1, Constant.LineEnding);
+                    sb.AppendFormat("{0}DisplayMemberPath=\"DisplayText\"{1}", tab1, Constant.LineEnding);
+                    sb.AppendFormat("{0}SelectedValueBinding=\"{{Binding {1}, UpdateSourceTrigger=PropertyChanged}}\"{2}", tab1, column.ColumnName, Constant.LineEnding);
+                    sb.AppendFormat("{0}ItemsSource=\"{{Binding {1}DataSource}}\"/>", tab1, column.ColumnName);
+                    return sb.ToString();
+                }
             }
+
             var dataType = column.DataType;
-            if (dataType == "string" || dataType == "int" || dataType == "int?")
+            if (dataType == "int" || dataType == "int?" || dataType == "long" || dataType == "long?")
             {
-                return "DataGridTextColumnExt";
+                return string.Format("{0}<SimpleDataGrid:DataGridRightAlignTextColumn Header=\"{1}\" Binding=\"{{Binding {1}, StringFormat=\\{{0:N0\\}}}}\"/>", baseTab, column.ColumnName);
             }
             else if (dataType == "bool" || dataType == "bool?")
             {
-                return "DataGridCheckBoxColumnExt";
+                return string.Format("{0}<SimpleDataGrid:DataGridCheckBoxColumnExt Header=\"{1}\" Binding=\"{{Binding {1}}}\"/>", baseTab, column.ColumnName);
             }
             else if (dataType == "System.DateTime" || dataType == "System.DateTime?")
             {
-                return "DataGridDateColumn";
+                return string.Format("{0}<SimpleDataGrid:DataGridDateColumn Header=\"{1}\" Binding=\"{{Binding {1}}}\"/>", baseTab, column.ColumnName);
             }
 
-            return "DataGridTextColumnExt";
+            return string.Format("{0}<SimpleDataGrid:DataGridTextColumnExt Header=\"{1}\" Binding=\"{{Binding {1}}}\"/>", baseTab, column.ColumnName);
         }
     }
 }
