@@ -126,22 +126,22 @@ namespace huypq.SmtCodeGen
         {
             var fs = new System.IO.FileStream(path, System.IO.FileMode.Create);
             var bw = new System.IO.BinaryWriter(fs);
-            bw.Write(DatabaseTreeVM.DBName);
-            bw.Write(ViewPath);
-            bw.Write(ViewModelPath);
-            bw.Write(TextPath);
-            bw.Write(ControllerPath);
-            bw.Write(DtoPath);
-            bw.Write(EntityPath);
+            bw.Write(DatabaseTreeVM.DBName ?? "");
+            bw.Write(ViewPath ?? "");
+            bw.Write(ViewModelPath ?? "");
+            bw.Write(TextPath ?? "");
+            bw.Write(ControllerPath ?? "");
+            bw.Write(DtoPath ?? "");
+            bw.Write(EntityPath ?? "");
             bw.Write(MasterDetailSelectorVM.MasterDetailList.Count);
             foreach (var item in MasterDetailSelectorVM.MasterDetailList)
             {
                 bw.Write(item.Levels.Count);
                 foreach (var level in item.Levels)
                 {
-                    bw.Write(level);
+                    bw.Write(level ?? "");
                 }
-                bw.Write(item.ViewName);
+                bw.Write(item.ViewName ?? "");
             }
             fs.Flush();
             fs.Close();
