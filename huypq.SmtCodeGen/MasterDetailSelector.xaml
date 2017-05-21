@@ -5,5 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:huypq.SmtCodeGen"
              mc:Ignorable="d">
-    <StackPanel x:Name="spRoot" Orientation="Vertical"/>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <StackPanel x:Name="spRoot" Orientation="Vertical"/>
+    </ScrollViewer>
 </UserControl>
