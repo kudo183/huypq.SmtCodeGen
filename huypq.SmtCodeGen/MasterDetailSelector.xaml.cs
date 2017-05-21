@@ -172,7 +172,14 @@ namespace huypq.SmtCodeGen
             vm.MasterDetailList[viewIndex].Levels.RemoveAt(levelIndex);
             vm.MasterDetailList[viewIndex].CanDeleteLevel = (vm.MasterDetailList[viewIndex].Levels.Count > 2);
             viewSp.Children.RemoveAt(stackPanelIndex);
-            viewSp.Children.RemoveAt(stackPanelIndex);
+            if (viewSp.Children.Count > stackPanelIndex)//remove arrow symbol in right
+            {
+                viewSp.Children.RemoveAt(stackPanelIndex);
+            }
+            else
+            {
+                viewSp.Children.RemoveAt(stackPanelIndex - 1);//remove arrow symbol in left
+            }
         }
 
         private StackPanel FindDeleteLevelButtonInex(Button btn, out int viewIndex, out int levelIndex, out int stackPanelIndex)
