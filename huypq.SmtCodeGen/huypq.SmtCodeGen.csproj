@@ -87,6 +87,10 @@
     <Compile Include="FileUtils.cs" />
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="StringBuilderExtension.cs" />
+    <Compile Include="TableSettingsView.xaml.cs">
+      <DependentUpon>TableSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TableSettingsVM.cs" />
     <Page Include="DatabaseTree.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -104,6 +108,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="MasterDetailSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TableSettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -159,6 +167,12 @@
   <ItemGroup>
     <Resource Include="CodeGenerator\Template\#ComplexViewTemplate.xaml.cs.txt" />
     <Resource Include="CodeGenerator\Template\#ComplexViewTemplate.xaml.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\huypq.SimpleDataGrid\SimpleDataGrid\SimpleDataGrid.csproj">
+      <Project>{9cfa4fe9-01d0-4bd1-aa8a-bca4b4a60375}</Project>
+      <Name>SimpleDataGrid</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -10,9 +11,9 @@ namespace huypq.SmtCodeGen
 {
     public class MasterDetailSelectorVM : INotifyPropertyChanged
     {
-        private List<string> tables;
+        private ObservableCollection<DbTable> tables;
 
-        public List<string> Tables
+        public ObservableCollection<DbTable> Tables
         {
             get { return tables; }
             set

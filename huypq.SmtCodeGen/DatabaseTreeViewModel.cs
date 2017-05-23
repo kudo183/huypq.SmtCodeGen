@@ -48,7 +48,7 @@ namespace huypq.SmtCodeGen
                 isExpanded = value; OnPropertyChanged();
             }
         }
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -98,7 +98,7 @@ namespace huypq.SmtCodeGen
         public string PropertyName { get; set; }
         public string FK_Name { get; set; }
         public string ForeignKeyTableName { get; set; }
-        
+
         /// <summary>
         /// Restrict = 0, SetNull = 1, Cascade = 2
         /// </summary>
@@ -142,20 +142,56 @@ namespace huypq.SmtCodeGen
             set
             {
                 dbTables = value;
+                SelectedTables.Clear();
+                foreach (var item in dbTables)
+                {
+                    item.PropertyChanged -= Item_PropertyChanged;
+                    item.PropertyChanged += Item_PropertyChanged;
+                    if (item.IsSelected == true)
+                    {
+                        SelectedTables.Add(item);
+                    }
+                }
                 OnPropertyChanged();
             }
         }
 
-        public IEnumerable<DbTable> SelectedTables
+        private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(DbTable.IsSelected))
+            {
+                var table = sender as DbTable;
+                if (table.IsSelected == true)
+                {
+                    SelectedTables.Add(table);
+                }
+                else
+                {
+                    SelectedTables.Remove(table);
+                }
+            }
+        }
+
+        private ObservableCollection<DbTable> selectedTables;
+        public ObservableCollection<DbTable> SelectedTables
         {
             get
             {
-                return DbTables.Where(p => p.IsSelected == true);
+                return selectedTables;
+            }
+            set
+            {
+                if (selectedTables != value)
+                {
+                    selectedTables = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
         public DatabaseTreeVM()
         {
+            selectedTables = new ObservableCollection<DbTable>();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

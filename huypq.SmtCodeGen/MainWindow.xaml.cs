@@ -27,19 +27,12 @@ namespace huypq.SmtCodeGen
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            vm.DatabaseTreeVM.PropertyChanged += DatabaseTreeVM_PropertyChanged;
+            vm.MasterDetailSelectorVM.Tables = vm.DatabaseTreeVM.SelectedTables;
+            vm.TableSettingsVM.Tables = vm.DatabaseTreeVM.SelectedTables;
             if (System.IO.File.Exists(defaultSaveFileName) == true)
             {
                 vm.Load(defaultSaveFileName);
                 masterDetailSelector.UpdateUI();
-            }
-        }
-
-        private void DatabaseTreeVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(DatabaseTreeVM.DbTables))
-            {
-                vm.MasterDetailSelectorVM.Tables = vm.DatabaseTreeVM.SelectedTables.Select(p => p.TableName).ToList();
             }
         }
 

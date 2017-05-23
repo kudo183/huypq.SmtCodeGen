@@ -72,6 +72,16 @@
                     </StackPanel>
                     <local:MasterDetailSelector Grid.Row="1" x:Name="masterDetailSelector" DataContext="{Binding MasterDetailSelectorVM}"/>
                 </Grid>
+                <Grid Background="BurlyWood">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="150"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Table Settings: " FontWeight="Bold"/>
+                    </StackPanel>
+                    <local:TableSettingsView Grid.Row="1" x:Name="tableSettings" DataContext="{Binding TableSettingsVM}"/>
+                </Grid>
                 <Button Content="GenAll" Tag="All" Width="150" Margin="5" HorizontalAlignment="Left" FontWeight="Bold" Click="GenerateButton_Click"/>
             </StackPanel>
             <ListBox Grid.Row="1" ItemsSource="{Binding Messages}" ScrollViewer.VerticalScrollBarVisibility="Visible"/>

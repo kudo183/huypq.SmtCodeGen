@@ -112,6 +112,8 @@ namespace huypq.SmtCodeGen
                 IsEditable = false
             };
 
+            combobox.DisplayMemberPath = nameof(DbTable.TableName);
+            combobox.SelectedValuePath = nameof(DbTable.TableName);
             combobox.SetBinding(ComboBox.ItemsSourceProperty, new Binding("Tables"));
             combobox.SetBinding(ComboBox.SelectedValueProperty, new Binding(string.Format("MasterDetailList[{0}].Levels[{1}]", viewIndex, levelIndex)));
 

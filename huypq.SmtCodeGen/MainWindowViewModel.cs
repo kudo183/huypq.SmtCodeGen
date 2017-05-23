@@ -13,6 +13,8 @@ namespace huypq.SmtCodeGen
 
         public MasterDetailSelectorVM MasterDetailSelectorVM { get; set; }
 
+        public TableSettingsVM TableSettingsVM { get; set; }
+
         private string viewPath;
 
         public string ViewPath
@@ -111,6 +113,7 @@ namespace huypq.SmtCodeGen
         {
             DatabaseTreeVM = new DatabaseTreeVM();
             MasterDetailSelectorVM = new MasterDetailSelectorVM();
+            TableSettingsVM = new TableSettingsVM();
             LanguageNameList = CultureInfo.GetCultures(CultureTypes.AllCultures).OrderBy(p => p.DisplayName, System.StringComparer.OrdinalIgnoreCase);
             Messages = new ObservableCollection<string>();
         }
@@ -143,6 +146,19 @@ namespace huypq.SmtCodeGen
                 }
                 bw.Write(item.ViewName ?? "");
             }
+            bw.Write(TableSettingsVM.TableSettings.Count);
+            foreach (var item in TableSettingsVM.TableSettings)
+            {
+                bw.Write(item.ColumnSettings.Count);
+                foreach (var column in item.ColumnSettings)
+                {
+                    bw.Write(column.ColumnName ?? "");
+                    bw.Write(column.DataGridColumnType ?? "");
+                    bw.Write(column.IsReadOnly);
+                    bw.Write(column.Order);
+                }
+                bw.Write(item.TableName ?? "");
+            }
             fs.Flush();
             fs.Close();
         }
@@ -173,6 +189,26 @@ namespace huypq.SmtCodeGen
                 masterDetailList.Add(md);
             }
             MasterDetailSelectorVM.MasterDetailList = masterDetailList;
+            int tableSettingsCount = br.ReadInt32();
+            var tableSettings = new ObservableCollection<TableSetting>();
+            for (int i = 0; i < tableSettingsCount; i++)
+            {
+                int columnsCount = br.ReadInt32();
+                var table = new TableSetting();
+                for (int j = 0; j < columnsCount; j++)
+                {
+                    table.ColumnSettings.Add(new ColumnSetting()
+                    {
+                        ColumnName = br.ReadString(),
+                        DataGridColumnType = br.ReadString(),
+                        IsReadOnly = br.ReadBoolean(),
+                        Order = br.ReadInt32()
+                    });
+                }
+                table.TableName = br.ReadString();
+                tableSettings.Add(table);
+            }
+            TableSettingsVM.TableSettings = tableSettings;
             fs.Flush();
             fs.Close();
         }
