@@ -31,14 +31,14 @@ namespace huypq.SmtCodeGen
             vm.TableSettingsVM.Tables = vm.DatabaseTreeVM.SelectedTables;
             if (System.IO.File.Exists(defaultSaveFileName) == true)
             {
-                vm.Load(defaultSaveFileName);
+                vm.LoadJson(defaultSaveFileName);
                 masterDetailSelector.UpdateUI();
             }
         }
 
         private void MainWindow_Closed(object sender, EventArgs e)
         {
-            vm.Save(defaultSaveFileName);
+            vm.SaveJson(defaultSaveFileName);
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
@@ -47,7 +47,7 @@ namespace huypq.SmtCodeGen
             sfd.Filter = "CodeGen Settings|*.gen";
             if (sfd.ShowDialog() == true)
             {
-                vm.Save(sfd.FileName);
+                vm.SaveJson(sfd.FileName);
             }
         }
 
@@ -57,7 +57,7 @@ namespace huypq.SmtCodeGen
             ofd.Filter = "CodeGen Settings|*.gen";
             if (ofd.ShowDialog() == true)
             {
-                vm.Load(ofd.FileName);
+                vm.LoadJson(ofd.FileName);
                 masterDetailSelector.UpdateUI();
             }
         }

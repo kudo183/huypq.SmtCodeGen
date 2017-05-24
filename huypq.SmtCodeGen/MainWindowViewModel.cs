@@ -125,96 +125,142 @@ namespace huypq.SmtCodeGen
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void Save(string path)
+        public void SaveJson(string path)
         {
-            var fs = new System.IO.FileStream(path, System.IO.FileMode.Create);
-            var bw = new System.IO.BinaryWriter(fs);
-            bw.Write(DatabaseTreeVM.DBName ?? "");
-            bw.Write(ViewPath ?? "");
-            bw.Write(ViewModelPath ?? "");
-            bw.Write(TextPath ?? "");
-            bw.Write(ControllerPath ?? "");
-            bw.Write(DtoPath ?? "");
-            bw.Write(EntityPath ?? "");
-            bw.Write(MasterDetailSelectorVM.MasterDetailList.Count);
+            var json = new JsonViewModel();
+
+            json.DBName = DatabaseTreeVM.DBName;
+
+            json.ControllerPath = controllerPath;
+            json.DtoPath = dtoPath;
+            json.EntityPath = entityPath;
+            json.TextPath = textPath;
+            json.ViewModelPath = viewModelPath;
+            json.ViewPath = viewPath;
+
+            json.MasterDetailList = new List<JsonMasterDetail>();
             foreach (var item in MasterDetailSelectorVM.MasterDetailList)
             {
-                bw.Write(item.Levels.Count);
+                var md = new JsonMasterDetail();
+                md.ViewName = item.ViewName;
+                md.Levels = new List<string>();
                 foreach (var level in item.Levels)
                 {
-                    bw.Write(level ?? "");
+                    md.Levels.Add(level);
                 }
-                bw.Write(item.ViewName ?? "");
+                json.MasterDetailList.Add(md);
             }
-            bw.Write(TableSettingsVM.TableSettings.Count);
+
+            json.TableSettingList = new List<JsonTableSetting>();
             foreach (var item in TableSettingsVM.TableSettings)
             {
-                bw.Write(item.ColumnSettings.Count);
+                var ts = new JsonTableSetting();
+                ts.ColumnSettingList = new List<JsonColumnSetting>();
+                ts.TableName = item.TableName;
                 foreach (var column in item.ColumnSettings)
                 {
-                    bw.Write(column.ColumnName ?? "");
-                    bw.Write(column.DataGridColumnType ?? "");
-                    bw.Write(column.IsReadOnly);
-                    bw.Write(column.IsTabStop);
-                    bw.Write(column.Width);
-                    bw.Write(column.Order);
+                    ts.ColumnSettingList.Add(new JsonColumnSetting()
+                    {
+                        ColumnName = column.ColumnName,
+                        DataGridColumnType = column.DataGridColumnType,
+                        IsReadOnly = column.IsReadOnly,
+                        IsTabStop = column.IsTabStop,
+                        Width = column.Width,
+                        Order = column.Order
+                    });
                 }
-                bw.Write(item.TableName ?? "");
+                json.TableSettingList.Add(ts);
             }
-            fs.Flush();
-            fs.Close();
+
+            string output = Newtonsoft.Json.JsonConvert.SerializeObject(json, Newtonsoft.Json.Formatting.Indented);
+            System.IO.File.WriteAllText(path, output);
         }
 
-        public void Load(string path)
+        public void LoadJson(string path)
         {
-            var fs = new System.IO.FileStream(path, System.IO.FileMode.Open);
-            var br = new System.IO.BinaryReader(fs);
-            DatabaseTreeVM.DBName = br.ReadString();
-            ViewPath = br.ReadString();
-            ViewModelPath = br.ReadString();
-            TextPath = br.ReadString();
-            ControllerPath = br.ReadString();
-            DtoPath = br.ReadString();
-            EntityPath = br.ReadString();
-            int masterDetailListCount = br.ReadInt32();
+            var text = System.IO.File.ReadAllText(path);
+            var json = Newtonsoft.Json.JsonConvert.DeserializeObject<JsonViewModel>(text);
+
+            DatabaseTreeVM.DBName = json.DBName;
+
+            ViewPath = json.ViewPath;
+            ViewModelPath = json.ViewModelPath;
+            TextPath = json.TextPath;
+            ControllerPath = json.ControllerPath;
+            DtoPath = json.DtoPath;
+            EntityPath = json.EntityPath;
+
+            int masterDetailListCount = json.MasterDetailList.Count;
             var masterDetailList = new List<MasterDetail>(masterDetailListCount);
             for (int i = 0; i < masterDetailListCount; i++)
             {
-                int levelsCount = br.ReadInt32();
+                int levelsCount = json.MasterDetailList[i].Levels.Count;
                 var md = new MasterDetail();
                 for (int j = 0; j < levelsCount; j++)
                 {
-                    md.Levels.Add(br.ReadString());
+                    md.Levels.Add(json.MasterDetailList[i].Levels[j]);
                 }
-                md.ViewName = br.ReadString();
+                md.ViewName = json.MasterDetailList[i].ViewName;
                 md.CanDeleteLevel = (levelsCount > 2);
                 masterDetailList.Add(md);
             }
             MasterDetailSelectorVM.MasterDetailList = masterDetailList;
-            int tableSettingsCount = br.ReadInt32();
+
+            int tableSettingsCount = json.TableSettingList.Count;
             var tableSettings = new ObservableCollection<TableSetting>();
             for (int i = 0; i < tableSettingsCount; i++)
             {
-                int columnsCount = br.ReadInt32();
+                int columnsCount = json.TableSettingList[i].ColumnSettingList.Count;
                 var table = new TableSetting();
                 for (int j = 0; j < columnsCount; j++)
                 {
+                    var column = json.TableSettingList[i].ColumnSettingList[j];
                     table.ColumnSettings.Add(new ColumnSetting()
                     {
-                        ColumnName = br.ReadString(),
-                        DataGridColumnType = br.ReadString(),
-                        IsReadOnly = br.ReadBoolean(),
-                        IsTabStop = br.ReadBoolean(),
-                        Width = br.ReadInt32(),
-                        Order = br.ReadInt32()
+                        ColumnName = column.ColumnName,
+                        DataGridColumnType = column.DataGridColumnType,
+                        IsReadOnly = column.IsReadOnly,
+                        IsTabStop = column.IsTabStop,
+                        Width = column.Width,
+                        Order = column.Order
                     });
                 }
-                table.TableName = br.ReadString();
+                table.TableName = json.TableSettingList[i].TableName;
                 tableSettings.Add(table);
             }
             TableSettingsVM.TableSettings = tableSettings;
-            fs.Flush();
-            fs.Close();
+        }
+
+        class JsonViewModel
+        {
+            public string DBName { get; set; }
+            public string ViewPath { get; set; }
+            public string ViewModelPath { get; set; }
+            public string TextPath { get; set; }
+            public string ControllerPath { get; set; }
+            public string DtoPath { get; set; }
+            public string EntityPath { get; set; }
+            public List<JsonMasterDetail> MasterDetailList { get; set; }
+            public List<JsonTableSetting> TableSettingList { get; set; }
+        }
+        class JsonMasterDetail
+        {
+            public string ViewName { get; set; }
+            public List<string> Levels { get; set; }
+        }
+        class JsonTableSetting
+        {
+            public string TableName { get; set; }
+            public List<JsonColumnSetting> ColumnSettingList { get; set; }
+        }
+        class JsonColumnSetting
+        {
+            public string ColumnName { get; set; }
+            public string DataGridColumnType { get; set; }
+            public bool IsReadOnly { get; set; }
+            public bool IsTabStop { get; set; }
+            public int Width { get; set; }
+            public int Order { get; set; }
         }
     }
 }
