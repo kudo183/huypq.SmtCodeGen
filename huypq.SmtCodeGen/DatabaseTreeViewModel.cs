@@ -113,8 +113,6 @@ namespace huypq.SmtCodeGen
         public bool IsForeignKey { get; set; }
         public bool IsIdentity { get; set; }
         public string ForeignKeyTableName { get; set; }
-
-        public bool IsReferenceToLargeTable { get; set; }
     }
 
     public class DatabaseTreeVM : INotifyPropertyChanged

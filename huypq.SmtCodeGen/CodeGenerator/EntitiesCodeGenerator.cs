@@ -12,7 +12,7 @@ namespace huypq.SmtCodeGen
         private const string EntityTemplateTemplateFileName = "#EntityTemplate.txt";
         private const string EntityTemplateFileNameSubFix = ".cs";
 
-        public static void GenDbContextClass(IEnumerable<DbTable> tables, string outputPath)
+        public static void GenDbContextClass(IEnumerable<TableSetting> tables, string outputPath)
         {
             var result = new StringBuilder();
             var classKeyword = " class ";
@@ -49,7 +49,7 @@ namespace huypq.SmtCodeGen
             FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, contextName + DbContextFileNameSubFix), result.ToString());
         }
 
-        public static void GenEntitiesClass(IEnumerable<DbTable> tables, string outputPath)
+        public static void GenEntitiesClass(IEnumerable<TableSetting> tables, string outputPath)
         {
             var results = new Dictionary<string, StringBuilder>();
             foreach (var table in tables)
@@ -67,19 +67,19 @@ namespace huypq.SmtCodeGen
                     var baseTab = trimmedEnd.Substring(0, trimmedEnd.Length - trimmed.Length);
                     if (trimmed == "<InitEntityCollectionNavigationProperties>")
                     {
-                        result.Append(InitEntityCollectionNavigationProperties(table.ReferencesToThisTable, baseTab));
+                        result.Append(InitEntityCollectionNavigationProperties(table.DbTable.ReferencesToThisTable, baseTab));
                     }
                     else if (trimmed == "<EntityProperties>")
                     {
-                        result.Append(EntityProperties(table.Columns, baseTab));
+                        result.Append(EntityProperties(table.ColumnSettings, baseTab));
                     }
                     else if (trimmed == "<EntityNavigationProperties>")
                     {
-                        result.Append(EntityNavigationProperties(table.Columns, baseTab));
+                        result.Append(EntityNavigationProperties(table.ColumnSettings, baseTab));
                     }
                     else if (trimmed == "<EntityCollectionNavigationProperties>")
                     {
-                        result.Append(EntityCollectionNavigationProperties(table.ReferencesToThisTable, baseTab));
+                        result.Append(EntityCollectionNavigationProperties(table.DbTable.ReferencesToThisTable, baseTab));
                     }
                     else
                     {
@@ -127,7 +127,7 @@ namespace huypq.SmtCodeGen
             return sb.ToString();
         }
 
-        private static string EntityProperties(IEnumerable<DbTableColumn> columns, string baseTab)
+        private static string EntityProperties(IEnumerable<ColumnSetting> columns, string baseTab)
         {
             if (columns.Count() == 0)
             {
@@ -139,10 +139,10 @@ namespace huypq.SmtCodeGen
             foreach (var item in columns)
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "public {0} {1} {{ get; set; }}",
-                    item.DataType, DatabaseUtils.UpperFirstLetter(item.ColumnName));
+                    item.DbColumn.DataType, DatabaseUtils.UpperFirstLetter(item.ColumnName));
             }
 
-            var pkName = columns.First(p => p.IsIdentity).ColumnName;
+            var pkName = columns.First(p => p.DbColumn.IsIdentity).ColumnName;
             if (pkName != "ID")
             {
                 sb.AppendLineEx();
@@ -153,9 +153,9 @@ namespace huypq.SmtCodeGen
             return sb.ToString();
         }
 
-        private static string EntityNavigationProperties(IEnumerable<DbTableColumn> columns, string baseTab)
+        private static string EntityNavigationProperties(IEnumerable<ColumnSetting> columns, string baseTab)
         {
-            var foreignKeyColumns = columns.Where(p => p.IsForeignKey == true);
+            var foreignKeyColumns = columns.Where(p => p.DbColumn.IsForeignKey == true);
             if (foreignKeyColumns.Count() == 0)
             {
                 return string.Empty;
@@ -166,7 +166,7 @@ namespace huypq.SmtCodeGen
             foreach (var item in foreignKeyColumns)
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "public {0} {1}Navigation {{ get; set; }}",
-                    DatabaseUtils.UpperFirstLetter(item.ForeignKeyTableName), DatabaseUtils.UpperFirstLetter(item.ColumnName));
+                    DatabaseUtils.UpperFirstLetter(item.DbColumn.ForeignKeyTableName), DatabaseUtils.UpperFirstLetter(item.ColumnName));
             }
 
             return sb.ToString();
@@ -190,7 +190,7 @@ namespace huypq.SmtCodeGen
             return sb.ToString();
         }
 
-        private static string ModelBuilderConfix(IEnumerable<DbTable> tables, string baseTab)
+        private static string ModelBuilderConfix(IEnumerable<TableSetting> tables, string baseTab)
         {
             if (tables.Count() == 0)
             {
@@ -205,7 +205,7 @@ namespace huypq.SmtCodeGen
                 var UpperedTableName = DatabaseUtils.UpperFirstLetter(table.TableName);
                 sb.AppendLineExWithTabAndFormat(baseTab, "modelBuilder.Entity<{0}>(entity =>", UpperedTableName);
                 sb.AppendLineExWithTab(baseTab, "{");
-                foreach (var index in table.Indexes)
+                foreach (var index in table.DbTable.Indexes)
                 {
                     switch (index.IndexType)
                     {
@@ -230,7 +230,7 @@ namespace huypq.SmtCodeGen
                     }
                     sb.AppendLine();
                 }
-                foreach (var defaultValue in table.DefaultValues)
+                foreach (var defaultValue in table.DbTable.DefaultValues)
                 {
                     var value = defaultValue.Value.Substring(1, defaultValue.Value.Length - 2);
                     if (string.IsNullOrEmpty(value) == true)
@@ -240,11 +240,11 @@ namespace huypq.SmtCodeGen
                     sb.AppendLineExWithTabAndFormat(tab1, "entity.Property(e => e.{0}).HasDefaultValueSql(\"{1}\");", defaultValue.PropertyName, value);
                     sb.AppendLineEx();
                 }
-                foreach (var hasColumnType in table.HasColumnTypes)
+                foreach (var hasColumnType in table.DbTable.HasColumnTypes)
                 {
                     sb.AppendLineExWithTabAndFormat(tab1, "entity.Property(e => e.{0}).HasColumnType(\"{1}\");", hasColumnType.PropertyName, hasColumnType.TypeName);
                 }
-                foreach (var requiredMaxLength in table.RequiredMaxLengths)
+                foreach (var requiredMaxLength in table.DbTable.RequiredMaxLengths)
                 {
                     sb.AppendTabAndFormat(tab1, "entity.Property(e => e.{0})", requiredMaxLength.PropertyName);
                     if (requiredMaxLength.NeedIsRequired == true)
@@ -260,7 +260,7 @@ namespace huypq.SmtCodeGen
                     sb.AppendLineEx(";");
                 }
                 sb.AppendLineEx();
-                foreach (var foreignKey in table.ForeignKeys)
+                foreach (var foreignKey in table.DbTable.ForeignKeys)
                 {
                     sb.AppendLineExWithTabAndFormat(tab1, "entity.HasOne(d => d.{0}Navigation)", foreignKey.PropertyName);
                     sb.AppendLineExWithTabAndFormat(tab2, ".WithMany(p => p.{0}{1}Navigation)", UpperedTableName, foreignKey.PropertyName);
@@ -286,7 +286,7 @@ namespace huypq.SmtCodeGen
             return sb.ToString();
         }
 
-        private static string DbSetProperties(IEnumerable<DbTable> tables, string baseTab)
+        private static string DbSetProperties(IEnumerable<TableSetting> tables, string baseTab)
         {
             if (tables.Count() == 0)
             {

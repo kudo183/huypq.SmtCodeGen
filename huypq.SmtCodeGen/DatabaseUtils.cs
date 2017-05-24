@@ -74,8 +74,7 @@ namespace huypq.SmtCodeGen
                         ColumnName = item.Name,
                         IsForeignKey = item.IsForeignKey,
                         IsPrimaryKey = item.InPrimaryKey,
-                        IsIdentity = item.Identity,
-                        IsReferenceToLargeTable = item.Name.Substring(item.Name.Length - 1) == "X"
+                        IsIdentity = item.Identity
                     };
                     if (item.IsForeignKey == true)
                     {

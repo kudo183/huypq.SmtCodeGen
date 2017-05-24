@@ -22,6 +22,7 @@ namespace huypq.SmtCodeGen
                 case nameof(ColumnSetting.DbColumn):
                 case nameof(ColumnSetting.OldOrder):
                 case nameof(ColumnSetting.DataGridColumnTypeList):
+                case nameof(ColumnSetting.IsNeedReferenceData):
                     e.Cancel = true;
                     break;
                 case nameof(ColumnSetting.ColumnName):

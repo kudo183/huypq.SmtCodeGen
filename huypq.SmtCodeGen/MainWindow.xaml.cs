@@ -104,6 +104,16 @@ namespace huypq.SmtCodeGen
             masterDetailSelector.AddView();
         }
 
+        private void ResetTableSettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            vm.TableSettingsVM.Reset();
+        }
+
+        private void ResetSelectedTableSettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            vm.TableSettingsVM.ResetSelectedTableSetting();
+        }
+
         private void OpenButton_Click(object sender, RoutedEventArgs e)
         {
             var btn = sender as Button;
@@ -153,52 +163,52 @@ namespace huypq.SmtCodeGen
         {
             vm.Messages.Add(string.Format("{0} | Generating View ...", DateTime.Now));
 
-            ViewCodeGenerator.GenViewCode(vm.DatabaseTreeVM.SelectedTables, path);
-            ViewCodeGenerator.GenViewXamlCode(vm.DatabaseTreeVM.SelectedTables, path);
+            ViewCodeGenerator.GenViewCode(vm.TableSettingsVM.TableSettings, path);
+            ViewCodeGenerator.GenViewXamlCode(vm.TableSettingsVM.TableSettings, path);
         }
 
         private void GenViewModel(string path)
         {
             vm.Messages.Add(string.Format("{0} | Generating ViewModel ...", DateTime.Now));
 
-            ViewModelCodeGenerator.GenViewModelCode(vm.DatabaseTreeVM.SelectedTables, path);
+            ViewModelCodeGenerator.GenViewModelCode(vm.TableSettingsVM.TableSettings, path);
         }
 
         private void GenText(string path)
         {
             vm.Messages.Add(string.Format("{0} | Generating Text ...", DateTime.Now));
 
-            TextManagerCodeGenerator.GenTextManagerCode(vm.DatabaseTreeVM.SelectedTables, path);
+            TextManagerCodeGenerator.GenTextManagerCode(vm.TableSettingsVM.TableSettings, path);
         }
 
         private void GenController(string path)
         {
             vm.Messages.Add(string.Format("{0} | Generating Controller ...", DateTime.Now));
 
-            ControllersCodeGenerator.GenControllersClass(vm.DatabaseTreeVM.SelectedTables, path);
+            ControllersCodeGenerator.GenControllersClass(vm.TableSettingsVM.TableSettings, path);
         }
 
         private void GenDto(string path)
         {
             vm.Messages.Add(string.Format("{0} | Generating Dto ...", DateTime.Now));
 
-            DtosCodeGenerator.GenDtosClass(vm.DatabaseTreeVM.SelectedTables, path);
+            DtosCodeGenerator.GenDtosClass(vm.TableSettingsVM.TableSettings, path);
         }
 
         private void GenEntity(string path)
         {
             vm.Messages.Add(string.Format("{0} | Generating Entity ...", DateTime.Now));
 
-            EntitiesCodeGenerator.GenDbContextClass(vm.DatabaseTreeVM.SelectedTables, path);
-            EntitiesCodeGenerator.GenEntitiesClass(vm.DatabaseTreeVM.SelectedTables, path);
+            EntitiesCodeGenerator.GenDbContextClass(vm.TableSettingsVM.TableSettings, path);
+            EntitiesCodeGenerator.GenEntitiesClass(vm.TableSettingsVM.TableSettings, path);
         }
 
         private void GenComplexView(string path)
         {
             vm.Messages.Add(string.Format("{0} | Generating Complex View ...", DateTime.Now));
 
-            ComplexViewCodeGenerator.GenComplexViewCode(vm.MasterDetailSelectorVM.MasterDetailList, vm.DatabaseTreeVM.SelectedTables, path);
-            ComplexViewCodeGenerator.GenComplexViewXamlCode(vm.MasterDetailSelectorVM.MasterDetailList, vm.DatabaseTreeVM.SelectedTables, path);
+            ComplexViewCodeGenerator.GenComplexViewCode(vm.MasterDetailSelectorVM.MasterDetailList, vm.TableSettingsVM.TableSettings, path);
+            ComplexViewCodeGenerator.GenComplexViewXamlCode(vm.MasterDetailSelectorVM.MasterDetailList, vm.TableSettingsVM.TableSettings, path);
         }
     }
 }

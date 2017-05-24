@@ -12,7 +12,7 @@ namespace huypq.SmtCodeGen
         private const string DtoPartTemplateFileName = "#DtoPartTemplate.txt";
         private const string DtoPartFileNameSubFix = "Dto.part.cs";
 
-        public static void GenDtosClass(IEnumerable<DbTable> tables, string outputPath)
+        public static void GenDtosClass(IEnumerable<TableSetting> tables, string outputPath)
         {
             var results = new Dictionary<string, StringBuilder>();
             foreach (var table in tables)
@@ -31,27 +31,27 @@ namespace huypq.SmtCodeGen
                     var baseTab = trimmedEnd.Substring(0, trimmedEnd.Length - trimmed.Length);
                     if (trimmed == "<PrivateFields>")
                     {
-                        result.Append(PrivateFields(table.Columns, baseTab));
+                        result.Append(PrivateFields(table.ColumnSettings, baseTab));
                     }
                     else if (trimmed == "<PublicProperties>")
                     {
-                        result.Append(PublicProperties(table.Columns, baseTab));
+                        result.Append(PublicProperties(table.ColumnSettings, baseTab));
                     }
                     else if (trimmed == "<SetCurrentValueAsOriginalValue>")
                     {
-                        result.Append(SetCurrentValueAsOriginalValue(table.Columns, baseTab));
+                        result.Append(SetCurrentValueAsOriginalValue(table.ColumnSettings, baseTab));
                     }
                     else if (trimmed == "<Update>")
                     {
-                        result.Append(Update(table.Columns, baseTab));
+                        result.Append(Update(table.ColumnSettings, baseTab));
                     }
                     else if (trimmed == "<HasChange>")
                     {
-                        result.Append(HasChange(table.Columns, baseTab));
+                        result.Append(HasChange(table.ColumnSettings, baseTab));
                     }
                     else if (trimmed == "<ReferenceDataSource>")
                     {
-                        result.Append(ReferenceDataSource(table.Columns, baseTab));
+                        result.Append(ReferenceDataSource(table.ColumnSettings, baseTab));
                     }
                     else
                     {
@@ -79,9 +79,9 @@ namespace huypq.SmtCodeGen
             GenDtosPartialClass(tables, outputPath);
         }
 
-        private static void GenDtosPartialClass(IEnumerable<DbTable> tables, string outputPath)
+        private static void GenDtosPartialClass(IEnumerable<TableSetting> tables, string outputPath)
         {
-            var referencedTable = tables.Where(p => p.ReferencesToThisTable.Count > 0);
+            var referencedTable = tables.Where(p => p.DbTable.ReferencesToThisTable.Count > 0);
             if (referencedTable.Count() == 0)
             {
                 return;
@@ -112,31 +112,31 @@ namespace huypq.SmtCodeGen
             }
         }
 
-        private static string PrivateFields(IEnumerable<DbTableColumn> columns, string baseTab)
+        private static string PrivateFields(IEnumerable<ColumnSetting> columnSettings, string baseTab)
         {
-            if (columns.Count() == 0)
+            if (columnSettings.Count() == 0)
             {
                 return string.Empty;
             }
 
             var sb = new StringBuilder();
 
-            foreach (var item in columns)
+            foreach (var item in columnSettings)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "{0} o{1};", item.DataType, item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "{0} o{1};", item.DbColumn.DataType, item.ColumnName);
             }
             sb.AppendLine();
-            foreach (var item in columns)
+            foreach (var item in columnSettings)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "{0} _{1};", item.DataType, item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "{0} _{1};", item.DbColumn.DataType, item.ColumnName);
             }
 
             return sb.ToString();
         }
 
-        private static string PublicProperties(IEnumerable<DbTableColumn> columns, string baseTab)
+        private static string PublicProperties(IEnumerable<ColumnSetting> columnSettings, string baseTab)
         {
-            if (columns.Count() == 0)
+            if (columnSettings.Count() == 0)
             {
                 return string.Empty;
             }
@@ -144,26 +144,26 @@ namespace huypq.SmtCodeGen
             var sb = new StringBuilder();
 
             var i = 1;
-            foreach (var item in columns)
+            foreach (var item in columnSettings)
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "[ProtoBuf.ProtoMember({0})]", i);
-                sb.AppendLineExWithTabAndFormat(baseTab, "public {0} {1} {{ get {{ return _{1}; }} set {{ _{1} = value; OnPropertyChanged(); }} }}", item.DataType, item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "public {0} {1} {{ get {{ return _{1}; }} set {{ _{1} = value; OnPropertyChanged(); }} }}", item.DbColumn.DataType, item.ColumnName);
                 i++;
             }
 
             return sb.ToString();
         }
 
-        private static string SetCurrentValueAsOriginalValue(IEnumerable<DbTableColumn> columns, string baseTab)
+        private static string SetCurrentValueAsOriginalValue(IEnumerable<ColumnSetting> columnSettings, string baseTab)
         {
-            if (columns.Count() == 0)
+            if (columnSettings.Count() == 0)
             {
                 return string.Empty;
             }
 
             var sb = new StringBuilder();
 
-            foreach (var item in columns)
+            foreach (var item in columnSettings)
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "o{0} = {0};", item.ColumnName);
             }
@@ -171,16 +171,16 @@ namespace huypq.SmtCodeGen
             return sb.ToString();
         }
 
-        private static string Update(IEnumerable<DbTableColumn> columns, string baseTab)
+        private static string Update(IEnumerable<ColumnSetting> columnSettings, string baseTab)
         {
-            if (columns.Count() == 0)
+            if (columnSettings.Count() == 0)
             {
                 return string.Empty;
             }
 
             var sb = new StringBuilder();
 
-            foreach (var item in columns)
+            foreach (var item in columnSettings)
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "{0} = dto.{0};", item.ColumnName);
             }
@@ -188,9 +188,9 @@ namespace huypq.SmtCodeGen
             return sb.ToString();
         }
 
-        private static string HasChange(IEnumerable<DbTableColumn> columns, string baseTab)
+        private static string HasChange(IEnumerable<ColumnSetting> columnSettings, string baseTab)
         {
-            if (columns.Count() == 0)
+            if (columnSettings.Count() == 0)
             {
                 return string.Empty;
             }
@@ -198,7 +198,7 @@ namespace huypq.SmtCodeGen
             var sb = new StringBuilder();
 
             sb.AppendLineExWithTab(baseTab, "return");
-            foreach (var item in columns)
+            foreach (var item in columnSettings)
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "(o{0} != {0})||", item.ColumnName);
             }
@@ -210,38 +210,28 @@ namespace huypq.SmtCodeGen
             return sb.ToString();
         }
 
-        private static string ReferenceDataSource(IEnumerable<DbTableColumn> columns, string baseTab)
+        private static string ReferenceDataSource(IEnumerable<ColumnSetting> columnSettings, string baseTab)
         {
-            if (columns.Count() == 0)
+            if (columnSettings.Count() == 0)
             {
                 return string.Empty;
             }
 
             var sb = new StringBuilder();
 
-            var foreignKeys = columns.Where(p => p.IsForeignKey);
+            var foreignKeys = columnSettings.Where(p => p.DbColumn.IsForeignKey && p.IsNeedReferenceData);
             foreach (var item in foreignKeys)
             {
-                if (item.IsReferenceToLargeTable == true)
-                {
-                    continue;
-                }
-
                 sb.AppendLineExWithTabAndFormat(baseTab, "object _{0}DataSource;", item.ColumnName);
             }
             sb.AppendLineEx();
             foreach (var item in foreignKeys)
             {
-                if (item.IsReferenceToLargeTable == true)
-                {
-                    continue;
-                }
-
                 sb.AppendLineExWithTab(baseTab, "[Newtonsoft.Json.JsonIgnore]");
                 sb.AppendLineExWithTabAndFormat(baseTab, "public object {0}DataSource {{ get {{ return _{0}DataSource; }} set {{ _{0}DataSource = value; OnPropertyChanged(); }} }}", item.ColumnName);
             }
 
-            var pkName = columns.First(p => p.IsIdentity).ColumnName;
+            var pkName = columnSettings.First(p => p.DbColumn.IsIdentity).ColumnName;
             if (pkName != "ID")
             {
                 sb.AppendLineEx();

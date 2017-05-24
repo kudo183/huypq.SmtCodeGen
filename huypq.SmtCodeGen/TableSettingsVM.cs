@@ -56,6 +56,17 @@ namespace huypq.SmtCodeGen
                 if (tableSettings != value)
                 {
                     tableSettings = value;
+                    if (tables != null)
+                    {
+                        foreach (var item in tables)
+                        {
+                            var tableSetting = tableSettings.FirstOrDefault(p => p.TableName == item.TableName);
+                            if (tableSetting != null)
+                            {
+                                tableSetting.DbTable = item;
+                            }
+                        }
+                    }
                     OnPropertyChanged();
                 }
             }
@@ -79,6 +90,30 @@ namespace huypq.SmtCodeGen
         public TableSettingsVM()
         {
             tableSettings = new ObservableCollection<TableSetting>();
+        }
+
+        public void Reset()
+        {
+            tableSettings.Clear();
+            foreach (var item in tables)
+            {
+                tableSettings.Add(new TableSetting() { TableName = item.TableName, DbTable = item });
+            }
+        }
+
+        public void ResetSelectedTableSetting()
+        {
+            if (selectedTableSetting == null)
+            {
+                return;
+            }
+            selectedTableSetting.ColumnSettings.Clear();
+            foreach (var item in selectedTableSetting.DbTable.Columns)
+            {
+                var column = new ColumnSetting() { ColumnName = item.ColumnName, DbColumn = item };
+                column.Order = selectedTableSetting.ColumnSettings.Count;
+                selectedTableSetting.ColumnSettings.Add(column);
+            }
         }
 
         private void Tables_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -157,13 +192,6 @@ namespace huypq.SmtCodeGen
                     dbTable = value;
                     foreach (var item in dbTable.Columns)
                     {
-                        if (item.ColumnName == "TenantID"
-                            || item.ColumnName == "CreateTime"
-                            || item.ColumnName == "LastUpdateTime")
-                        {
-                            continue;
-                        }
-
                         var columnSetting = columnSettings.FirstOrDefault(p => p.ColumnName == item.ColumnName);
                         if (columnSetting != null)
                         {
@@ -290,9 +318,17 @@ namespace huypq.SmtCodeGen
 
     public class ColumnSetting : INotifyPropertyChanged
     {
-        private List<string> dataGridColumnTypeList;
+        public bool IsNeedReferenceData
+        {
+            get
+            {
+                return dataGridColumnType == "DataGridComboBoxColumnExt";
+            }
+        }
 
-        public List<string> DataGridColumnTypeList
+        private ObservableCollection<string> dataGridColumnTypeList;
+
+        public ObservableCollection<string> DataGridColumnTypeList
         {
             get { return dataGridColumnTypeList; }
             set
@@ -379,6 +415,13 @@ namespace huypq.SmtCodeGen
                 {
                     dbColumn = value;
 
+                    if (dbColumn.ColumnName == "TenantID"
+                        || dbColumn.ColumnName == "CreateTime"
+                        || dbColumn.ColumnName == "LastUpdateTime")
+                    {
+                        IsReadOnly = true;
+                    }
+
                     if (dbColumn.IsIdentity)
                     {
                         IsReadOnly = true;
@@ -422,7 +465,7 @@ namespace huypq.SmtCodeGen
 
         public ColumnSetting()
         {
-            dataGridColumnTypeList = new List<string>();
+            dataGridColumnTypeList = new ObservableCollection<string>();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

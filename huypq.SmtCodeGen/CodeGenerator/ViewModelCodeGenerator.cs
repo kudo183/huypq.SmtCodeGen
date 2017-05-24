@@ -9,7 +9,7 @@ namespace huypq.SmtCodeGen
         private const string ViewModelTemplateFileName = "#ViewModelTemplate.txt";
         private const string ViewModelFileNameSubFix = "ViewModel.cs";
 
-        public static void GenViewModelCode(IEnumerable<DbTable> tables, string outputPath)
+        public static void GenViewModelCode(IEnumerable<TableSetting> tables, string outputPath)
         {
             var results = new Dictionary<string, StringBuilder>();
             foreach (var table in tables)
@@ -27,27 +27,27 @@ namespace huypq.SmtCodeGen
                     var baseTab = trimmedEnd.Substring(0, trimmedEnd.Length - trimmed.Length);
                     if (trimmed == "<DeclareHeaderFilters>")
                     {
-                        result.Append(DeclareHeaderFilters(table.Columns, baseTab));
+                        result.Append(DeclareHeaderFilters(table.ColumnSettings, baseTab));
                     }
                     else if (trimmed == "<InitHeaderFilters>")
                     {
-                        result.Append(InitHeaderFilters(table.Columns, table.TableName, baseTab));
+                        result.Append(InitHeaderFilters(table.ColumnSettings, table.TableName, baseTab));
                     }
                     else if (trimmed == "<AddHeaderFiltersToHeaderFilterCollection>")
                     {
-                        result.Append(AddHeaderFiltersToHeaderFilterCollection(table.Columns, baseTab));
+                        result.Append(AddHeaderFiltersToHeaderFilterCollection(table.ColumnSettings, baseTab));
                     }
                     else if (trimmed == "<LoadReferenceDatas>")
                     {
-                        result.Append(LoadReferenceDatas(table.Columns, baseTab));
+                        result.Append(LoadReferenceDatas(table.ColumnSettings, baseTab));
                     }
                     else if (trimmed == "<SetDtosReferenceDataSource>")
                     {
-                        result.Append(SetDtosReferenceDataSource(table.Columns, baseTab));
+                        result.Append(SetDtosReferenceDataSource(table.ColumnSettings, baseTab));
                     }
                     else if (trimmed == "<SetDtosDefaultValue>")
                     {
-                        result.Append(SetDtosDefaultValue(table.Columns, baseTab));
+                        result.Append(SetDtosDefaultValue(table.ColumnSettings, baseTab));
                     }
                     else
                     {
@@ -62,7 +62,7 @@ namespace huypq.SmtCodeGen
             }
         }
 
-        private static string DeclareHeaderFilters(IEnumerable<DbTableColumn> columns, string baseTab)
+        private static string DeclareHeaderFilters(IEnumerable<ColumnSetting> columns, string baseTab)
         {
             if (columns.Count() == 0)
             {
@@ -79,7 +79,7 @@ namespace huypq.SmtCodeGen
             return sb.ToString();
         }
 
-        private static string InitHeaderFilters(IEnumerable<DbTableColumn> columns, string tableName, string baseTab)
+        private static string InitHeaderFilters(IEnumerable<ColumnSetting> columns, string tableName, string baseTab)
         {
             if (columns.Count() == 0)
             {
@@ -91,42 +91,36 @@ namespace huypq.SmtCodeGen
             var tab2 = tab1 + Constant.Tab;
             foreach (var item in columns)
             {
-                if (item.IsForeignKey == true)
+                var columnName = item.ColumnName;
+                var dataType = item.DbColumn.DataType;
+                var headerFilterModelType = GetHeaderFilterModelType(item);
+                if (headerFilterModelType == "HeaderComboBoxFilterModel")
                 {
-                    if (item.IsReferenceToLargeTable)
-                    {
-                        var filterType = "HeaderTextFilterModel";
-                        sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = new {1}(TextManager.{2}_{0}, nameof({2}Dto.{0}), typeof({3}));",
-                        item.ColumnName, filterType, tableName, item.DataType);
-                    }
-                    else
-                    {
-                        sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = new HeaderComboBoxFilterModel(", item.ColumnName);
-                        sb.AppendLineExWithTabAndFormat(tab1, "TextManager.{0}_{1}, HeaderComboBoxFilterModel.ComboBoxFilter,", tableName, item.ColumnName);
-                        sb.AppendLineExWithTabAndFormat(tab1, "nameof({0}Dto.{1}),", tableName, item.ColumnName);
-                        sb.AppendLineExWithTabAndFormat(tab1, "typeof({0}),", item.DataType);
-                        sb.AppendLineExWithTabAndFormat(tab1, "nameof({0}Dto.DisplayText),", item.ForeignKeyTableName);
-                        sb.AppendLineExWithTabAndFormat(tab1, "nameof({0}Dto.ID))", item.ForeignKeyTableName);
-                        sb.AppendLineExWithTab(baseTab, "{");
-                        sb.AppendLineExWithTabAndFormat(tab1, "AddCommand = new SimpleCommand(\"{0}AddCommand\",", item.ColumnName);
-                        sb.AppendLineExWithTab(tab2, "() => base.ProccessHeaderAddCommand(");
-                        sb.AppendLineExWithTabAndFormat(tab2, "new View.{0}View(), \"{0}\", ReferenceDataManager<{0}Dto>.Instance.LoadOrUpdate)),", item.ForeignKeyTableName);
-                        sb.AppendLineExWithTabAndFormat(tab1, "ItemSource = ReferenceDataManager<{0}Dto>.Instance.Get()", item.ForeignKeyTableName);
-                        sb.AppendLineExWithTab(baseTab, "};");
-                    }
+                    var foreignKeyTableName = item.DbColumn.ForeignKeyTableName;
+                    sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = new HeaderComboBoxFilterModel(", columnName);
+                    sb.AppendLineExWithTabAndFormat(tab1, "TextManager.{0}_{1}, HeaderComboBoxFilterModel.ComboBoxFilter,", tableName, columnName);
+                    sb.AppendLineExWithTabAndFormat(tab1, "nameof({0}Dto.{1}),", tableName, columnName);
+                    sb.AppendLineExWithTabAndFormat(tab1, "typeof({0}),", dataType);
+                    sb.AppendLineExWithTabAndFormat(tab1, "nameof({0}Dto.DisplayText),", foreignKeyTableName);
+                    sb.AppendLineExWithTabAndFormat(tab1, "nameof({0}Dto.ID))", foreignKeyTableName);
+                    sb.AppendLineExWithTab(baseTab, "{");
+                    sb.AppendLineExWithTabAndFormat(tab1, "AddCommand = new SimpleCommand(\"{0}AddCommand\",", columnName);
+                    sb.AppendLineExWithTab(tab2, "() => base.ProccessHeaderAddCommand(");
+                    sb.AppendLineExWithTabAndFormat(tab2, "new View.{0}View(), \"{0}\", ReferenceDataManager<{0}Dto>.Instance.LoadOrUpdate)),", foreignKeyTableName);
+                    sb.AppendLineExWithTabAndFormat(tab1, "ItemSource = ReferenceDataManager<{0}Dto>.Instance.Get()", foreignKeyTableName);
+                    sb.AppendLineExWithTab(baseTab, "};");
                 }
                 else
                 {
-                    var filterType = GetFilterTypeFromProperty(item);
                     sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = new {1}(TextManager.{2}_{0}, nameof({2}Dto.{0}), typeof({3}));",
-                        item.ColumnName, filterType, tableName, item.DataType);
+                        item.ColumnName, headerFilterModelType, tableName, dataType);
                 }
             }
 
             return sb.ToString();
         }
 
-        private static string AddHeaderFiltersToHeaderFilterCollection(IEnumerable<DbTableColumn> columns, string baseTab)
+        private static string AddHeaderFiltersToHeaderFilterCollection(IEnumerable<ColumnSetting> columns, string baseTab)
         {
             if (columns.Count() == 0)
             {
@@ -143,54 +137,44 @@ namespace huypq.SmtCodeGen
             return sb.ToString();
         }
 
-        private static string LoadReferenceDatas(IEnumerable<DbTableColumn> columns, string baseTab)
+        private static string LoadReferenceDatas(IEnumerable<ColumnSetting> columns, string baseTab)
         {
-            var foreignKeys = columns.Where(p => p.IsForeignKey);
-            if (foreignKeys.Count() == 0)
+            var needReferenceDataColumn = columns.Where(p => p.DbColumn.IsForeignKey && p.IsNeedReferenceData == true);
+            if (needReferenceDataColumn.Count() == 0)
             {
                 return string.Empty;
             }
 
             var sb = new StringBuilder();
 
-            foreach (var item in foreignKeys)
+            foreach (var item in needReferenceDataColumn)
             {
-                if (item.IsReferenceToLargeTable == true)
-                {
-                    continue;
-                }
-
-                sb.AppendLineExWithTabAndFormat(baseTab, "ReferenceDataManager<{0}Dto>.Instance.LoadOrUpdate();", item.ForeignKeyTableName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "ReferenceDataManager<{0}Dto>.Instance.LoadOrUpdate();", item.DbColumn.ForeignKeyTableName);
             }
 
             return sb.ToString();
         }
 
-        private static string SetDtosReferenceDataSource(IEnumerable<DbTableColumn> columns, string baseTab)
+        private static string SetDtosReferenceDataSource(IEnumerable<ColumnSetting> columns, string baseTab)
         {
-            var foreignKeys = columns.Where(p => p.IsForeignKey);
-            if (foreignKeys.Count() == 0)
+            var needReferenceDataColumn = columns.Where(p => p.DbColumn.IsForeignKey && p.IsNeedReferenceData == true);
+            if (needReferenceDataColumn.Count() == 0)
             {
                 return string.Empty;
             }
 
             var sb = new StringBuilder();
 
-            foreach (var item in foreignKeys)
+            foreach (var item in needReferenceDataColumn)
             {
-                if (item.IsReferenceToLargeTable == true)
-                {
-                    continue;
-                }
-
                 sb.AppendLineExWithTabAndFormat(baseTab, "dto.{0}DataSource = ReferenceDataManager<{1}Dto>.Instance.Get();",
-                    item.ColumnName, item.ForeignKeyTableName);
+                    item.ColumnName, item.DbColumn.ForeignKeyTableName);
             }
 
             return sb.ToString();
         }
 
-        private static string SetDtosDefaultValue(IEnumerable<DbTableColumn> columns, string baseTab)
+        private static string SetDtosDefaultValue(IEnumerable<ColumnSetting> columns, string baseTab)
         {
             if (columns.Count() == 0)
             {
@@ -203,31 +187,27 @@ namespace huypq.SmtCodeGen
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "if (_{0}Filter.FilterValue != null)", item.ColumnName);
                 sb.AppendLineExWithTab(baseTab, "{");
-                sb.AppendLineExWithTabAndFormat(tab1, "dto.{0} = ({1})_{0}Filter.FilterValue;", item.ColumnName, item.DataType);
+                sb.AppendLineExWithTabAndFormat(tab1, "dto.{0} = ({1})_{0}Filter.FilterValue;", item.ColumnName, item.DbColumn.DataType);
                 sb.AppendLineExWithTab(baseTab, "}");
             }
 
             return sb.ToString();
         }
 
-        private static string GetFilterTypeFromProperty(DbTableColumn column)
+        private static string GetHeaderFilterModelType(ColumnSetting columnSetting)
         {
-            if (column.IsForeignKey == true)
+            switch (columnSetting.DataGridColumnType)
             {
-                return "HeaderComboBoxFilterModel";
-            }
-            var dataType = column.DataType;
-            if (dataType == "int" || dataType == "int?" || dataType == "long" || dataType == "long?")
-            {
-                return "HeaderTextFilterModel";
-            }
-            else if (dataType == "bool" || dataType == "bool?")
-            {
-                return "HeaderCheckFilterModel";
-            }
-            else if (dataType == "System.DateTime" || dataType == "System.DateTime?")
-            {
-                return "HeaderDateFilterModel";
+                case "DataGridTextColumnExt":
+                case "DataGridRightAlignTextColumn":
+                case "DataGridForeignKeyColumn":
+                    return "HeaderTextFilterModel";
+                case "DataGridComboBoxColumnExt":
+                    return "HeaderComboBoxFilterModel";
+                case "DataGridCheckBoxColumnExt":
+                    return "HeaderCheckFilterModel";
+                case "DataGridDateColumn":
+                    return "HeaderDateFilterModel";
             }
 
             return "HeaderTextFilterModel";

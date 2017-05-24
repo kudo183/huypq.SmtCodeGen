@@ -9,7 +9,7 @@ namespace huypq.SmtCodeGen
         private const string TextManagerTemplateFileName = "#TextManagerTemplate.txt";
         private const string TextManagerFileNameSubFix = ".cs";
 
-        public static void GenTextManagerCode(IEnumerable<DbTable> tables, string outputPath)
+        public static void GenTextManagerCode(IEnumerable<TableSetting> tables, string outputPath)
         {
             var result = new StringBuilder();
             var classKeyword = " class ";
@@ -53,7 +53,7 @@ namespace huypq.SmtCodeGen
             FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, className + TextManagerFileNameSubFix), result.ToString());
         }
 
-        private static string TextStaticProperties(IEnumerable<DbTable> tables, string baseTab)
+        private static string TextStaticProperties(IEnumerable<TableSetting> tables, string baseTab)
         {
             if (tables.Count() == 0)
             {
@@ -64,7 +64,7 @@ namespace huypq.SmtCodeGen
 
             foreach (var table in tables)
             {
-                foreach (var column in table.Columns)
+                foreach (var column in table.ColumnSettings)
                 {
                     sb.AppendLineExWithTabAndFormat(baseTab, "public static string {0}_{1} {{ get {{ return GetText(); }} }}", table.TableName, column.ColumnName);
                 }
@@ -73,7 +73,7 @@ namespace huypq.SmtCodeGen
             return sb.ToString();
         }
 
-        private static string InitDefaultTextData(IEnumerable<DbTable> tables, string baseTab)
+        private static string InitDefaultTextData(IEnumerable<TableSetting> tables, string baseTab)
         {
             if (tables.Count() == 0)
             {
@@ -84,7 +84,7 @@ namespace huypq.SmtCodeGen
 
             foreach (var table in tables)
             {
-                foreach (var column in table.Columns)
+                foreach (var column in table.ColumnSettings)
                 {
                     sb.AppendLineExWithTabAndFormat(baseTab, "_dic.Add(\"{0}_{1}\", \"{1}\");", table.TableName, column.ColumnName);
                 }

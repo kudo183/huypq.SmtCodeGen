@@ -7,7 +7,8 @@
                       xmlns:SimpleDataGrid="clr-namespace:SimpleDataGrid;assembly=SimpleDataGrid"
                       xmlns:Dto="clr-namespace:Shared;assembly=Shared.Old.Net"
                       xmlns:Abstraction="clr-namespace:huypq.SmtWpfClient.Abstraction;assembly=huypq.SmtWpfClient"
-                      xmlns:converter="clr-namespace:huypq.SmtWpfClient.Converter;assembly=huypq.SmtWpfClient">
+                      xmlns:converter="clr-namespace:huypq.SmtWpfClient.Converter;assembly=huypq.SmtWpfClient"
+                      xmlns:view="clr-namespace:Client.View">
     <SimpleDataGrid:EditableGridView>
         <SimpleDataGrid:EditableGridView.Columns>
             <DataGridColumns>

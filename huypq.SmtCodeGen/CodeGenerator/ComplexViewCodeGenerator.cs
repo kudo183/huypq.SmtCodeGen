@@ -12,7 +12,7 @@ namespace huypq.SmtCodeGen
         private const string ComplexViewXamlTemplateFileName = "#ComplexViewTemplate.xaml.txt";
         private const string ComplexViewXamlFileNameSubFix = "ComplexView.xaml";
 
-        public static void GenComplexViewCode(IEnumerable<MasterDetail> complexViews, IEnumerable<DbTable> tables, string outputPath)
+        public static void GenComplexViewCode(IEnumerable<MasterDetail> complexViews, IEnumerable<TableSetting> tables, string outputPath)
         {
             var results = new Dictionary<string, StringBuilder>();
             foreach (var cv in complexViews)
@@ -35,7 +35,7 @@ namespace huypq.SmtCodeGen
             }
         }
 
-        public static void GenComplexViewXamlCode(IEnumerable<MasterDetail> complexViews, IEnumerable<DbTable> tables, string outputPath)
+        public static void GenComplexViewXamlCode(IEnumerable<MasterDetail> complexViews, IEnumerable<TableSetting> tables, string outputPath)
         {
             var results = new Dictionary<string, StringBuilder>();
             foreach (var cv in complexViews)
@@ -68,7 +68,7 @@ namespace huypq.SmtCodeGen
             }
         }
 
-        private static string GridContent(MasterDetail view, IEnumerable<DbTable> tables, string baseTab)
+        private static string GridContent(MasterDetail view, IEnumerable<TableSetting> tables, string baseTab)
         {
             var sb = new StringBuilder();
 
@@ -86,7 +86,7 @@ namespace huypq.SmtCodeGen
             for (int i = 1; i < view.Levels.Count; i++)
             {
                 var parentTable = tables.First(p => p.TableName == view.Levels[i - 1]);
-                var foreignKey = parentTable.ReferencesToThisTable.First(p => p.ReferenceTableName == view.Levels[i]).PropertyName;
+                var foreignKey = parentTable.DbTable.ReferencesToThisTable.First(p => p.ReferenceTableName == view.Levels[i]).PropertyName;
                 sb.AppendLineExWithTabAndFormat(baseTab, "<view:{0}View Grid.Row=\"{1}\" Abstraction:BaseComplexView.ViewLevel=\"{1}\" Abstraction:BaseComplexView.FilterProperty=\"{2}\"/>", view.Levels[i], i, foreignKey);
             }
 

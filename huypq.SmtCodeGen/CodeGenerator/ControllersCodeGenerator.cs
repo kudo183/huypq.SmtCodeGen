@@ -12,7 +12,7 @@ namespace huypq.SmtCodeGen
         private const string ControllerPartTemplateFileName = "#ControllerPartTemplate.txt";
         private const string ControllerPartFileNameSubFix = "Controller.part.cs";
 
-        public static void GenControllersClass(IEnumerable<DbTable> tables, string outputPath)
+        public static void GenControllersClass(IEnumerable<TableSetting> tables, string outputPath)
         {
             var results = new Dictionary<string, StringBuilder>();
             foreach (var table in tables)
@@ -30,11 +30,11 @@ namespace huypq.SmtCodeGen
                     var baseTab = trimmedEnd.Substring(0, trimmedEnd.Length - trimmed.Length);
                     if (trimmed == "<InitDtoProperties>")
                     {
-                        result.Append(InitDtoProperties(table.Columns, baseTab));
+                        result.Append(InitDtoProperties(table.ColumnSettings, baseTab));
                     }
                     else if (trimmed == "<InitEntityProperties>")
                     {
-                        result.Append(InitEntityProperties(table.Columns, baseTab));
+                        result.Append(InitEntityProperties(table.ColumnSettings, baseTab));
                     }
                     else
                     {
@@ -51,9 +51,9 @@ namespace huypq.SmtCodeGen
             GenControllersPartialClass(tables, outputPath);
         }
 
-        private static void GenControllersPartialClass(IEnumerable<DbTable> tables, string outputPath)
+        private static void GenControllersPartialClass(IEnumerable<TableSetting> tables, string outputPath)
         {
-            var referencedTable = tables.Where(p => p.ReferencesToThisTable.Count > 0);
+            var referencedTable = tables.Where(p => p.DbTable.ReferencesToThisTable.Count > 0);
             if (referencedTable.Count() == 0)
             {
                 return;
@@ -84,16 +84,16 @@ namespace huypq.SmtCodeGen
             }
         }
 
-        private static string InitEntityProperties(IEnumerable<DbTableColumn> columns, string baseTab)
+        private static string InitEntityProperties(IEnumerable<ColumnSetting> columnSettings, string baseTab)
         {
-            if (columns.Count() == 0)
+            if (columnSettings.Count() == 0)
             {
                 return string.Empty;
             }
 
             var sb = new StringBuilder();
 
-            foreach (var item in columns)
+            foreach (var item in columnSettings)
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "{0} = dto.{0},", item.ColumnName);
             }
@@ -102,16 +102,16 @@ namespace huypq.SmtCodeGen
             return sb.ToString();
         }
 
-        private static string InitDtoProperties(IEnumerable<DbTableColumn> columns, string baseTab)
+        private static string InitDtoProperties(IEnumerable<ColumnSetting> columnSettings, string baseTab)
         {
-            if (columns.Count() == 0)
+            if (columnSettings.Count() == 0)
             {
                 return string.Empty;
             }
 
             var sb = new StringBuilder();
 
-            foreach (var item in columns)
+            foreach (var item in columnSettings)
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "{0} = entity.{0},", item.ColumnName);
             }
