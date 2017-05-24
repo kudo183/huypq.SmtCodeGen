@@ -155,6 +155,8 @@ namespace huypq.SmtCodeGen
                     bw.Write(column.ColumnName ?? "");
                     bw.Write(column.DataGridColumnType ?? "");
                     bw.Write(column.IsReadOnly);
+                    bw.Write(column.IsTabStop);
+                    bw.Write(column.Width);
                     bw.Write(column.Order);
                 }
                 bw.Write(item.TableName ?? "");
@@ -202,6 +204,8 @@ namespace huypq.SmtCodeGen
                         ColumnName = br.ReadString(),
                         DataGridColumnType = br.ReadString(),
                         IsReadOnly = br.ReadBoolean(),
+                        IsTabStop = br.ReadBoolean(),
+                        Width = br.ReadInt32(),
                         Order = br.ReadInt32()
                     });
                 }

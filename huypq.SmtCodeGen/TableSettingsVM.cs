@@ -111,6 +111,7 @@ namespace huypq.SmtCodeGen
             foreach (var item in selectedTableSetting.DbTable.Columns)
             {
                 var column = new ColumnSetting() { ColumnName = item.ColumnName, DbColumn = item };
+                column.InitColumnSettingFromDbColumn();
                 column.Order = selectedTableSetting.ColumnSettings.Count;
                 selectedTableSetting.ColumnSettings.Add(column);
             }
@@ -196,10 +197,41 @@ namespace huypq.SmtCodeGen
                         if (columnSetting != null)
                         {
                             columnSetting.DbColumn = item;
+                            columnSetting.DataGridColumnTypeList.Clear();
+                            if (item.IsIdentity)
+                            {
+                                columnSetting.DataGridColumnTypeList.Add("DataGridTextColumnExt");
+                            }
+                            else if (item.IsForeignKey)
+                            {
+                                columnSetting.DataGridColumnTypeList.Add("DataGridComboBoxColumnExt");
+                                columnSetting.DataGridColumnTypeList.Add("DataGridForeignKeyColumn");
+                                columnSetting.DataGridColumnTypeList.Add("DataGridTextColumnExt");
+                            }
+                            else
+                            {
+                                switch (item.DataType)
+                                {
+                                    case "int":
+                                    case "long":
+                                        columnSetting.DataGridColumnTypeList.Add("DataGridRightAlignTextColumn");
+                                        break;
+                                    case "System.DateTime":
+                                        columnSetting.DataGridColumnTypeList.Add("DataGridDateColumn");
+                                        break;
+                                    case "bool":
+                                        columnSetting.DataGridColumnTypeList.Add("DataGridCheckBoxColumnExt");
+                                        break;
+                                    case "string":
+                                        columnSetting.DataGridColumnTypeList.Add("DataGridTextColumnExt");
+                                        break;
+                                }
+                            }
                         }
                         else
                         {
                             var column = new ColumnSetting() { ColumnName = item.ColumnName, DbColumn = item };
+                            column.InitColumnSettingFromDbColumn();
                             column.Order = ColumnSettings.Count;
                             ColumnSettings.Add(column);
                         }
@@ -371,6 +403,40 @@ namespace huypq.SmtCodeGen
             }
         }
 
+        private int width;
+
+        public int Width
+        {
+            get { return width; }
+            set
+            {
+                if (width != value)
+                {
+                    width = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private bool isTabStop;
+
+        public bool IsTabStop
+        {
+            get { return isTabStop; }
+            set
+            {
+                if (isTabStop != value)
+                {
+                    isTabStop = value;
+                    if (isTabStop == true)
+                    {
+                        IsReadOnly = false;
+                    }
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         private bool isReadOnly;
 
         public bool IsReadOnly
@@ -381,6 +447,10 @@ namespace huypq.SmtCodeGen
                 if (isReadOnly != value)
                 {
                     isReadOnly = value;
+                    if (isReadOnly == true)
+                    {
+                        IsTabStop = false;
+                    }
                     OnPropertyChanged();
                 }
             }
@@ -414,50 +484,6 @@ namespace huypq.SmtCodeGen
                 if (dbColumn != value)
                 {
                     dbColumn = value;
-
-                    if (dbColumn.ColumnName == "TenantID"
-                        || dbColumn.ColumnName == "CreateTime"
-                        || dbColumn.ColumnName == "LastUpdateTime")
-                    {
-                        IsReadOnly = true;
-                    }
-
-                    if (dbColumn.IsIdentity)
-                    {
-                        IsReadOnly = true;
-                        DataGridColumnType = "DataGridTextColumnExt";
-                        DataGridColumnTypeList.Add("DataGridTextColumnExt");
-                    }
-                    else if (dbColumn.IsForeignKey)
-                    {
-                        DataGridColumnTypeList.Add("DataGridComboBoxColumnExt");
-                        DataGridColumnTypeList.Add("DataGridForeignKeyColumn");
-                        DataGridColumnTypeList.Add("DataGridTextColumnExt");
-                        DataGridColumnType = "DataGridForeignKeyColumn";
-                    }
-                    else
-                    {
-                        switch (dbColumn.DataType)
-                        {
-                            case "int":
-                            case "long":
-                                DataGridColumnTypeList.Add("DataGridRightAlignTextColumn");
-                                DataGridColumnType = "DataGridRightAlignTextColumn";
-                                break;
-                            case "System.DateTime":
-                                DataGridColumnTypeList.Add("DataGridDateColumn");
-                                DataGridColumnType = "DataGridDateColumn";
-                                break;
-                            case "bool":
-                                DataGridColumnTypeList.Add("DataGridCheckBoxColumnExt");
-                                DataGridColumnType = "DataGridCheckBoxColumnExt";
-                                break;
-                            case "string":
-                                DataGridColumnTypeList.Add("DataGridTextColumnExt");
-                                DataGridColumnType = "DataGridTextColumnExt";
-                                break;
-                        }
-                    }
                     OnPropertyChanged();
                 }
             }
@@ -466,6 +492,58 @@ namespace huypq.SmtCodeGen
         public ColumnSetting()
         {
             dataGridColumnTypeList = new ObservableCollection<string>();
+            isTabStop = true;
+        }
+
+        public void InitColumnSettingFromDbColumn()
+        {
+            if (dbColumn == null)
+                return;
+
+            if (dbColumn.ColumnName == "TenantID"
+                || dbColumn.ColumnName == "CreateTime"
+                || dbColumn.ColumnName == "LastUpdateTime")
+            {
+                IsReadOnly = true;
+            }
+
+            if (dbColumn.IsIdentity)
+            {
+                IsReadOnly = true;
+                Width = 80;
+                DataGridColumnType = "DataGridTextColumnExt";
+                DataGridColumnTypeList.Add("DataGridTextColumnExt");
+            }
+            else if (dbColumn.IsForeignKey)
+            {
+                DataGridColumnTypeList.Add("DataGridComboBoxColumnExt");
+                DataGridColumnTypeList.Add("DataGridForeignKeyColumn");
+                DataGridColumnTypeList.Add("DataGridTextColumnExt");
+                DataGridColumnType = "DataGridForeignKeyColumn";
+            }
+            else
+            {
+                switch (dbColumn.DataType)
+                {
+                    case "int":
+                    case "long":
+                        DataGridColumnTypeList.Add("DataGridRightAlignTextColumn");
+                        DataGridColumnType = "DataGridRightAlignTextColumn";
+                        break;
+                    case "System.DateTime":
+                        DataGridColumnTypeList.Add("DataGridDateColumn");
+                        DataGridColumnType = "DataGridDateColumn";
+                        break;
+                    case "bool":
+                        DataGridColumnTypeList.Add("DataGridCheckBoxColumnExt");
+                        DataGridColumnType = "DataGridCheckBoxColumnExt";
+                        break;
+                    case "string":
+                        DataGridColumnTypeList.Add("DataGridTextColumnExt");
+                        DataGridColumnType = "DataGridTextColumnExt";
+                        break;
+                }
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

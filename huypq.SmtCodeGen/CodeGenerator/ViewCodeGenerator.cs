@@ -101,51 +101,41 @@ namespace huypq.SmtCodeGen
         private static string GetDataGridColumnFromProperty(ColumnSetting columnSetting, string baseTab)
         {
             var columnName = columnSetting.ColumnName;
-            if (columnSetting.IsReadOnly == true)
+            var columnType = columnSetting.DataGridColumnType;
+            var header = string.Format(" Header=\"{0}\"", columnName);
+            var width = columnSetting.Width > 0 ? string.Format(" Width =\"{0}\"", 80) : "";
+
+            if (columnType == "DataGridComboBoxColumnExt")
             {
-                return GetDataGridReadOnlyColumn(columnName, columnSetting.DataGridColumnType, baseTab);
+                var tab1 = baseTab + Constant.Tab;
+                var sb = new StringBuilder();
+                sb.AppendLineExWithTabAndFormat(baseTab, "<SimpleDataGrid:{0}{1}{2}", columnType, header, width);
+                sb.AppendLineExWithTab(tab1, "SelectedValuePath=\"ID\"");
+                sb.AppendLineExWithTab(tab1, "DisplayMemberPath=\"DisplayText\"");
+                sb.AppendLineExWithTabAndFormat(tab1, "SelectedValueBinding=\"{{Binding {0}, UpdateSourceTrigger=PropertyChanged}}\"", columnName);
+                sb.AppendTabAndFormat(tab1, "ItemsSource=\"{{Binding {0}DataSource}}\"/>", columnName);
+                return sb.ToString();
             }
 
+            var tabStop = columnSetting.IsTabStop ? " SimpleDataGrid:DataGridColumnAttachedProperty.IsTabStop =\"True\"" : "";
+            var readOnly = columnSetting.IsReadOnly ? " IsReadOnly=\"True\"" : "";
+            var binding = string.Format(" Binding=\"{{Binding {0}{1}}}\"", columnName, columnSetting.IsReadOnly ? ", Mode=OneWay" : "");
+            var customProperty = string.Empty;
             switch (columnSetting.DataGridColumnType)
             {
                 case "DataGridTextColumnExt":
-                    return string.Format("{0}<SimpleDataGrid:DataGridTextColumnExt Width =\"80\" Header=\"{1}\" Binding=\"{{Binding {1}}}\"/>", baseTab, columnName);
-                case "DataGridComboBoxColumnExt":
-                    var tab1 = baseTab + Constant.Tab;
-                    var sb = new StringBuilder();
-                    sb.AppendLineExWithTabAndFormat(baseTab, "<SimpleDataGrid:DataGridComboBoxColumnExt Header=\"{0}\"", columnName);
-                    sb.AppendLineExWithTab(tab1, "SelectedValuePath=\"ID\"");
-                    sb.AppendLineExWithTab(tab1, "DisplayMemberPath=\"DisplayText\"");
-                    sb.AppendLineExWithTabAndFormat(tab1, "SelectedValueBinding=\"{{Binding {0}, UpdateSourceTrigger=PropertyChanged}}\"", columnName);
-                    sb.AppendTabAndFormat(tab1, "ItemsSource=\"{{Binding {0}DataSource}}\"/>", columnName);
-                    return sb.ToString();
-                case "DataGridRightAlignTextColumn":
-                    return string.Format("{0}<SimpleDataGrid:DataGridRightAlignTextColumn Header=\"{1}\" Binding=\"{{Binding {1}, StringFormat=\\{{0:N0\\}}}}\"/>", baseTab, columnName);
-                case "DataGridCheckBoxColumnExt":
-                    return string.Format("{0}<SimpleDataGrid:DataGridCheckBoxColumnExt Header=\"{1}\" Binding=\"{{Binding {1}}}\"/>", baseTab, columnName);
                 case "DataGridDateColumn":
-                    return string.Format("{0}<SimpleDataGrid:DataGridDateColumn Header=\"{1}\" Binding=\"{{Binding {1}}}\"/>", baseTab, columnName);
-                case "DataGridForeignKeyColumn":
-                    return string.Format("{0}<SimpleDataGrid:DataGridForeignKeyColumn Header=\"{1}\" ReferenceType=\"{{x:Type view:{2}View}}\" Binding=\"{{Binding {1}}}\"/>",
-                        baseTab, columnName, columnSetting.DbColumn.ForeignKeyTableName);
-            }
-
-            return string.Format("{0}<SimpleDataGrid:DataGridTextColumnExt Header=\"{1}\" Binding=\"{{Binding {1}}}\"/>", baseTab, columnName);
-        }
-
-        private static string GetDataGridReadOnlyColumn(string columnName, string columnType, string baseTab)
-        {
-            switch (columnType)
-            {
-                case "DataGridTextColumnExt":
-                    return string.Format("{0}<SimpleDataGrid:DataGridTextColumnExt Width =\"80\" Header=\"{1}\" IsReadOnly=\"True\" Binding=\"{{Binding {1}, Mode=OneWay}}\"/>", baseTab, columnName);
-                case "DataGridRightAlignTextColumn":
-                    return string.Format("{0}<SimpleDataGrid:DataGridRightAlignTextColumn Header=\"{1}\" IsReadOnly=\"True\" Binding=\"{{Binding {1}, Mode=OneWay, StringFormat=\\{{0:N0\\}}}}\"/>", baseTab, columnName);
                 case "DataGridCheckBoxColumnExt":
-                    return string.Format("{0}<SimpleDataGrid:DataGridCheckBoxColumnExt Header=\"{1}\" IsReadOnly=\"True\" Binding=\"{{Binding {1}, Mode=OneWay}}\"/>", baseTab, columnName);
+                    break;
+                case "DataGridRightAlignTextColumn":
+                    binding = string.Format(" Binding=\"{{Binding {0}, StringFormat=\\{{0:N0\\}}{1}}}\"", columnName, columnSetting.IsReadOnly ? ", Mode=OneWay" : "");
+                    break;
+                case "DataGridForeignKeyColumn":
+                    customProperty = string.Format(" ReferenceType=\"{{x:Type view:{0}View}}\"", columnSetting.DbColumn.ForeignKeyTableName);
+                    break;
             }
 
-            return string.Format("{0}<SimpleDataGrid:DataGridTextColumnExt Width =\"80\" Header=\"{1}\" IsReadOnly=\"True\" Binding=\"{{Binding {1}, Mode=OneWay}}\"/>", baseTab, columnName);
+            return string.Format("{0}<SimpleDataGrid:{1}{2}{3}{4}{5}{6}{7}/>", baseTab, columnType, width, header, tabStop, readOnly, binding, customProperty);
         }
     }
 }
