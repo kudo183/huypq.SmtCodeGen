@@ -9,34 +9,36 @@ namespace Shared
     {
         <PrivateFields>
 
-		<PublicProperties>
+        <PublicProperties>
 
-		[ProtoBuf.ProtoMember(100)]
+        [ProtoBuf.ProtoMember(100)]
         public int State { get; set; }
         
-		public void SetCurrentValueAsOriginalValue()
+        public void SetCurrentValueAsOriginalValue()
         {
-			<SetCurrentValueAsOriginalValue>
-		}
+            <SetCurrentValueAsOriginalValue>
+        }
 
-		public void Update(object obj)
+        public void Update(object obj)
         {
-			var dto = obj as <EntityName>Dto;
+            var dto = obj as <EntityName>Dto;
             if (dto == null)
             {
                 return;
             }
-			
-			<Update>
-		}
 
-		public bool HasChange()
-        {
-			<HasChange>
+            <Update>
         }
-		
-		<ReferenceDataSource>
-		
+
+        public bool HasChange()
+        {
+            <HasChange>
+        }
+
+        <ForeignKeyDto>
+
+        <ReferenceDataSource>
+
         public event PropertyChangedEventHandler PropertyChanged;
         public virtual void OnPropertyChanged([CallerMemberName] string name = null)
         {

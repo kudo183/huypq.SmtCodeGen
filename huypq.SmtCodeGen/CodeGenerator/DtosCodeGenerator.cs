@@ -49,6 +49,10 @@ namespace huypq.SmtCodeGen
                     {
                         result.Append(HasChange(table.ColumnSettings, baseTab));
                     }
+                    else if (trimmed == "<ForeignKeyDto>")
+                    {
+                        result.Append(ForeignKeyDto(table.ColumnSettings, baseTab));
+                    }
                     else if (trimmed == "<ReferenceDataSource>")
                     {
                         result.Append(ReferenceDataSource(table.ColumnSettings, baseTab));
@@ -207,6 +211,24 @@ namespace huypq.SmtCodeGen
             sb.Remove(sb.Length - l, l);
 
             sb.AppendLineEx(";");
+            return sb.ToString();
+        }
+
+        private static string ForeignKeyDto(IEnumerable<ColumnSetting> columnSettings, string baseTab)
+        {
+            var foreignKeys = columnSettings.Where(p => p.DbColumn.IsForeignKey == true);
+            if (foreignKeys.Count() == 0)
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder();
+
+            foreach (var item in foreignKeys)
+            {
+                sb.AppendLineExWithTabAndFormat(baseTab, "public {0}Dto {0}Dto {{ get; set; }}", item.DbColumn.ForeignKeyTableName);
+            }
+
             return sb.ToString();
         }
 

@@ -103,7 +103,7 @@ namespace huypq.SmtCodeGen
             var columnName = columnSetting.ColumnName;
             var columnType = columnSetting.DataGridColumnType;
             var header = string.Format(" Header=\"{0}\"", columnName);
-            var width = columnSetting.Width > 0 ? string.Format(" Width =\"{0}\"", 80) : "";
+            var width = columnSetting.Width > 0 ? string.Format(" Width=\"{0}\"", 80) : "";
 
             if (columnType == "DataGridComboBoxColumnExt")
             {
@@ -117,10 +117,27 @@ namespace huypq.SmtCodeGen
                 return sb.ToString();
             }
 
-            var tabStop = columnSetting.IsTabStop ? " SimpleDataGrid:DataGridColumnAttachedProperty.IsTabStop =\"True\"" : "";
+            if (columnType == "DataGridForeignKeyColumn")
+            {
+                var tab1 = baseTab + Constant.Tab;
+                var tab2 = tab1 + Constant.Tab;
+                var sb = new StringBuilder();
+                sb.AppendLineExWithTabAndFormat(baseTab, "<SimpleDataGrid:{0}{1}{2}", columnType, header, width);
+                sb.AppendLineExWithTabAndFormat(tab1, "SimpleDataGrid:DataGridColumnAttachedProperty.IsTabStop=\"False\"");
+                sb.AppendLineExWithTabAndFormat(tab1, "Binding=\"{{Binding {0}}}\"", columnName);
+                sb.AppendLineExWithTabAndFormat(tab1, "DisplayTextBinding=\"{{Binding {0}Dto.DisplayText}}\">", columnSetting.DbColumn.ForeignKeyTableName);
+                sb.AppendLineExWithTabAndFormat(tab1, "<SimpleDataGrid:{0}.PopupView>", columnType);
+                sb.AppendLineExWithTabAndFormat(tab2, "<view:{0}View KeepSelectionType=\"KeepSelectedValue\"/>", columnSetting.DbColumn.ForeignKeyTableName);
+                sb.AppendLineExWithTabAndFormat(tab1, "</SimpleDataGrid:{0}.PopupView>", columnType);
+                sb.AppendTabAndFormat(baseTab, "</SimpleDataGrid:{0}>", columnType);
+                return sb.ToString();
+            }
+
+            var tabStop = columnSetting.IsReadOnly ? "" : columnSetting.IsTabStop ? "" : " SimpleDataGrid:DataGridColumnAttachedProperty.IsTabStop=\"False\"";
             var readOnly = columnSetting.IsReadOnly ? " IsReadOnly=\"True\"" : "";
             var binding = string.Format(" Binding=\"{{Binding {0}{1}}}\"", columnName, columnSetting.IsReadOnly ? ", Mode=OneWay" : "");
             var customProperty = string.Empty;
+
             switch (columnSetting.DataGridColumnType)
             {
                 case "DataGridTextColumnExt":
@@ -129,9 +146,6 @@ namespace huypq.SmtCodeGen
                     break;
                 case "DataGridRightAlignTextColumn":
                     binding = string.Format(" Binding=\"{{Binding {0}, StringFormat=\\{{0:N0\\}}{1}}}\"", columnName, columnSetting.IsReadOnly ? ", Mode=OneWay" : "");
-                    break;
-                case "DataGridForeignKeyColumn":
-                    customProperty = string.Format(" ReferenceType=\"{{x:Type view:{0}View}}\"", columnSetting.DbColumn.ForeignKeyTableName);
                     break;
             }
 
