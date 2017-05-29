@@ -9,8 +9,8 @@ namespace huypq.SmtCodeGen
         private const string ControllerTemplateFileName = "#ControllerTemplate.txt";
         private const string ControllerFileNameSubFix = "Controller.cs";
 
-        private const string ControllerPartTemplateFileName = "#ControllerPartTemplate.txt";
-        private const string ControllerPartFileNameSubFix = "Controller.part.cs";
+        //private const string ControllerPartTemplateFileName = "#ControllerPartTemplate.txt";
+        //private const string ControllerPartFileNameSubFix = "Controller.part.cs";
 
         public static void GenControllersClass(IEnumerable<TableSetting> tables, string outputPath)
         {
@@ -43,46 +43,48 @@ namespace huypq.SmtCodeGen
                 }
             }
 
+            FileUtils.DeleteAllFileEndWith(outputPath, ControllerFileNameSubFix);
+
             foreach (var result in results)
             {
                 FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, result.Key + ControllerFileNameSubFix), result.Value.ToString());
             }
 
-            GenControllersPartialClass(tables, outputPath);
+            //GenControllersPartialClass(tables, outputPath);
         }
 
-        private static void GenControllersPartialClass(IEnumerable<TableSetting> tables, string outputPath)
-        {
-            var referencedTable = tables.Where(p => p.DbTable.ReferencesToThisTable.Count > 0);
-            if (referencedTable.Count() == 0)
-            {
-                return;
-            }
+        //private static void GenControllersPartialClass(IEnumerable<TableSetting> tables, string outputPath)
+        //{
+        //    var referencedTable = tables.Where(p => p.DbTable.ReferencesToThisTable.Count > 0);
+        //    if (referencedTable.Count() == 0)
+        //    {
+        //        return;
+        //    }
 
-            var results = new Dictionary<string, StringBuilder>();
-            foreach (var table in referencedTable)
-            {
-                results.Add(table.TableName, new StringBuilder());
-            }
+        //    var results = new Dictionary<string, StringBuilder>();
+        //    foreach (var table in referencedTable)
+        //    {
+        //        results.Add(table.TableName, new StringBuilder());
+        //    }
 
-            foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, ControllerPartTemplateFileName)))
-            {
-                foreach (var table in referencedTable)
-                {
-                    var result = results[table.TableName];
-                    result.AppendLineEx(line.Replace("<EntityName>", table.TableName));
-                }
-            }
+        //    foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, ControllerPartTemplateFileName)))
+        //    {
+        //        foreach (var table in referencedTable)
+        //        {
+        //            var result = results[table.TableName];
+        //            result.AppendLineEx(line.Replace("<EntityName>", table.TableName));
+        //        }
+        //    }
 
-            foreach (var result in results)
-            {
-                var filePath = System.IO.Path.Combine(outputPath, result.Key + ControllerPartFileNameSubFix);
-                if (System.IO.File.Exists(filePath) == false)
-                {
-                    FileUtils.WriteAllTextInUTF8(filePath, result.Value.ToString());
-                }
-            }
-        }
+        //    foreach (var result in results)
+        //    {
+        //        var filePath = System.IO.Path.Combine(outputPath, result.Key + ControllerPartFileNameSubFix);
+        //        if (System.IO.File.Exists(filePath) == false)
+        //        {
+        //            FileUtils.WriteAllTextInUTF8(filePath, result.Value.ToString());
+        //        }
+        //    }
+        //}
 
         private static string InitEntityProperties(IEnumerable<ColumnSetting> columnSettings, string baseTab)
         {

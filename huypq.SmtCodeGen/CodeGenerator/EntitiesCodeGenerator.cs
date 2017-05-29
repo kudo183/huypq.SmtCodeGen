@@ -7,12 +7,11 @@ namespace huypq.SmtCodeGen
     public static class EntitiesCodeGenerator
     {
         private const string DbContextTemplateFileName = "#DbContextTemplate.txt";
-        private const string DbContextFileNameSubFix = ".cs";
+        private const string FileNameSubFix = ".cs";
 
         private const string EntityTemplateTemplateFileName = "#EntityTemplate.txt";
-        private const string EntityTemplateFileNameSubFix = ".cs";
 
-        public static void GenDbContextClass(IEnumerable<TableSetting> tables, string outputPath)
+        public static void GenDbContextAndEntitiesClass(IEnumerable<TableSetting> tables, string outputPath)
         {
             var result = new StringBuilder();
             var classKeyword = " class ";
@@ -46,10 +45,14 @@ namespace huypq.SmtCodeGen
                 }
             }
 
-            FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, contextName + DbContextFileNameSubFix), result.ToString());
+            FileUtils.DeleteAllFileEndWith(outputPath, FileNameSubFix);
+
+            FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, contextName + FileNameSubFix), result.ToString());
+
+            GenEntitiesClass(tables, outputPath);
         }
 
-        public static void GenEntitiesClass(IEnumerable<TableSetting> tables, string outputPath)
+        private static void GenEntitiesClass(IEnumerable<TableSetting> tables, string outputPath)
         {
             var results = new Dictionary<string, StringBuilder>();
             foreach (var table in tables)
@@ -105,7 +108,7 @@ namespace huypq.SmtCodeGen
 
             foreach (var result in results)
             {
-                FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, result.Key + EntityTemplateFileNameSubFix), result.Value.ToString());
+                FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, result.Key + FileNameSubFix), result.Value.ToString());
             }
         }
 

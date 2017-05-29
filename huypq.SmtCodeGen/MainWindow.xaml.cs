@@ -164,7 +164,6 @@ namespace huypq.SmtCodeGen
             vm.Messages.Add(string.Format("{0} | Generating View ...", DateTime.Now));
 
             ViewCodeGenerator.GenViewCode(vm.TableSettingsVM.TableSettings, path);
-            ViewCodeGenerator.GenViewXamlCode(vm.TableSettingsVM.TableSettings, path);
         }
 
         private void GenViewModel(string path)
@@ -199,8 +198,7 @@ namespace huypq.SmtCodeGen
         {
             vm.Messages.Add(string.Format("{0} | Generating Entity ...", DateTime.Now));
 
-            EntitiesCodeGenerator.GenDbContextClass(vm.TableSettingsVM.TableSettings, path);
-            EntitiesCodeGenerator.GenEntitiesClass(vm.TableSettingsVM.TableSettings, path);
+            EntitiesCodeGenerator.GenDbContextAndEntitiesClass(vm.TableSettingsVM.TableSettings, path);
         }
 
         private void GenComplexView(string path)
@@ -208,7 +206,6 @@ namespace huypq.SmtCodeGen
             vm.Messages.Add(string.Format("{0} | Generating Complex View ...", DateTime.Now));
 
             ComplexViewCodeGenerator.GenComplexViewCode(vm.MasterDetailSelectorVM.MasterDetailList, vm.TableSettingsVM.TableSettings, path);
-            ComplexViewCodeGenerator.GenComplexViewXamlCode(vm.MasterDetailSelectorVM.MasterDetailList, vm.TableSettingsVM.TableSettings, path);
         }
     }
 }

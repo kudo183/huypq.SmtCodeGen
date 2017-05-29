@@ -29,13 +29,17 @@ namespace huypq.SmtCodeGen
                 }
             }
 
+            FileUtils.DeleteAllFileEndWith(outputPath, ComplexViewFileNameSubFix);
+
             foreach (var result in results)
             {
                 FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, result.Key + ComplexViewFileNameSubFix), result.Value.ToString());
             }
+
+            GenComplexViewXamlCode(complexViews, tables, outputPath);
         }
 
-        public static void GenComplexViewXamlCode(IEnumerable<MasterDetail> complexViews, IEnumerable<TableSetting> tables, string outputPath)
+        private static void GenComplexViewXamlCode(IEnumerable<MasterDetail> complexViews, IEnumerable<TableSetting> tables, string outputPath)
         {
             var results = new Dictionary<string, StringBuilder>();
             foreach (var cv in complexViews)
@@ -61,6 +65,8 @@ namespace huypq.SmtCodeGen
                     }
                 }
             }
+
+            FileUtils.DeleteAllFileEndWith(outputPath, ComplexViewXamlFileNameSubFix);
 
             foreach (var result in results)
             {

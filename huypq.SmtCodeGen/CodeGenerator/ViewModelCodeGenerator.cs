@@ -56,6 +56,8 @@ namespace huypq.SmtCodeGen
                 }
             }
 
+            FileUtils.DeleteAllFileEndWith(outputPath, ViewModelFileNameSubFix);
+
             foreach (var result in results)
             {
                 FileUtils.WriteAllTextInUTF8(System.IO.Path.Combine(outputPath, result.Key + ViewModelFileNameSubFix), result.Value.ToString());
