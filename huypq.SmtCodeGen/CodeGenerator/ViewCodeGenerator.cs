@@ -57,7 +57,7 @@ namespace huypq.SmtCodeGen
                     var baseTab = trimmedEnd.Substring(0, trimmedEnd.Length - trimmed.Length);
                     if (trimmed == "<DataGridColumns>")
                     {
-                        result.Append(DataGridColumns(table.ColumnSettings, baseTab));
+                        result.Append(DataGridColumns(table.ColumnSettings.OrderBy(p => p.Order), baseTab));
                     }
                     else
                     {
