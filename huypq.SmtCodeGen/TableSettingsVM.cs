@@ -213,15 +213,21 @@ namespace huypq.SmtCodeGen
                                 switch (item.DataType)
                                 {
                                     case "int":
+                                    case "int?":
                                     case "long":
+                                    case "long?":
                                         columnSetting.DataGridColumnTypeList.Add("DataGridRightAlignTextColumn");
                                         break;
                                     case "System.DateTime":
+                                    case "System.DateTime?":
                                         columnSetting.DataGridColumnTypeList.Add("DataGridDateColumn");
                                         break;
                                     case "bool":
+                                    case "bool?":
                                         columnSetting.DataGridColumnTypeList.Add("DataGridCheckBoxColumnExt");
                                         break;
+                                    case "System.TimeSpan":
+                                    case "System.TimeSpan?":
                                     case "string":
                                         columnSetting.DataGridColumnTypeList.Add("DataGridTextColumnExt");
                                         break;
@@ -526,18 +532,24 @@ namespace huypq.SmtCodeGen
                 switch (dbColumn.DataType)
                 {
                     case "int":
+                    case "int?":
                     case "long":
+                    case "long?":
                         DataGridColumnTypeList.Add("DataGridRightAlignTextColumn");
                         DataGridColumnType = "DataGridRightAlignTextColumn";
                         break;
                     case "System.DateTime":
+                    case "System.DateTime?":
                         DataGridColumnTypeList.Add("DataGridDateColumn");
                         DataGridColumnType = "DataGridDateColumn";
                         break;
                     case "bool":
+                    case "bool?":
                         DataGridColumnTypeList.Add("DataGridCheckBoxColumnExt");
                         DataGridColumnType = "DataGridCheckBoxColumnExt";
                         break;
+                    case "System.TimeSpan":
+                    case "System.TimeSpan?":
                     case "string":
                         DataGridColumnTypeList.Add("DataGridTextColumnExt");
                         DataGridColumnType = "DataGridTextColumnExt";
