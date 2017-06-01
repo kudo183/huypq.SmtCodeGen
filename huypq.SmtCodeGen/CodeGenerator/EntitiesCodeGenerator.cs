@@ -226,8 +226,8 @@ namespace huypq.SmtCodeGen
                             }
                             break;
                         case 2:
-                            sb.AppendLineExWithTabAndFormat(tab1, "entity.HasIndex(e => e.{0})", tab1, index.PropertyName);
-                            sb.AppendLineExWithTabAndFormat(tab2, ".HasName(\"{0}\")", tab2, index.IX_Name);
+                            sb.AppendLineExWithTabAndFormat(tab1, "entity.HasIndex(e => e.{0})", index.PropertyName);
+                            sb.AppendLineExWithTabAndFormat(tab2, ".HasName(\"{0}\")", index.IX_Name);
                             sb.AppendLineExWithTab(tab2, ".IsUnique();");
                             break;
                     }
