@@ -480,6 +480,22 @@ namespace huypq.SmtCodeGen
             }
         }
 
+
+        private int orderBy;
+
+        public int OrderBy
+        {
+            get { return orderBy; }
+            set
+            {
+                if (orderBy != value)
+                {
+                    orderBy = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         private DbTableColumn dbColumn;
 
         public DbTableColumn DbColumn

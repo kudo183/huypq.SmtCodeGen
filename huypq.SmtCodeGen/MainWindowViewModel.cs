@@ -166,7 +166,8 @@ namespace huypq.SmtCodeGen
                         IsReadOnly = column.IsReadOnly,
                         IsTabStop = column.IsTabStop,
                         Width = column.Width,
-                        Order = column.Order
+                        Order = column.Order,
+                        OrderBy = column.OrderBy
                     });
                 }
                 json.TableSettingList.Add(ts);
@@ -222,7 +223,8 @@ namespace huypq.SmtCodeGen
                         IsReadOnly = column.IsReadOnly,
                         IsTabStop = column.IsTabStop,
                         Width = column.Width,
-                        Order = column.Order
+                        Order = column.Order,
+                        OrderBy = column.OrderBy
                     });
                 }
                 table.TableName = json.TableSettingList[i].TableName;
@@ -261,6 +263,7 @@ namespace huypq.SmtCodeGen
             public bool IsTabStop { get; set; }
             public int Width { get; set; }
             public int Order { get; set; }
+            public int OrderBy { get; set; }
         }
     }
 }

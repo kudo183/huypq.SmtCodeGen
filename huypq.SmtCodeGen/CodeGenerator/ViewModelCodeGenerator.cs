@@ -119,6 +119,13 @@ namespace huypq.SmtCodeGen
                 }
             }
 
+            foreach (var item in columns.Where(p => p.OrderBy != 0))
+            {
+                var sortDirection = (item.OrderBy == 1) ? "Ascending" : "Descending";
+                sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = HeaderFilterBaseModel.SortDirection.{1};",
+                        item.ColumnName, sortDirection);
+            }
+
             return sb.ToString();
         }
 

@@ -1,4 +1,5 @@
 ﻿using SimpleDataGrid;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -10,6 +11,13 @@ namespace huypq.SmtCodeGen
     /// </summary>
     public partial class TableSettingsView : UserControl
     {
+        private Dictionary<string, int> orderByOptions = new Dictionary<string, int>()
+        {
+            [""] = 0,
+            ["Asc"] = 1,
+            ["Des"] = 2
+        };
+
         public TableSettingsView()
         {
             InitializeComponent();
@@ -44,6 +52,17 @@ namespace huypq.SmtCodeGen
                         column.Header = nameof(ColumnSetting.Order);
                         column.SelectedItemBinding = new Binding(nameof(ColumnSetting.Order));
                         column.ItemsSource = Enumerable.Range(0, table.ColumnSettings.Count).ToList();
+                        e.Column = column;
+                    }
+                    break;
+                case nameof(ColumnSetting.OrderBy):
+                    {
+                        var column = new DataGridComboBoxColumnExt();
+                        column.Header = nameof(ColumnSetting.OrderBy);
+                        column.DisplayMemberPath = "Key";
+                        column.SelectedValuePath = "Value";
+                        column.SelectedValueBinding = new Binding(nameof(ColumnSetting.OrderBy));
+                        column.ItemsSource = orderByOptions;
                         e.Column = column;
                     }
                     break;
