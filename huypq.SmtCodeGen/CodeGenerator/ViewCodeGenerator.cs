@@ -131,7 +131,7 @@ namespace huypq.SmtCodeGen
                 sb.AppendLineExWithTabAndFormat(baseTab, "<SimpleDataGrid:{0}{1}{2}", columnType, header, width);
                 sb.AppendLineExWithTabAndFormat(tab1, "SimpleDataGrid:DataGridColumnAttachedProperty.IsTabStop=\"False\"");
                 sb.AppendLineExWithTabAndFormat(tab1, "Binding=\"{{Binding {0}}}\"", columnName);
-                sb.AppendLineExWithTabAndFormat(tab1, "DisplayTextBinding=\"{{Binding {0}Dto.DisplayText}}\">", columnSetting.DbColumn.ForeignKeyTableName);
+                sb.AppendLineExWithTabAndFormat(tab1, "DisplayTextBinding=\"{{Binding {0}{1}Dto.DisplayText}}\">", columnName, columnSetting.DbColumn.ForeignKeyTableName);
                 sb.AppendLineExWithTabAndFormat(tab1, "<SimpleDataGrid:{0}.PopupView>", columnType);
                 sb.AppendLineExWithTabAndFormat(tab2, "<view:{0}View KeepSelectionType=\"KeepSelectedValue\"/>", columnSetting.DbColumn.ForeignKeyTableName);
                 sb.AppendLineExWithTabAndFormat(tab1, "</SimpleDataGrid:{0}.PopupView>", columnType);
@@ -141,7 +141,7 @@ namespace huypq.SmtCodeGen
 
             var tabStop = columnSetting.IsReadOnly ? "" : columnSetting.IsTabStop ? "" : " SimpleDataGrid:DataGridColumnAttachedProperty.IsTabStop=\"False\"";
             var readOnly = columnSetting.IsReadOnly ? " IsReadOnly=\"True\"" : "";
-            var binding = string.Format(" Binding=\"{{Binding {0}{1}}}\"", columnName, columnSetting.IsReadOnly ? ", Mode=OneWay" : "");
+            var binding = string.Format(" Binding=\"{{Binding {0}{1}, UpdateSourceTrigger=PropertyChanged}}\"", columnName, columnSetting.IsReadOnly ? ", Mode=OneWay" : "");
             var customProperty = string.Empty;
 
             switch (columnSetting.DataGridColumnType)
@@ -151,7 +151,7 @@ namespace huypq.SmtCodeGen
                 case "DataGridCheckBoxColumnExt":
                     break;
                 case "DataGridRightAlignTextColumn":
-                    binding = string.Format(" Binding=\"{{Binding {0}, StringFormat=\\{{0:N0\\}}{1}}}\"", columnName, columnSetting.IsReadOnly ? ", Mode=OneWay" : "");
+                    binding = string.Format(" Binding=\"{{Binding {0}, UpdateSourceTrigger=PropertyChanged, StringFormat=\\{{0:N0\\}}{1}}}\"", columnName, columnSetting.IsReadOnly ? ", Mode=OneWay" : "");
                     break;
             }
 
