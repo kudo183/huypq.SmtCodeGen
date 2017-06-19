@@ -110,12 +110,17 @@ namespace huypq.SmtCodeGen
             var columnType = columnSetting.DataGridColumnType;
             var header = string.Format(" Header=\"{0}\"", columnName);
             var width = columnSetting.Width > 0 ? string.Format(" Width=\"{0}\"", 80) : "";
+            var tabStop = columnSetting.IsReadOnly ? "" : columnSetting.IsTabStop ? "" : " SimpleDataGrid:DataGridColumnAttachedProperty.IsTabStop=\"False\"";
 
             if (columnType == "DataGridComboBoxColumnExt")
             {
                 var tab1 = baseTab + Constant.Tab;
                 var sb = new StringBuilder();
                 sb.AppendLineExWithTabAndFormat(baseTab, "<SimpleDataGrid:{0}{1}{2}", columnType, header, width);
+                if (string.IsNullOrEmpty(tabStop) == false)
+                {
+                    sb.AppendLineExWithTabAndFormat(tab1, "SimpleDataGrid:DataGridColumnAttachedProperty.IsTabStop=\"False\"");
+                }
                 sb.AppendLineExWithTab(tab1, "SelectedValuePath=\"ID\"");
                 sb.AppendLineExWithTab(tab1, "DisplayMemberPath=\"DisplayText\"");
                 sb.AppendLineExWithTabAndFormat(tab1, "SelectedValueBinding=\"{{Binding {0}, UpdateSourceTrigger=PropertyChanged}}\"", columnName);
@@ -129,7 +134,10 @@ namespace huypq.SmtCodeGen
                 var tab2 = tab1 + Constant.Tab;
                 var sb = new StringBuilder();
                 sb.AppendLineExWithTabAndFormat(baseTab, "<SimpleDataGrid:{0}{1}{2}", columnType, header, width);
-                sb.AppendLineExWithTabAndFormat(tab1, "SimpleDataGrid:DataGridColumnAttachedProperty.IsTabStop=\"False\"");
+                if (string.IsNullOrEmpty(tabStop) == false)
+                {
+                    sb.AppendLineExWithTabAndFormat(tab1, "SimpleDataGrid:DataGridColumnAttachedProperty.IsTabStop=\"False\"");
+                }
                 sb.AppendLineExWithTabAndFormat(tab1, "Binding=\"{{Binding {0}}}\"", columnName);
                 sb.AppendLineExWithTabAndFormat(tab1, "DisplayTextBinding=\"{{Binding {0}{1}Dto.DisplayText}}\">", columnName, columnSetting.DbColumn.ForeignKeyTableName);
                 sb.AppendLineExWithTabAndFormat(tab1, "<SimpleDataGrid:{0}.PopupView>", columnType);
@@ -139,7 +147,6 @@ namespace huypq.SmtCodeGen
                 return sb.ToString();
             }
 
-            var tabStop = columnSetting.IsReadOnly ? "" : columnSetting.IsTabStop ? "" : " SimpleDataGrid:DataGridColumnAttachedProperty.IsTabStop=\"False\"";
             var readOnly = columnSetting.IsReadOnly ? " IsReadOnly=\"True\"" : "";
             var binding = string.Format(" Binding=\"{{Binding {0}{1}, UpdateSourceTrigger=PropertyChanged}}\"", columnName, columnSetting.IsReadOnly ? ", Mode=OneWay" : "");
             var customProperty = string.Empty;

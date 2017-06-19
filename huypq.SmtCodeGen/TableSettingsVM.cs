@@ -404,6 +404,10 @@ namespace huypq.SmtCodeGen
                 if (dataGridColumnType != value)
                 {
                     dataGridColumnType = value;
+                    if (dataGridColumnType == "DataGridForeignKeyColumn")
+                    {
+                        IsTabStop = false;
+                    }
                     OnPropertyChanged();
                 }
             }
