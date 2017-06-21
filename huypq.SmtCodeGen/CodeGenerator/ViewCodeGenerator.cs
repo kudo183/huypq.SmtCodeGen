@@ -139,7 +139,7 @@ namespace huypq.SmtCodeGen
                     sb.AppendLineExWithTabAndFormat(tab1, "SimpleDataGrid:DataGridColumnAttachedProperty.IsTabStop=\"False\"");
                 }
                 sb.AppendLineExWithTabAndFormat(tab1, "Binding=\"{{Binding {0}}}\"", columnName);
-                sb.AppendLineExWithTabAndFormat(tab1, "DisplayTextBinding=\"{{Binding {0}{1}Dto.DisplayText}}\">", columnName, columnSetting.DbColumn.ForeignKeyTableName);
+                sb.AppendLineExWithTabAndFormat(tab1, "DisplayTextBinding=\"{{Binding {0}Navigation.DisplayText}}\">", columnName);
                 sb.AppendLineExWithTabAndFormat(tab1, "<SimpleDataGrid:{0}.PopupView>", columnType);
                 sb.AppendLineExWithTabAndFormat(tab2, "<view:{0}View KeepSelectionType=\"KeepSelectedValue\"/>", columnSetting.DbColumn.ForeignKeyTableName);
                 sb.AppendLineExWithTabAndFormat(tab1, "</SimpleDataGrid:{0}.PopupView>", columnType);

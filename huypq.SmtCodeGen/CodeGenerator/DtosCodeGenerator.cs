@@ -228,7 +228,7 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in foreignKeys)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "public {0}Dto {1}{0}Dto {{ get; set; }}", item.DbColumn.ForeignKeyTableName, item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "public {0}Dto {1}Navigation {{ get; set; }}", item.DbColumn.ForeignKeyTableName, item.ColumnName);
             }
 
             return sb.ToString();
