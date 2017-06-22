@@ -112,6 +112,11 @@ namespace huypq.SmtCodeGen
                     sb.AppendLineExWithTabAndFormat(tab1, "ItemSource = ReferenceDataManager<{0}Dto>.Instance.Get()", foreignKeyTableName);
                     sb.AppendLineExWithTab(baseTab, "};");
                 }
+                else if (headerFilterModelType == "HeaderForeignKeyFilterModel")
+                {
+                    sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = new {1}(TextManager.{2}_{0}, nameof({2}Dto.{0}), typeof({3}), new View.{4}View() {{ KeepSelectionType = DataGridExt.KeepSelection.KeepSelectedValue }});",
+                        item.ColumnName, headerFilterModelType, tableName, dataType, item.DbColumn.ForeignKeyTableName);
+                }
                 else
                 {
                     sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = new {1}(TextManager.{2}_{0}, nameof({2}Dto.{0}), typeof({3}));",
@@ -211,8 +216,9 @@ namespace huypq.SmtCodeGen
             {
                 case "DataGridTextColumnExt":
                 case "DataGridRightAlignTextColumn":
-                case "DataGridForeignKeyColumn":
                     return "HeaderTextFilterModel";
+                case "DataGridForeignKeyColumn":
+                    return "HeaderForeignKeyFilterModel";
                 case "DataGridComboBoxColumnExt":
                     return "HeaderComboBoxFilterModel";
                 case "DataGridCheckBoxColumnExt":
