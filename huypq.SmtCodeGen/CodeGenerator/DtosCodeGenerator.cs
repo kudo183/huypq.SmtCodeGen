@@ -29,7 +29,11 @@ namespace huypq.SmtCodeGen
                     var trimmedEnd = line.TrimEnd();
                     var trimmed = trimmedEnd.TrimStart();
                     var baseTab = trimmedEnd.Substring(0, trimmedEnd.Length - trimmed.Length);
-                    if (trimmed == "<PrivateFields>")
+                    if (trimmed == "<DefaultValues>")
+                    {
+                        result.Append(DefaultValues(table.ColumnSettings, baseTab));
+                    }
+                    else if (trimmed == "<PrivateFields>")
                     {
                         result.Append(PrivateFields(table.ColumnSettings, baseTab));
                     }
@@ -118,6 +122,23 @@ namespace huypq.SmtCodeGen
             }
         }
 
+        private static string DefaultValues(IEnumerable<ColumnSetting> columnSettings, string baseTab)
+        {
+            if (columnSettings.Count() == 0)
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder();
+
+            foreach (var item in columnSettings)
+            {
+                sb.AppendLineExWithTabAndFormat(baseTab, "public static {0} D{1};", item.DbColumn.DataType, item.ColumnName);
+            }
+
+            return sb.ToString();
+        }
+
         private static string PrivateFields(IEnumerable<ColumnSetting> columnSettings, string baseTab)
         {
             if (columnSettings.Count() == 0)
@@ -134,7 +155,7 @@ namespace huypq.SmtCodeGen
             sb.AppendLine();
             foreach (var item in columnSettings)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "{0} _{1};", item.DbColumn.DataType, item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "{0} _{1} = D{1};", item.DbColumn.DataType, item.ColumnName);
             }
 
             return sb.ToString();
