@@ -260,7 +260,7 @@ namespace huypq.SmtCodeGen
             {
                 sb.AppendLineEx();
                 sb.AppendLineExWithTab(baseTab, "[Newtonsoft.Json.JsonIgnore]");
-                sb.AppendLineExWithTabAndFormat(baseTab, "public int ID {{ get {{ return {0}; }} set {{ {0} = value;}} }}", pkName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "public int ID {{ get {{ return {0}; }} set {{ {0} = value; }} }}", pkName);
             }
 
             return sb.ToString();
