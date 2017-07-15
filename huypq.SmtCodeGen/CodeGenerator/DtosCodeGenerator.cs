@@ -227,7 +227,7 @@ namespace huypq.SmtCodeGen
             sb.AppendLineExWithTab(baseTab, "return");
             foreach (var item in columnSettings)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "(o{0} != {0})||", item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "(o{0} != {0}) ||", item.ColumnName);
             }
 
             var l = "||".Length + Constant.LineEnding.Length;
