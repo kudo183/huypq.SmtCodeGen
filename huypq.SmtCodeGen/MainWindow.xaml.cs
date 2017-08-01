@@ -17,6 +17,11 @@ namespace huypq.SmtCodeGen
 
         public MainWindow()
         {
+            FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata()
+            {
+                DefaultValue = System.Windows.Markup.XmlLanguage.GetLanguage(System.Threading.Thread.CurrentThread.CurrentCulture.Name)
+            });
+
             InitializeComponent();
 
             DataContext = vm;
