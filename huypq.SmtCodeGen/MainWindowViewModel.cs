@@ -130,6 +130,7 @@ namespace huypq.SmtCodeGen
             var json = new JsonViewModel();
 
             json.DBName = DatabaseTreeVM.DBName;
+            json.DbTableList = DatabaseTreeVM.DbTables;
 
             json.ControllerPath = controllerPath;
             json.DtoPath = dtoPath;
@@ -172,7 +173,7 @@ namespace huypq.SmtCodeGen
                 }
                 json.TableSettingList.Add(ts);
             }
-
+            
             string output = Newtonsoft.Json.JsonConvert.SerializeObject(json, Newtonsoft.Json.Formatting.Indented);
             System.IO.File.WriteAllText(path, output);
         }
@@ -183,6 +184,7 @@ namespace huypq.SmtCodeGen
             var json = Newtonsoft.Json.JsonConvert.DeserializeObject<JsonViewModel>(text);
 
             DatabaseTreeVM.DBName = json.DBName;
+            DatabaseTreeVM.DbTables = json.DbTableList;
 
             ViewPath = json.ViewPath;
             ViewModelPath = json.ViewModelPath;
@@ -244,6 +246,14 @@ namespace huypq.SmtCodeGen
             public string EntityPath { get; set; }
             public List<JsonMasterDetail> MasterDetailList { get; set; }
             public List<JsonTableSetting> TableSettingList { get; set; }
+            public List<DbTable> DbTableList { get; set; }
+
+            public JsonViewModel()
+            {
+                MasterDetailList = new List<JsonMasterDetail>();
+                TableSettingList = new List<JsonTableSetting>();
+                DbTableList = new List<DbTable>();
+            }
         }
         class JsonMasterDetail
         {
