@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -127,6 +128,21 @@ namespace huypq.SmtCodeGen
                 if (dBName != value)
                 {
                     dBName = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private DateTime connectTime;
+
+        public DateTime ConnectTime
+        {
+            get { return connectTime; }
+            set
+            {
+                if (connectTime != value)
+                {
+                    connectTime = value;
                     OnPropertyChanged();
                 }
             }

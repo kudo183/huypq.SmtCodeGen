@@ -9,6 +9,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
@@ -18,14 +19,18 @@
             <TextBlock Text="{Binding DbTables.Count}" Foreground="Blue" VerticalAlignment="Center"/>
             <TextBlock Text=" table(s)" VerticalAlignment="Center"/>
         </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5">
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <TextBlock Text="Connect time (UTC):" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding ConnectTime}" FontWeight="Bold" FontSize="16"/>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5">
             <Button x:Name="btnCollapseAll" Margin="5" Content="Collapse All" Click="btnCollapseAll_Click"/>
             <Button x:Name="btnExpandAll" Margin="5" Content="Expand All" Click="btnExpandAll_Click"/>
             <Button x:Name="btnSelectAll" Margin="5" Content="Select All" Click="btnSelectAll_Click"/>
             <Button x:Name="btnDeselectAll" Margin="5" Content="Deselect All" Click="btnDeselectAll_Click"/>
             <Button x:Name="btnToogleSelect" Margin="5" Content="Toggle Select" Click="btnToogleSelect_Click"/>
         </StackPanel>
-        <TreeView Grid.Row="2" ItemsSource="{Binding DbTables}">
+        <TreeView Grid.Row="3" ItemsSource="{Binding DbTables}">
             <TreeView.Resources>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />

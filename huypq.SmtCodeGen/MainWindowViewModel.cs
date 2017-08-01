@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
@@ -131,6 +132,7 @@ namespace huypq.SmtCodeGen
 
             json.DBName = DatabaseTreeVM.DBName;
             json.DbTableList = DatabaseTreeVM.DbTables;
+            json.ConnectTime = DatabaseTreeVM.ConnectTime;
 
             json.ControllerPath = controllerPath;
             json.DtoPath = dtoPath;
@@ -185,6 +187,7 @@ namespace huypq.SmtCodeGen
 
             DatabaseTreeVM.DBName = json.DBName;
             DatabaseTreeVM.DbTables = json.DbTableList;
+            DatabaseTreeVM.ConnectTime = json.ConnectTime;
 
             ViewPath = json.ViewPath;
             ViewModelPath = json.ViewModelPath;
@@ -247,6 +250,7 @@ namespace huypq.SmtCodeGen
             public List<JsonMasterDetail> MasterDetailList { get; set; }
             public List<JsonTableSetting> TableSettingList { get; set; }
             public List<DbTable> DbTableList { get; set; }
+            public DateTime ConnectTime { get; set; }
 
             public JsonViewModel()
             {

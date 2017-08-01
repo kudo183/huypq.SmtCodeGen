@@ -17,6 +17,7 @@ namespace huypq.SmtCodeGen
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
             var vm = DataContext as DatabaseTreeVM;
+            vm.ConnectTime = System.DateTime.UtcNow;
             vm.DbTables = new List<DbTable>(DatabaseUtils.FromDB(vm.DBName));
         }
 
