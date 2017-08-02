@@ -20,7 +20,7 @@
             <TextBlock Text=" table(s)" VerticalAlignment="Center"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <TextBlock Text="Connect time (UTC):" VerticalAlignment="Center"/>
+            <TextBlock Text="Connect time (UTC):  " VerticalAlignment="Center"/>
             <TextBlock Text="{Binding ConnectTime}" FontWeight="Bold" FontSize="16"/>
         </StackPanel>
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5">
