@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleDataGrid;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,9 +12,9 @@ namespace huypq.SmtCodeGen
 {
     public class MasterDetailSelectorVM : INotifyPropertyChanged
     {
-        private ObservableCollection<DbTable> tables;
+        private ObservableCollectionEx<DbTable> tables;
 
-        public ObservableCollection<DbTable> Tables
+        public ObservableCollectionEx<DbTable> Tables
         {
             get { return tables; }
             set

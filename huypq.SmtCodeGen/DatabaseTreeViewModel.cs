@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleDataGrid;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -156,16 +157,17 @@ namespace huypq.SmtCodeGen
             set
             {
                 dbTables = value;
-                SelectedTables.Clear();
+                var temp = new List<DbTable>();
                 foreach (var item in dbTables)
                 {
                     item.PropertyChanged -= Item_PropertyChanged;
                     item.PropertyChanged += Item_PropertyChanged;
                     if (item.IsSelected == true)
                     {
-                        SelectedTables.Add(item);
+                        temp.Add(item);
                     }
                 }
+                selectedTables.Reset(temp);
                 OnPropertyChanged();
             }
         }
@@ -186,8 +188,8 @@ namespace huypq.SmtCodeGen
             }
         }
 
-        private ObservableCollection<DbTable> selectedTables;
-        public ObservableCollection<DbTable> SelectedTables
+        private ObservableCollectionEx<DbTable> selectedTables;
+        public ObservableCollectionEx<DbTable> SelectedTables
         {
             get
             {
@@ -205,7 +207,7 @@ namespace huypq.SmtCodeGen
 
         public DatabaseTreeVM()
         {
-            selectedTables = new ObservableCollection<DbTable>();
+            selectedTables = new ObservableCollectionEx<DbTable>();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

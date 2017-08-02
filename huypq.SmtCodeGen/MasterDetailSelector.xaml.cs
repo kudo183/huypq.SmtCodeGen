@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleDataGrid;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -107,14 +108,14 @@ namespace huypq.SmtCodeGen
             };
             btnAdd.Click += AddLevelBtn_Click;
 
-            var combobox = new ComboBox()
+            var combobox = new ComboBoxEx()
             {
                 IsEditable = false
             };
 
             combobox.DisplayMemberPath = nameof(DbTable.TableName);
             combobox.SelectedValuePath = nameof(DbTable.TableName);
-            combobox.SetBinding(ComboBox.ItemsSourceProperty, new Binding("Tables"));
+            combobox.SetBinding(ComboBoxEx.ItemsSourceExProperty, new Binding("Tables"));
             combobox.SetBinding(ComboBox.SelectedValueProperty, new Binding(string.Format("MasterDetailList[{0}].Levels[{1}]", viewIndex, levelIndex)));
 
             var stackPanel = new StackPanel()
