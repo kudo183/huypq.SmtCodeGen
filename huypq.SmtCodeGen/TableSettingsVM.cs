@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleDataGrid;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,9 +12,9 @@ namespace huypq.SmtCodeGen
 {
     public class TableSettingsVM : INotifyPropertyChanged
     {
-        private ObservableCollection<DbTable> tables;
+        private ObservableCollectionEx<DbTable> tables;
 
-        public ObservableCollection<DbTable> Tables
+        public ObservableCollectionEx<DbTable> Tables
         {
             get { return tables; }
             set
@@ -23,25 +24,34 @@ namespace huypq.SmtCodeGen
                     if (tables != null)
                     {
                         tables.CollectionChanged -= Tables_CollectionChanged;
+                        tables.EndReset -= UpdateTableSettings;
                     }
                     tables = value;
                     if (tables != null)
                     {
                         tables.CollectionChanged += Tables_CollectionChanged;
+                        tables.EndReset += UpdateTableSettings;
                     }
-                    foreach (var item in tables)
-                    {
-                        var tableSetting = tableSettings.FirstOrDefault(p => p.TableName == item.TableName);
-                        if (tableSetting != null)
-                        {
-                            tableSetting.DbTable = item;
-                        }
-                        else
-                        {
-                            TableSettings.Add(new TableSetting() { TableName = item.TableName, DbTable = item });
-                        }
-                    }
+
+                    UpdateTableSettings();
+
                     OnPropertyChanged();
+                }
+            }
+        }
+
+        private void UpdateTableSettings()
+        {
+            foreach (var item in tables)
+            {
+                var tableSetting = tableSettings.FirstOrDefault(p => p.TableName == item.TableName);
+                if (tableSetting != null)
+                {
+                    tableSetting.DbTable = item;
+                }
+                else
+                {
+                    TableSettings.Add(new TableSetting() { TableName = item.TableName, DbTable = item });
                 }
             }
         }
