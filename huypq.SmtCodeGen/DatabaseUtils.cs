@@ -10,24 +10,46 @@ namespace huypq.SmtCodeGen
         private static string serverName = ".";
         private static Dictionary<string, string> _typeMapping = new Dictionary<string, string>()
         {
-            {"int", "int" },
             {"bigint", "long" },
-            {"bit","bool" },
-            {"date","System.DateTime" },
-            {"datetime","System.DateTime" },
-            {"datetime2","System.DateTime" },
-            {"time","System.TimeSpan" },
-            {"varchar", "string" },
+            {"binary", "byte[]" },
+            {"bit", "bool" },
+            {"char", "string" },
+            {"date", "System.DateTime" },
+            {"datetime", "System.DateTime" },
+            {"datetime2", "System.DateTime" },
+            {"datetimeoffset", "System.DateTimeOffset" },
+            {"decimal", "decimal" },
+            {"float", "double" },
+            //{"geography", ""},
+            //{"geometry", ""},
+            //{"hierarchyid", ""},
+            {"image", "byte[]"},
+            {"int", "int" },
+            {"money", "decimal"},
+            {"nchar", "string" },
+            {"ntext", "string" },
+            {"numeric", "decimal"},
             {"nvarchar", "string" },
+            {"real", "System.Single"},
+            //{"rowversion", "byte[]"},
+            {"smalldatetime", "System.DateTime" },
+            {"smallint", "System.Int16" },
+            {"smallmoney", "decimal"},
+            //{"sql_variant", ""},
+            {"text", "string" },
+            {"time","System.TimeSpan" },
+            {"timestamp", "byte[]"},
+            {"tinyint", "byte" },
+            {"uniqueidentifier", "System.Guid" },
             {"varbinary", "byte[]" },
-            {"uniqueidentifier", "System.Guid" }
-
+            {"varchar", "string" },
+            //{"xml", "System.Data.SqlTypes.SqlXml" }
         };
 
         public static List<DbTable> FromDB(string dbName)
         {
             var tables = new List<DbTable>();
-            var dicReferenceTable = new Dictionary<string, List<Reference>>();
+             var dicReferenceTable = new Dictionary<string, List<Reference>>();
 
             var server = new Microsoft.SqlServer.Management.Smo.Server(serverName);
             var db = new Microsoft.SqlServer.Management.Smo.Database(server, dbName);
@@ -64,13 +86,14 @@ namespace huypq.SmtCodeGen
 
                 foreach (Microsoft.SqlServer.Management.Smo.Column item in table.Columns)
                 {
-                    var propertyType = _typeMapping[item.DataType.Name];
-                    if (item.Nullable == true && propertyType != "string")
-                        propertyType = propertyType + "?";
+                    var sqlDataType = item.DataType.Name;
+                    var dotnetType = _typeMapping[sqlDataType];
+                    if (item.Nullable == true && dotnetType != "string")
+                        dotnetType = dotnetType + "?";
 
                     var entityProperty = new DbTableColumn()
                     {
-                        DataType = propertyType,
+                        DataType = dotnetType,
                         ColumnName = item.Name,
                         IsForeignKey = item.IsForeignKey,
                         IsPrimaryKey = item.InPrimaryKey,
@@ -83,31 +106,32 @@ namespace huypq.SmtCodeGen
                     columns.Add(entityProperty);
 
                     //hascolumntype
-                    if (entityProperty.DataType == "System.DateTime"
-                        || entityProperty.DataType == "System.TimeSpan")
+                    if (sqlDataType == "datetime2"
+                        || sqlDataType == "datetimeoffset"
+                        || sqlDataType == "time")
                     {
                         hasColumnTypes.Add(new HasColumnType()
                         {
                             PropertyName = item.Name,
-                            TypeName = item.DataType.Name + "(" + item.DataType.NumericScale + ")"
+                            TypeName = sqlDataType + "(" + item.DataType.NumericScale + ")"
                         });
                     }
-                    else if (item.DataType.Name == "decimal" || item.DataType.Name == "numeric")
+                    else if (sqlDataType == "decimal" || sqlDataType == "numeric")
                     {
                         hasColumnTypes.Add(new HasColumnType()
                         {
                             PropertyName = item.Name,
-                            TypeName = item.DataType.Name + "(" + item.DataType.NumericPrecision + "," + item.DataType.NumericScale + ")"
+                            TypeName = sqlDataType + "(" + item.DataType.NumericPrecision + "," + item.DataType.NumericScale + ")"
                         });
                     }
 
                     //requiredmaxlength
                     var requiredMaxLength = new RequiredMaxLength() { PropertyName = item.Name, MaxLength = -1 };
-                    if (item.Nullable == false && propertyType == "string")
+                    if (item.Nullable == false && dotnetType == "string")
                     {
                         requiredMaxLength.NeedIsRequired = true;
                     }
-                    if (propertyType == "string" || propertyType == "byte[]")
+                    if (dotnetType == "string" || dotnetType == "byte[]")
                     {
                         requiredMaxLength.MaxLength = item.DataType.MaximumLength;
                     }
@@ -256,12 +280,12 @@ namespace huypq.SmtCodeGen
         private static void CalculateReferenceLevel(List<DbTable> tables)
         {
             var temp = new List<DbTable>(tables);
-            
+
             int level = 0;
             var previousLevelTables = new List<DbTable>();
             var removedTables = new List<DbTable>();
             while (temp.Count > 0)
-            {                
+            {
                 for (int i = 0; i < temp.Count; i++)
                 {
                     bool isOnlyReferenceToPreviousLevel = true;
