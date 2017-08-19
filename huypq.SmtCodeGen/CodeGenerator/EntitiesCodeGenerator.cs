@@ -208,6 +208,12 @@ namespace huypq.SmtCodeGen
                 var UpperedTableName = DatabaseUtils.UpperFirstLetter(table.TableName);
                 sb.AppendLineExWithTabAndFormat(baseTab, "modelBuilder.Entity<{0}>(entity =>", UpperedTableName);
                 sb.AppendLineExWithTab(baseTab, "{");
+                var pkName = table.ColumnSettings.First(p => p.DbColumn.IsIdentity).ColumnName;
+                if (pkName != "ID")
+                {
+                    sb.AppendLineExWithTabAndFormat(tab1, "entity.Property(p => p.ID).HasColumnName(\"{0}\");", pkName);
+                    sb.AppendLineEx();
+                }
                 foreach (var index in table.DbTable.Indexes)
                 {
                     switch (index.IndexType)
@@ -231,7 +237,7 @@ namespace huypq.SmtCodeGen
                             sb.AppendLineExWithTab(tab2, ".IsUnique();");
                             break;
                     }
-                    sb.AppendLine();
+                    sb.AppendLineEx();
                 }
                 foreach (var defaultValue in table.DbTable.DefaultValues)
                 {
