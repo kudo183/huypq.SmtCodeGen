@@ -208,6 +208,11 @@ namespace huypq.SmtCodeGen
                 var UpperedTableName = DatabaseUtils.UpperFirstLetter(table.TableName);
                 sb.AppendLineExWithTabAndFormat(baseTab, "modelBuilder.Entity<{0}>(entity =>", UpperedTableName);
                 sb.AppendLineExWithTab(baseTab, "{");
+                if (table.TableName != UpperedTableName)
+                {
+                    sb.AppendLineExWithTabAndFormat(tab1, "entity.ToTable(\"{0}\");", table.TableName);
+                    sb.AppendLineEx();
+                }
                 var pkName = table.ColumnSettings.First(p => p.DbColumn.IsIdentity).ColumnName;
                 if (pkName != "ID")
                 {
@@ -225,11 +230,6 @@ namespace huypq.SmtCodeGen
                         case 1:
                             sb.AppendLineExWithTabAndFormat(tab1, "entity.HasKey(e => e.{0})", index.PropertyName);
                             sb.AppendLineExWithTabAndFormat(tab2, ".HasName(\"{0}\");", index.IX_Name);
-                            if (table.TableName != UpperedTableName)
-                            {
-                                sb.AppendLineEx();
-                                sb.AppendLineExWithTabAndFormat(tab1, "entity.ToTable(\"{0}\");", table.TableName);
-                            }
                             break;
                         case 2:
                             sb.AppendLineExWithTabAndFormat(tab1, "entity.HasIndex(e => e.{0})", index.PropertyName);
