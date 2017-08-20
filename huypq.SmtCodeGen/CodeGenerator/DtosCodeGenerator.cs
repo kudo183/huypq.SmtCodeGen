@@ -173,6 +173,7 @@ namespace huypq.SmtCodeGen
             var i = 1;
             foreach (var item in columnSettings)
             {
+                sb.AppendLineExWithTabAndFormat(baseTab, "[Newtonsoft.Json.JsonProperty]");
                 sb.AppendLineExWithTabAndFormat(baseTab, "[ProtoBuf.ProtoMember({0})]", i);
                 sb.AppendLineExWithTabAndFormat(baseTab, "public {0} {1} {{ get {{ return _{1}; }} set {{ _{1} = value; OnPropertyChanged(); }} }}", item.DbColumn.DataType, item.ColumnName);
                 i++;
@@ -272,7 +273,6 @@ namespace huypq.SmtCodeGen
             sb.AppendLineEx();
             foreach (var item in foreignKeys)
             {
-                sb.AppendLineExWithTab(baseTab, "[Newtonsoft.Json.JsonIgnore]");
                 sb.AppendLineExWithTabAndFormat(baseTab, "public object {0}DataSource {{ get {{ return _{0}DataSource; }} set {{ _{0}DataSource = value; OnPropertyChanged(); }} }}", item.ColumnName);
             }
 
@@ -280,7 +280,6 @@ namespace huypq.SmtCodeGen
             if (pkName != "ID")
             {
                 sb.AppendLineEx();
-                sb.AppendLineExWithTab(baseTab, "[Newtonsoft.Json.JsonIgnore]");
                 sb.AppendLineExWithTabAndFormat(baseTab, "public int ID {{ get {{ return {0}; }} set {{ {0} = value; }} }}", pkName);
             }
 
