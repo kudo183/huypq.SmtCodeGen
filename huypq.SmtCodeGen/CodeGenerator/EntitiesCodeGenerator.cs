@@ -206,7 +206,7 @@ namespace huypq.SmtCodeGen
                     sb.AppendLineEx();
                 }
                 var pkColumn = table.ColumnSettings.First(p => p.DbColumn.IsIdentity);
-                if (pkColumn.DbColumn.ColumnName != "ID")
+                if (pkColumn.DbColumn.ColumnName != Constant.PrimaryKey)
                 {
                     sb.AppendLineExWithTabAndFormat(tab1, "entity.Property(p => p.ID).HasColumnName(\"{0}\");", pkColumn.DbColumn.ColumnName);
                     sb.AppendLineEx();
@@ -221,7 +221,7 @@ namespace huypq.SmtCodeGen
                             break;
                         case 1:
                             //sb.AppendLineExWithTabAndFormat(tab1, "entity.HasKey(e => e.{0})", index.PropertyName);
-                            sb.AppendLineExWithTabAndFormat(tab1, "entity.HasKey(e => e.{0})", "ID");
+                            sb.AppendLineExWithTabAndFormat(tab1, "entity.HasKey(e => e.{0})", Constant.PrimaryKey);
                             sb.AppendLineExWithTabAndFormat(tab2, ".HasName(\"{0}\");", index.IX_Name);
                             break;
                         case 2:

@@ -590,7 +590,7 @@ namespace huypq.SmtCodeGen
 
         public string GetColumnNameForCodeGen()
         {
-            return dbColumn.IsIdentity ? "ID" : columnName;
+            return dbColumn.IsIdentity ? Constant.PrimaryKey : columnName;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
