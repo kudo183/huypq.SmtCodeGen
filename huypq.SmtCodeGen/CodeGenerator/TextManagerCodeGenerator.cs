@@ -66,7 +66,7 @@ namespace huypq.SmtCodeGen
             {
                 foreach (var column in table.ColumnSettings)
                 {
-                    sb.AppendLineExWithTabAndFormat(baseTab, "public static string {0}_{1} {{ get {{ return GetText(); }} }}", table.TableName, column.ColumnName);
+                    sb.AppendLineExWithTabAndFormat(baseTab, "public static string {0}_{1} {{ get {{ return GetText(); }} }}", table.TableName, column.GetColumnNameForCodeGen());
                 }
             }
 
@@ -86,7 +86,7 @@ namespace huypq.SmtCodeGen
             {
                 foreach (var column in table.ColumnSettings)
                 {
-                    sb.AppendLineExWithTabAndFormat(baseTab, "_dic.Add(\"{0}_{1}\", \"{1}\");", table.TableName, column.ColumnName);
+                    sb.AppendLineExWithTabAndFormat(baseTab, "_dic.Add(\"{0}_{1}\", \"{1}\");", table.TableName, column.GetColumnNameForCodeGen());
                 }
             }
 

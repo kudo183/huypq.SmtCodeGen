@@ -75,7 +75,7 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columns)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "HeaderFilterBaseModel _{0}Filter;", item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "HeaderFilterBaseModel _{0}Filter;", item.GetColumnNameForCodeGen());
             }
 
             return sb.ToString();
@@ -93,7 +93,7 @@ namespace huypq.SmtCodeGen
             var tab2 = tab1 + Constant.Tab;
             foreach (var item in columns)
             {
-                var columnName = item.ColumnName;
+                var columnName = item.GetColumnNameForCodeGen();
                 var dataType = item.DbColumn.DataType;
                 var headerFilterModelType = GetHeaderFilterModelType(item);
                 if (headerFilterModelType == "HeaderComboBoxFilterModel")
@@ -115,12 +115,12 @@ namespace huypq.SmtCodeGen
                 else if (headerFilterModelType == "HeaderForeignKeyFilterModel")
                 {
                     sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = new {1}(TextManager.{2}_{0}, nameof({2}Dto.{0}), typeof({3}), new View.{4}View() {{ KeepSelectionType = DataGridExt.KeepSelection.KeepSelectedValue }});",
-                        item.ColumnName, headerFilterModelType, tableName, dataType, item.DbColumn.ForeignKeyTableName);
+                        columnName, headerFilterModelType, tableName, dataType, item.DbColumn.ForeignKeyTableName);
                 }
                 else
                 {
                     sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = new {1}(TextManager.{2}_{0}, nameof({2}Dto.{0}), typeof({3}));",
-                        item.ColumnName, headerFilterModelType, tableName, dataType);
+                        columnName, headerFilterModelType, tableName, dataType);
                 }
             }
 
@@ -130,7 +130,7 @@ namespace huypq.SmtCodeGen
             {
                 var sortDirection = (item.OrderBy == 1) ? "Ascending" : "Descending";
                 sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter.IsSorted = HeaderFilterBaseModel.SortDirection.{1};",
-                        item.ColumnName, sortDirection);
+                        item.GetColumnNameForCodeGen(), sortDirection);
             }
 
             return sb.ToString();
@@ -147,7 +147,7 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columns)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "AddHeaderFilter(_{0}Filter);", item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "AddHeaderFilter(_{0}Filter);", item.GetColumnNameForCodeGen());
             }
 
             return sb.ToString();
@@ -184,7 +184,7 @@ namespace huypq.SmtCodeGen
             foreach (var item in needReferenceDataColumn)
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "dto.{0}DataSource = ReferenceDataManager<{1}Dto>.Instance.Get();",
-                    item.ColumnName, item.DbColumn.ForeignKeyTableName);
+                    item.GetColumnNameForCodeGen(), item.DbColumn.ForeignKeyTableName);
             }
 
             return sb.ToString();
@@ -201,9 +201,10 @@ namespace huypq.SmtCodeGen
             var tab1 = baseTab + Constant.Tab;
             foreach (var item in columns)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "if (_{0}Filter.FilterValue != null)", item.ColumnName);
+                var columnName = item.GetColumnNameForCodeGen();
+                sb.AppendLineExWithTabAndFormat(baseTab, "if (_{0}Filter.FilterValue != null)", columnName);
                 sb.AppendLineExWithTab(baseTab, "{");
-                sb.AppendLineExWithTabAndFormat(tab1, "dto.{0} = ({1})_{0}Filter.FilterValue;", item.ColumnName, item.DbColumn.DataType);
+                sb.AppendLineExWithTabAndFormat(tab1, "dto.{0} = ({1})_{0}Filter.FilterValue;", columnName, item.DbColumn.DataType);
                 sb.AppendLineExWithTab(baseTab, "}");
             }
 

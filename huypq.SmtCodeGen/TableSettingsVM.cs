@@ -588,6 +588,11 @@ namespace huypq.SmtCodeGen
             }
         }
 
+        public string GetColumnNameForCodeGen()
+        {
+            return dbColumn.IsIdentity ? "ID" : columnName;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

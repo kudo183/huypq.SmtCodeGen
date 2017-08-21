@@ -142,15 +142,7 @@ namespace huypq.SmtCodeGen
             foreach (var item in columns)
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "public {0} {1} {{ get; set; }}",
-                    item.DbColumn.DataType, DatabaseUtils.UpperFirstLetter(item.ColumnName));
-            }
-
-            var pkName = columns.First(p => p.DbColumn.IsIdentity).ColumnName;
-            if (pkName != "ID")
-            {
-                sb.AppendLineEx();
-                sb.AppendLineExWithTab(baseTab, "[System.ComponentModel.DataAnnotations.Schema.NotMapped]");
-                sb.AppendLineExWithTabAndFormat(baseTab, "public int ID {{ get {{ return {0}; }} set {{ {0} = value;}} }}", pkName);
+                    item.DbColumn.DataType, DatabaseUtils.UpperFirstLetter(item.GetColumnNameForCodeGen()));
             }
 
             return sb.ToString();
@@ -169,7 +161,7 @@ namespace huypq.SmtCodeGen
             foreach (var item in foreignKeyColumns)
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "public {0} {1}Navigation {{ get; set; }}",
-                    DatabaseUtils.UpperFirstLetter(item.DbColumn.ForeignKeyTableName), DatabaseUtils.UpperFirstLetter(item.ColumnName));
+                    DatabaseUtils.UpperFirstLetter(item.DbColumn.ForeignKeyTableName), DatabaseUtils.UpperFirstLetter(item.GetColumnNameForCodeGen()));
             }
 
             return sb.ToString();
@@ -213,10 +205,10 @@ namespace huypq.SmtCodeGen
                     sb.AppendLineExWithTabAndFormat(tab1, "entity.ToTable(\"{0}\");", table.TableName);
                     sb.AppendLineEx();
                 }
-                var pkName = table.ColumnSettings.First(p => p.DbColumn.IsIdentity).ColumnName;
-                if (pkName != "ID")
+                var pkColumn = table.ColumnSettings.First(p => p.DbColumn.IsIdentity);
+                if (pkColumn.DbColumn.ColumnName != "ID")
                 {
-                    sb.AppendLineExWithTabAndFormat(tab1, "entity.Property(p => p.ID).HasColumnName(\"{0}\");", pkName);
+                    sb.AppendLineExWithTabAndFormat(tab1, "entity.Property(p => p.ID).HasColumnName(\"{0}\");", pkColumn.DbColumn.ColumnName);
                     sb.AppendLineEx();
                 }
                 foreach (var index in table.DbTable.Indexes)
@@ -228,7 +220,8 @@ namespace huypq.SmtCodeGen
                             sb.AppendLineExWithTabAndFormat(tab2, ".HasName(\"{1}\");{2}", index.IX_Name);
                             break;
                         case 1:
-                            sb.AppendLineExWithTabAndFormat(tab1, "entity.HasKey(e => e.{0})", index.PropertyName);
+                            //sb.AppendLineExWithTabAndFormat(tab1, "entity.HasKey(e => e.{0})", index.PropertyName);
+                            sb.AppendLineExWithTabAndFormat(tab1, "entity.HasKey(e => e.{0})", "ID");
                             sb.AppendLineExWithTabAndFormat(tab2, ".HasName(\"{0}\");", index.IX_Name);
                             break;
                         case 2:

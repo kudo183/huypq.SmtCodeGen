@@ -97,7 +97,7 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columnSettings)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "{0} = dto.{0},", item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "{0} = dto.{0},", item.GetColumnNameForCodeGen());
             }
 
             sb.Remove(sb.Length - Constant.LineEnding.Length - ",".Length, 1);
@@ -115,7 +115,7 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columnSettings)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "{0} = entity.{0},", item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "{0} = entity.{0},", item.GetColumnNameForCodeGen());
             }
 
             sb.Remove(sb.Length - Constant.LineEnding.Length - ",".Length, 1);

@@ -133,7 +133,7 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columnSettings)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "public static {0} D{1};", item.DbColumn.DataType, item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "public static {0} D{1};", item.DbColumn.DataType, item.GetColumnNameForCodeGen());
             }
 
             return sb.ToString();
@@ -150,12 +150,12 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columnSettings)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "{0} o{1};", item.DbColumn.DataType, item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "{0} o{1};", item.DbColumn.DataType, item.GetColumnNameForCodeGen());
             }
             sb.AppendLine();
             foreach (var item in columnSettings)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "{0} _{1} = D{1};", item.DbColumn.DataType, item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "{0} _{1} = D{1};", item.DbColumn.DataType, item.GetColumnNameForCodeGen());
             }
 
             return sb.ToString();
@@ -175,7 +175,7 @@ namespace huypq.SmtCodeGen
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "[Newtonsoft.Json.JsonProperty]");
                 sb.AppendLineExWithTabAndFormat(baseTab, "[ProtoBuf.ProtoMember({0})]", i);
-                sb.AppendLineExWithTabAndFormat(baseTab, "public {0} {1} {{ get {{ return _{1}; }} set {{ _{1} = value; OnPropertyChanged(); }} }}", item.DbColumn.DataType, item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "public {0} {1} {{ get {{ return _{1}; }} set {{ _{1} = value; OnPropertyChanged(); }} }}", item.DbColumn.DataType, item.GetColumnNameForCodeGen());
                 i++;
             }
 
@@ -193,7 +193,7 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columnSettings)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "o{0} = {0};", item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "o{0} = {0};", item.GetColumnNameForCodeGen());
             }
 
             return sb.ToString();
@@ -210,7 +210,7 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columnSettings)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "{0} = dto.{0};", item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "{0} = dto.{0};", item.GetColumnNameForCodeGen());
             }
 
             return sb.ToString();
@@ -228,7 +228,7 @@ namespace huypq.SmtCodeGen
             sb.AppendLineExWithTab(baseTab, "return");
             foreach (var item in columnSettings)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "(o{0} != {0}) ||", item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "(o{0} != {0}) ||", item.GetColumnNameForCodeGen());
             }
 
             var l = "||".Length + Constant.LineEnding.Length;
@@ -250,7 +250,7 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in foreignKeys)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "public {0}Dto {1}Navigation {{ get; set; }}", item.DbColumn.ForeignKeyTableName, item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "public {0}Dto {1}Navigation {{ get; set; }}", item.DbColumn.ForeignKeyTableName, item.GetColumnNameForCodeGen());
             }
 
             return sb.ToString();
@@ -268,19 +268,12 @@ namespace huypq.SmtCodeGen
             var foreignKeys = columnSettings.Where(p => p.DbColumn.IsForeignKey && p.IsNeedReferenceData);
             foreach (var item in foreignKeys)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "object _{0}DataSource;", item.ColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "object _{0}DataSource;", item.GetColumnNameForCodeGen());
             }
             sb.AppendLineEx();
             foreach (var item in foreignKeys)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "public object {0}DataSource {{ get {{ return _{0}DataSource; }} set {{ _{0}DataSource = value; OnPropertyChanged(); }} }}", item.ColumnName);
-            }
-
-            var pkName = columnSettings.First(p => p.DbColumn.IsIdentity).ColumnName;
-            if (pkName != "ID")
-            {
-                sb.AppendLineEx();
-                sb.AppendLineExWithTabAndFormat(baseTab, "public int ID {{ get {{ return {0}; }} set {{ {0} = value; }} }}", pkName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "public object {0}DataSource {{ get {{ return _{0}DataSource; }} set {{ _{0}DataSource = value; OnPropertyChanged(); }} }}", item.GetColumnNameForCodeGen());
             }
 
             return sb.ToString();

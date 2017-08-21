@@ -87,14 +87,15 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in columnSettings)
             {
-                if (item.ColumnName == "TenantID")
+                var columnName = item.GetColumnNameForCodeGen();
+                if (columnName == "TenantID")
                 {
                     continue;
                 }
 
-                if (item.ColumnName == "CreateTime" || item.ColumnName == "LastUpdateTime")
+                if (columnName == "CreateTime" || columnName == "LastUpdateTime")
                 {
-                    sb.AppendLineExWithTabAndFormat(baseTab, "<SimpleDataGrid:DataGridTextColumnExt Header=\"{0}\" IsReadOnly=\"True\" Binding=\"{{Binding {0}, UpdateSourceTrigger=PropertyChanged, Converter={{x:Static converter:LongToDateTimeStringConverter.Instance}}}}\"/>", item.ColumnName);
+                    sb.AppendLineExWithTabAndFormat(baseTab, "<SimpleDataGrid:DataGridTextColumnExt Header=\"{0}\" IsReadOnly=\"True\" Binding=\"{{Binding {0}, UpdateSourceTrigger=PropertyChanged, Converter={{x:Static converter:LongToDateTimeStringConverter.Instance}}}}\"/>", columnName);
                     continue;
                 }
 
@@ -106,7 +107,7 @@ namespace huypq.SmtCodeGen
 
         private static string GetDataGridColumnFromProperty(ColumnSetting columnSetting, string baseTab)
         {
-            var columnName = columnSetting.ColumnName;
+            var columnName = columnSetting.GetColumnNameForCodeGen();
             var columnType = columnSetting.DataGridColumnType;
             var header = string.Format(" Header=\"{0}\"", columnName);
             var width = columnSetting.Width > 0 ? string.Format(" Width=\"{0}\"", 80) : "";
