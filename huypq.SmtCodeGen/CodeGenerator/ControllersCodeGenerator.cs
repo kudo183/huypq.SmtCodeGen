@@ -86,24 +86,6 @@ namespace huypq.SmtCodeGen
         //    }
         //}
 
-        private static string InitEntityProperties(IEnumerable<ColumnSetting> columnSettings, string baseTab)
-        {
-            if (columnSettings.Count() == 0)
-            {
-                return string.Empty;
-            }
-
-            var sb = new StringBuilder();
-
-            foreach (var item in columnSettings)
-            {
-                sb.AppendLineExWithTabAndFormat(baseTab, "{0} = dto.{0},", item.GetColumnNameForCodeGen());
-            }
-
-            sb.Remove(sb.Length - Constant.LineEnding.Length - ",".Length, 1);
-            return sb.ToString();
-        }
-
         private static string InitDtoProperties(IEnumerable<ColumnSetting> columnSettings, string baseTab)
         {
             if (columnSettings.Count() == 0)
@@ -116,6 +98,31 @@ namespace huypq.SmtCodeGen
             foreach (var item in columnSettings)
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "{0} = entity.{0},", item.GetColumnNameForCodeGen());
+            }
+
+            sb.Remove(sb.Length - Constant.LineEnding.Length - ",".Length, 1);
+            return sb.ToString();
+        }
+
+        private static string InitEntityProperties(IEnumerable<ColumnSetting> columnSettings, string baseTab)
+        {
+            if (columnSettings.Count() == 0)
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder();
+
+            foreach (var item in columnSettings)
+            {
+                if (item.IsReadOnly == true && item.DbColumn.IsIdentity == false && item.IsSmtColumn() == false)
+                {
+                    sb.AppendLineExWithTabAndFormat(baseTab, "//{0} = dto.{0},", item.GetColumnNameForCodeGen());
+                }
+                else
+                {
+                    sb.AppendLineExWithTabAndFormat(baseTab, "{0} = dto.{0},", item.GetColumnNameForCodeGen());
+                }
             }
 
             sb.Remove(sb.Length - Constant.LineEnding.Length - ",".Length, 1);

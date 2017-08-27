@@ -31,9 +31,9 @@ namespace huypq.SmtCodeGen
                 var trimmedEnd = line.TrimEnd();
                 var trimmed = trimmedEnd.TrimStart();
                 var baseTab = trimmedEnd.Substring(0, trimmedEnd.Length - trimmed.Length);
-                if (trimmed == "<ModelBuilderConfix>")
+                if (trimmed == "<ModelBuilderConfig>")
                 {
-                    result.Append(ModelBuilderConfix(tables, baseTab));
+                    result.Append(ModelBuilderConfig(tables, baseTab));
                 }
                 else if (trimmed == "<DbSetProperties>")
                 {
@@ -185,7 +185,7 @@ namespace huypq.SmtCodeGen
             return sb.ToString();
         }
 
-        private static string ModelBuilderConfix(IEnumerable<TableSetting> tables, string baseTab)
+        private static string ModelBuilderConfig(IEnumerable<TableSetting> tables, string baseTab)
         {
             if (tables.Count() == 0)
             {
@@ -205,33 +205,42 @@ namespace huypq.SmtCodeGen
                     sb.AppendLineExWithTabAndFormat(tab1, "entity.ToTable(\"{0}\");", table.TableName);
                     sb.AppendLineEx();
                 }
+
                 var pkColumn = table.ColumnSettings.First(p => p.DbColumn.IsIdentity);
                 if (pkColumn.DbColumn.ColumnName != Constant.PrimaryKey)
                 {
                     sb.AppendLineExWithTabAndFormat(tab1, "entity.Property(p => p.ID).HasColumnName(\"{0}\");", pkColumn.DbColumn.ColumnName);
                     sb.AppendLineEx();
                 }
+
+                foreach (var column in table.ColumnSettings.Where(p => p.IsReadOnly == true && p.DbColumn.IsIdentity == false && p.IsSmtColumn() == false))
+                {
+                    sb.AppendLineExWithTabAndFormat(tab1, "entity.Property(p => p.{0}).ValueGeneratedOnAddOrUpdate();", column.ColumnName);
+                    sb.AppendLineEx();
+                }
+
                 foreach (var index in table.DbTable.Indexes)
                 {
                     switch (index.IndexType)
                     {
                         case 0:
-                            sb.AppendLineExWithTabAndFormat(tab1, "entity.HasIndex(e => e.{0})", index.PropertyName);
+                            sb.AppendLineExWithTabAndFormat(tab1, "entity.HasIndex(p => p.{0})", index.PropertyName);
                             sb.AppendLineExWithTabAndFormat(tab2, ".HasName(\"{1}\");{2}", index.IX_Name);
                             break;
                         case 1:
-                            //sb.AppendLineExWithTabAndFormat(tab1, "entity.HasKey(e => e.{0})", index.PropertyName);
-                            sb.AppendLineExWithTabAndFormat(tab1, "entity.HasKey(e => e.{0})", Constant.PrimaryKey);
+                            //sb.AppendLineExWithTabAndFormat(tab1, "entity.HasKey(p => p.{0})", index.PropertyName);
+                            sb.AppendLineExWithTabAndFormat(tab1, "entity.HasKey(p => p.{0})", Constant.PrimaryKey);
                             sb.AppendLineExWithTabAndFormat(tab2, ".HasName(\"{0}\");", index.IX_Name);
                             break;
                         case 2:
-                            sb.AppendLineExWithTabAndFormat(tab1, "entity.HasIndex(e => e.{0})", index.PropertyName);
+                            sb.AppendLineExWithTabAndFormat(tab1, "entity.HasIndex(p => p.{0})", index.PropertyName);
                             sb.AppendLineExWithTabAndFormat(tab2, ".HasName(\"{0}\")", index.IX_Name);
                             sb.AppendLineExWithTab(tab2, ".IsUnique();");
                             break;
                     }
                     sb.AppendLineEx();
                 }
+
                 foreach (var defaultValue in table.DbTable.DefaultValues)
                 {
                     var value = defaultValue.Value.Substring(1, defaultValue.Value.Length - 2);
@@ -239,16 +248,18 @@ namespace huypq.SmtCodeGen
                     {
                         value = "''";
                     }
-                    sb.AppendLineExWithTabAndFormat(tab1, "entity.Property(e => e.{0}).HasDefaultValueSql(\"{1}\");", defaultValue.PropertyName, value);
+                    sb.AppendLineExWithTabAndFormat(tab1, "entity.Property(p => p.{0}).HasDefaultValueSql(\"{1}\");", defaultValue.PropertyName, value);
                     sb.AppendLineEx();
                 }
+
                 foreach (var hasColumnType in table.DbTable.HasColumnTypes)
                 {
-                    sb.AppendLineExWithTabAndFormat(tab1, "entity.Property(e => e.{0}).HasColumnType(\"{1}\");", hasColumnType.PropertyName, hasColumnType.TypeName);
+                    sb.AppendLineExWithTabAndFormat(tab1, "entity.Property(p => p.{0}).HasColumnType(\"{1}\");", hasColumnType.PropertyName, hasColumnType.TypeName);
                 }
+
                 foreach (var requiredMaxLength in table.DbTable.RequiredMaxLengths)
                 {
-                    sb.AppendTabAndFormat(tab1, "entity.Property(e => e.{0})", requiredMaxLength.PropertyName);
+                    sb.AppendTabAndFormat(tab1, "entity.Property(p => p.{0})", requiredMaxLength.PropertyName);
                     if (requiredMaxLength.NeedIsRequired == true)
                     {
                         sb.AppendLineEx();
@@ -260,8 +271,9 @@ namespace huypq.SmtCodeGen
                         sb.AppendTabAndFormat(tab2, ".HasMaxLength({0})", requiredMaxLength.MaxLength);
                     }
                     sb.AppendLineEx(";");
+                    sb.AppendLineEx();
                 }
-                sb.AppendLineEx();
+
                 foreach (var foreignKey in table.DbTable.ForeignKeys)
                 {
                     sb.AppendLineExWithTabAndFormat(tab1, "entity.HasOne(d => d.{0}Navigation)", foreignKey.PropertyName);
@@ -282,9 +294,12 @@ namespace huypq.SmtCodeGen
                     sb.AppendLineExWithTabAndFormat(tab2, ".HasConstraintName(\"{0}\");", foreignKey.FK_Name);
                     sb.AppendLineEx();
                 }
+                sb.Remove(sb.Length - Constant.LineEnding.Length, Constant.LineEnding.Length);
                 sb.AppendLineExWithTab(baseTab, "});");
+                sb.AppendLineEx();
             }
 
+            sb.Remove(sb.Length - Constant.LineEnding.Length, Constant.LineEnding.Length);
             return sb.ToString();
         }
 

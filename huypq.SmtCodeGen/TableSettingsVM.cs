@@ -593,6 +593,18 @@ namespace huypq.SmtCodeGen
             return dbColumn.IsIdentity ? Constant.PrimaryKey : columnName;
         }
 
+        public bool IsSmtColumn()
+        {
+            if (columnName == "TenantID"
+                || columnName == "LastUpdateTime"
+                || columnName == "CreateTime")
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
