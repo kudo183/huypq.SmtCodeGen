@@ -36,6 +36,10 @@ namespace huypq.SmtCodeGen
                     {
                         result.Append(InitEntityProperties(table.ColumnSettings, baseTab));
                     }
+                    else if (trimmed == "<OverrideUpdateEntity>")
+                    {
+                        result.Append(OverrideUpdateEntity(table, baseTab));
+                    }
                     else
                     {
                         result.AppendLineEx(line.Replace("<EntityName>", table.TableName));
@@ -126,6 +130,31 @@ namespace huypq.SmtCodeGen
             }
 
             sb.Remove(sb.Length - Constant.LineEnding.Length - ",".Length, 1);
+            return sb.ToString();
+        }
+
+        private static string OverrideUpdateEntity(TableSetting tableSetting, string baseTab)
+        {
+            if (tableSetting.ColumnSettings.Count() == 0)
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder();
+            var list = tableSetting.ColumnSettings.Where(item => item.IsReadOnly == true && item.DbColumn.IsIdentity == false && item.IsSmtColumn() == false).ToList();
+            if (list.Count > 0)
+            {
+                var tab1 = baseTab + Constant.Tab;
+                sb.AppendLineEx();
+                sb.AppendLineExWithTabAndFormat(baseTab, "protected override void UpdateEntity(SqlDbContext context, {0} entity)", tableSetting.TableName);
+                sb.AppendLineExWithTab(baseTab, "{");
+                sb.AppendLineExWithTabAndFormat(tab1, "var entry = context.{0}.Update(entity);", tableSetting.TableName);
+                foreach (var item in list)
+                {
+                    sb.AppendLineExWithTabAndFormat(tab1, "entry.Property(p => p.{0}).IsModified = false;", item.ColumnName);
+                }
+                sb.AppendLineExWithTab(baseTab, "}");
+            }
             return sb.ToString();
         }
     }

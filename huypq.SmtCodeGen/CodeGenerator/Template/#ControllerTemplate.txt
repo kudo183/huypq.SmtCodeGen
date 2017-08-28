@@ -38,5 +38,6 @@ namespace Server.Controllers
         {
             return nameof(<EntityName>Controller);
         }
+        <OverrideUpdateEntity>
     }
 }

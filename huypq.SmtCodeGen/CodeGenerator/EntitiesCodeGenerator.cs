@@ -213,11 +213,11 @@ namespace huypq.SmtCodeGen
                     sb.AppendLineEx();
                 }
 
-                foreach (var column in table.ColumnSettings.Where(p => p.IsReadOnly == true && p.DbColumn.IsIdentity == false && p.IsSmtColumn() == false))
-                {
-                    sb.AppendLineExWithTabAndFormat(tab1, "entity.Property(p => p.{0}).ValueGeneratedOnAddOrUpdate();", column.ColumnName);
-                    sb.AppendLineEx();
-                }
+                //foreach (var column in table.ColumnSettings.Where(p => p.IsReadOnly == true && p.DbColumn.IsIdentity == false && p.IsSmtColumn() == false))
+                //{
+                //    sb.AppendLineExWithTabAndFormat(tab1, "entity.Property(p => p.{0}).ValueGeneratedOnAddOrUpdate();", column.ColumnName);
+                //    sb.AppendLineEx();
+                //}
 
                 foreach (var index in table.DbTable.Indexes)
                 {
