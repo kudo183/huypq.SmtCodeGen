@@ -225,10 +225,9 @@ namespace huypq.SmtCodeGen
                     {
                         case 0:
                             sb.AppendLineExWithTabAndFormat(tab1, "entity.HasIndex(p => p.{0})", index.PropertyName);
-                            sb.AppendLineExWithTabAndFormat(tab2, ".HasName(\"{1}\");{2}", index.IX_Name);
+                            sb.AppendLineExWithTabAndFormat(tab2, ".HasName(\"{0}\");{1}", index.IX_Name);
                             break;
                         case 1:
-                            //sb.AppendLineExWithTabAndFormat(tab1, "entity.HasKey(p => p.{0})", index.PropertyName);
                             sb.AppendLineExWithTabAndFormat(tab1, "entity.HasKey(p => p.{0})", Constant.PrimaryKey);
                             sb.AppendLineExWithTabAndFormat(tab2, ".HasName(\"{0}\");", index.IX_Name);
                             break;
