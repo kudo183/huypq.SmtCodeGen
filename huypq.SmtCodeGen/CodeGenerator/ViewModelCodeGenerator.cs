@@ -41,13 +41,13 @@ namespace huypq.SmtCodeGen
                     {
                         result.Append(LoadReferenceDatas(table.ColumnSettings, baseTab));
                     }
-                    else if (trimmed == "<SetDtosReferenceDataSource>")
+                    else if (trimmed == "<SetDataModelsReferenceDataSource>")
                     {
-                        result.Append(SetDtosReferenceDataSource(table.ColumnSettings, baseTab));
+                        result.Append(SetDataModelsReferenceDataSource(table.ColumnSettings, baseTab));
                     }
-                    else if (trimmed == "<SetDtosDefaultValue>")
+                    else if (trimmed == "<SetDataModelsDefaultValue>")
                     {
-                        result.Append(SetDtosDefaultValue(table.ColumnSettings, baseTab));
+                        result.Append(SetDataModelsDefaultValue(table.ColumnSettings, baseTab));
                     }
                     else
                     {
@@ -101,25 +101,25 @@ namespace huypq.SmtCodeGen
                     var foreignKeyTableName = item.DbColumn.ForeignKeyTableName;
                     sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = new HeaderComboBoxFilterModel(", columnName);
                     sb.AppendLineExWithTabAndFormat(tab1, "TextManager.{0}_{1}, HeaderComboBoxFilterModel.ComboBoxFilter,", tableName, columnName);
-                    sb.AppendLineExWithTabAndFormat(tab1, "nameof({0}Dto.{1}),", tableName, columnName);
+                    sb.AppendLineExWithTabAndFormat(tab1, "nameof({0}DataModel.{1}),", tableName, columnName);
                     sb.AppendLineExWithTabAndFormat(tab1, "typeof({0}),", dataType);
-                    sb.AppendLineExWithTabAndFormat(tab1, "nameof({0}Dto.DisplayText),", foreignKeyTableName);
-                    sb.AppendLineExWithTabAndFormat(tab1, "nameof({0}Dto.ID))", foreignKeyTableName);
+                    sb.AppendLineExWithTabAndFormat(tab1, "nameof({0}DataModel.DisplayText),", foreignKeyTableName);
+                    sb.AppendLineExWithTabAndFormat(tab1, "nameof({0}DataModel.ID))", foreignKeyTableName);
                     sb.AppendLineExWithTab(baseTab, "{");
                     sb.AppendLineExWithTabAndFormat(tab1, "AddCommand = new SimpleCommand(\"{0}AddCommand\",", columnName);
                     sb.AppendLineExWithTab(tab2, "() => base.ProccessHeaderAddCommand(");
-                    sb.AppendLineExWithTabAndFormat(tab2, "new View.{0}View(), \"{0}\", ReferenceDataManager<{0}Dto>.Instance.LoadOrUpdate)),", foreignKeyTableName);
-                    sb.AppendLineExWithTabAndFormat(tab1, "ItemSource = ReferenceDataManager<{0}Dto>.Instance.Get()", foreignKeyTableName);
+                    sb.AppendLineExWithTabAndFormat(tab2, "new View.{0}View(), \"{0}\", ReferenceDataManager<{0}Dto, {0}DataModel>.Instance.LoadOrUpdate)),", foreignKeyTableName);
+                    sb.AppendLineExWithTabAndFormat(tab1, "ItemSource = ReferenceDataManager<{0}Dto, {0}DataModel>.Instance.Get()", foreignKeyTableName);
                     sb.AppendLineExWithTab(baseTab, "};");
                 }
                 else if (headerFilterModelType == "HeaderForeignKeyFilterModel")
                 {
-                    sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = new {1}(TextManager.{2}_{0}, nameof({2}Dto.{0}), typeof({3}), new View.{4}View() {{ KeepSelectionType = DataGridExt.KeepSelection.KeepSelectedValue }});",
+                    sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = new {1}(TextManager.{2}_{0}, nameof({2}DataModel.{0}), typeof({3}), new View.{4}View() {{ KeepSelectionType = DataGridExt.KeepSelection.KeepSelectedValue }});",
                         columnName, headerFilterModelType, tableName, dataType, item.DbColumn.ForeignKeyTableName);
                 }
                 else
                 {
-                    sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = new {1}(TextManager.{2}_{0}, nameof({2}Dto.{0}), typeof({3}));",
+                    sb.AppendLineExWithTabAndFormat(baseTab, "_{0}Filter = new {1}(TextManager.{2}_{0}, nameof({2}DataModel.{0}), typeof({3}));",
                         columnName, headerFilterModelType, tableName, dataType);
                 }
             }
@@ -165,13 +165,13 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in needReferenceDataColumn)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "ReferenceDataManager<{0}Dto>.Instance.LoadOrUpdate();", item.DbColumn.ForeignKeyTableName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "ReferenceDataManager<{0}Dto, {0}DataModel>.Instance.LoadOrUpdate();", item.DbColumn.ForeignKeyTableName);
             }
 
             return sb.ToString();
         }
 
-        private static string SetDtosReferenceDataSource(IEnumerable<ColumnSetting> columns, string baseTab)
+        private static string SetDataModelsReferenceDataSource(IEnumerable<ColumnSetting> columns, string baseTab)
         {
             var needReferenceDataColumn = columns.Where(p => p.DbColumn.IsForeignKey && p.IsNeedReferenceData == true);
             if (needReferenceDataColumn.Count() == 0)
@@ -183,14 +183,14 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in needReferenceDataColumn)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "dto.{0}DataSource = ReferenceDataManager<{1}Dto>.Instance.Get();",
+                sb.AppendLineExWithTabAndFormat(baseTab, "dataModel.{0}DataSource = ReferenceDataManager<{1}Dto, {1}DataModel>.Instance.Get();",
                     item.GetColumnNameForCodeGen(), item.DbColumn.ForeignKeyTableName);
             }
 
             return sb.ToString();
         }
 
-        private static string SetDtosDefaultValue(IEnumerable<ColumnSetting> columns, string baseTab)
+        private static string SetDataModelsDefaultValue(IEnumerable<ColumnSetting> columns, string baseTab)
         {
             if (columns.Count() == 0)
             {
@@ -204,7 +204,7 @@ namespace huypq.SmtCodeGen
                 var columnName = item.GetColumnNameForCodeGen();
                 sb.AppendLineExWithTabAndFormat(baseTab, "if (_{0}Filter.FilterValue != null)", columnName);
                 sb.AppendLineExWithTab(baseTab, "{");
-                sb.AppendLineExWithTabAndFormat(tab1, "dto.{0} = ({1})_{0}Filter.FilterValue;", columnName, item.DbColumn.DataType);
+                sb.AppendLineExWithTabAndFormat(tab1, "dataModel.{0} = ({1})_{0}Filter.FilterValue;", columnName, item.DbColumn.DataType);
                 sb.AppendLineExWithTab(baseTab, "}");
             }
 

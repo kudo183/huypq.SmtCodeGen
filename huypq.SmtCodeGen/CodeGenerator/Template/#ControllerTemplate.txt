@@ -13,8 +13,8 @@ namespace Server.Controllers
         public override <EntityName>Dto ConvertToDto(<EntityName> entity)
         {
             var dto = new <EntityName>Dto()
-			{
-				<InitDtoProperties>
+            {
+                <InitDtoProperties>
             };
 
             ConvertToDtoPartial(ref dto, entity);
@@ -26,15 +26,15 @@ namespace Server.Controllers
         {
             var entity = new <EntityName>()
             {
-				<InitEntityProperties>
-			};
+                <InitEntityProperties>
+            };
 
             ConvertToEntityPartial(ref entity, dto);
 
             return entity;
         }
-		
-		public override string GetControllerName()
+
+        public override string GetControllerName()
         {
             return nameof(<EntityName>Controller);
         }

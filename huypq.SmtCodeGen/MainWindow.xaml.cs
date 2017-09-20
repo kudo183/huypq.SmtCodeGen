@@ -81,14 +81,17 @@ namespace huypq.SmtCodeGen
                 case "ViewModel":
                     GenViewModel(vm.ViewModelPath);
                     break;
+                case "DataModel":
+                    GenDataModel(vm.DataModelPath);
+                    break;
                 case "Text":
                     GenText(vm.TextPath);
                     break;
-                case "Controller":
-                    GenController(vm.ControllerPath);
-                    break;
                 case "Dto":
                     GenDto(vm.DtoPath);
+                    break;
+                case "Controller":
+                    GenController(vm.ControllerPath);
                     break;
                 case "Entity":
                     GenEntity(vm.EntityPath);
@@ -133,14 +136,17 @@ namespace huypq.SmtCodeGen
                 case "ViewModel":
                     OpenPath(vm.ViewModelPath);
                     break;
+                case "DataModel":
+                    OpenPath(vm.DataModelPath);
+                    break;
                 case "Text":
                     OpenPath(vm.TextPath);
                     break;
-                case "Controller":
-                    OpenPath(vm.ControllerPath);
-                    break;
                 case "Dto":
                     OpenPath(vm.DtoPath);
+                    break;
+                case "Controller":
+                    OpenPath(vm.ControllerPath);
                     break;
                 case "Entity":
                     OpenPath(vm.EntityPath);
@@ -152,9 +158,10 @@ namespace huypq.SmtCodeGen
         {
             GenView(vm.ViewPath);
             GenViewModel(vm.ViewModelPath);
+            GenDataModel(vm.DataModelPath);
             GenText(vm.TextPath);
-            GenController(vm.ControllerPath);
             GenDto(vm.DtoPath);
+            GenController(vm.ControllerPath);
             GenEntity(vm.EntityPath);
             GenComplexView(vm.ViewPath);
         }
@@ -178,6 +185,13 @@ namespace huypq.SmtCodeGen
             ViewModelCodeGenerator.GenViewModelCode(vm.TableSettingsVM.TableSettings, path);
         }
 
+        private void GenDataModel(string path)
+        {
+            vm.Messages.Add(string.Format("{0} | Generating DataModel ...", DateTime.Now));
+
+            DataModelCodeGenerator.GenDataModelClass(vm.TableSettingsVM.TableSettings, path);
+        }
+
         private void GenText(string path)
         {
             vm.Messages.Add(string.Format("{0} | Generating Text ...", DateTime.Now));
@@ -185,18 +199,18 @@ namespace huypq.SmtCodeGen
             TextManagerCodeGenerator.GenTextManagerCode(vm.TableSettingsVM.TableSettings, path);
         }
 
-        private void GenController(string path)
-        {
-            vm.Messages.Add(string.Format("{0} | Generating Controller ...", DateTime.Now));
-
-            ControllersCodeGenerator.GenControllersClass(vm.TableSettingsVM.TableSettings, path);
-        }
-
         private void GenDto(string path)
         {
             vm.Messages.Add(string.Format("{0} | Generating Dto ...", DateTime.Now));
 
             DtosCodeGenerator.GenDtosClass(vm.TableSettingsVM.TableSettings, path);
+        }
+
+        private void GenController(string path)
+        {
+            vm.Messages.Add(string.Format("{0} | Generating Controller ...", DateTime.Now));
+
+            ControllersCodeGenerator.GenControllersClass(vm.TableSettingsVM.TableSettings, path);
         }
 
         private void GenEntity(string path)

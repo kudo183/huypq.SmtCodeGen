@@ -76,6 +76,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CodeGenerator\ComplexViewCodeGenerator.cs" />
+    <Compile Include="CodeGenerator\DataModelCodeGenerator.cs" />
     <Compile Include="CodeGenerator\TextManagerCodeGenerator.cs" />
     <Compile Include="CodeGenerator\ViewCodeGenerator.cs" />
     <Compile Include="CodeGenerator\DtosCodeGenerator.cs" />
@@ -164,7 +165,6 @@
     <Resource Include="CodeGenerator\Template\#ViewModelTemplate.txt" />
     <Resource Include="CodeGenerator\Template\#ViewTemplate.xaml.cs.txt" />
     <Resource Include="CodeGenerator\Template\#ViewTemplate.xaml.txt" />
-    <Resource Include="CodeGenerator\Template\#DtoPartTemplate.txt" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="CodeGenerator\Template\#ControllerPartTemplate.txt" />
@@ -178,6 +178,9 @@
       <Project>{9cfa4fe9-01d0-4bd1-aa8a-bca4b4a60375}</Project>
       <Name>SimpleDataGrid</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CodeGenerator\Template\#DataModelTemplate.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

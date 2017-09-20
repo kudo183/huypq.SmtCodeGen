@@ -1,17 +1,19 @@
 using huypq.SmtWpfClient;
 using huypq.SmtWpfClient.Abstraction;
 using Shared;
+using huypq.wpf.Utils;
 using SimpleDataGrid;
 using SimpleDataGrid.ViewModel;
+using Client.DataModel;
 
 namespace Client.ViewModel
 {
-    public partial class <EntityName>ViewModel : BaseViewModel<<EntityName>Dto>
+    public partial class <EntityName>ViewModel : BaseViewModel<<EntityName>Dto, <EntityName>DataModel>
     {
         partial void InitFilterPartial();
         partial void LoadReferenceDataPartial();
-        partial void ProcessDtoBeforeAddToEntitiesPartial(<EntityName>Dto dto);
-        partial void ProcessNewAddedDtoPartial(<EntityName>Dto dto);
+        partial void ProcessDataModelBeforeAddToEntitiesPartial(<EntityName>DataModel dataModel);
+        partial void ProcessNewAddedDataModelPartial(<EntityName>DataModel dataModel);
 
         <DeclareHeaderFilters>
 
@@ -31,19 +33,19 @@ namespace Client.ViewModel
             LoadReferenceDataPartial();
         }
 
-        protected override void ProcessDtoBeforeAddToEntities(<EntityName>Dto dto)
+        protected override void ProcessDataModelBeforeAddToEntities(<EntityName>DataModel dataModel)
         {
-            <SetDtosReferenceDataSource>
+            <SetDataModelsReferenceDataSource>
 
-            ProcessDtoBeforeAddToEntitiesPartial(dto);
+            ProcessDataModelBeforeAddToEntitiesPartial(dataModel);
         }
 
-        protected override void ProcessNewAddedDto(<EntityName>Dto dto)
+        protected override void ProcessNewAddedDataModel(<EntityName>DataModel dataModel)
         {
-            <SetDtosDefaultValue>
+            <SetDataModelsDefaultValue>
 
-            ProcessNewAddedDtoPartial(dto);
-            ProcessDtoBeforeAddToEntities(dto);
+            ProcessNewAddedDataModelPartial(dataModel);
+            ProcessDataModelBeforeAddToEntities(dataModel);
         }
     }
 }

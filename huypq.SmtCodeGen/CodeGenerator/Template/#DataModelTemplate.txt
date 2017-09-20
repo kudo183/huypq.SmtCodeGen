@@ -1,0 +1,59 @@
+using huypq.SmtWpfClient.Abstraction;
+using Shared;
+
+namespace Client.DataModel
+{
+    public partial class <EntityName>DataModel : BaseDataModel<<EntityName>Dto>
+    {
+        partial void ToDtoPartial(ref <EntityName>Dto dto);
+        partial void FromDtoPartial(<EntityName>Dto dto);
+		
+        <DefaultValues>
+
+        <PrivateFields>
+
+        <PublicProperties>
+
+        public override void SetCurrentValueAsOriginalValue()
+        {
+            <SetCurrentValueAsOriginalValue>
+        }
+
+        public override void Update(object obj)
+        {
+            var dataModel = obj as <EntityName>DataModel;
+            if (dataModel == null)
+            {
+                return;
+            }
+
+            <Update>
+        }
+
+        public override bool HasChange()
+        {
+            <HasChange>
+        }
+
+        public override <EntityName>Dto ToDto()
+        {
+            var dto = new <EntityName>Dto();
+            <ToDto>
+
+            ToDtoPartial(ref dto);
+
+            return dto;
+        }
+
+        public override void FromDto(<EntityName>Dto dto)
+        {
+            <FromDto>
+
+            FromDtoPartial(dto);
+        }
+
+        <ForeignKeyDataModel>
+
+        <ReferenceDataSource>
+    }
+}

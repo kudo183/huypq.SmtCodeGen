@@ -46,6 +46,21 @@ namespace huypq.SmtCodeGen
             }
         }
 
+        private string dataModelPath;
+
+        public string DataModelPath
+        {
+            get { return dataModelPath; }
+            set
+            {
+                if (dataModelPath != value)
+                {
+                    dataModelPath = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         private string textPath;
 
         public string TextPath
@@ -140,6 +155,7 @@ namespace huypq.SmtCodeGen
             json.TextPath = textPath;
             json.ViewModelPath = viewModelPath;
             json.ViewPath = viewPath;
+            json.DataModelPath = dataModelPath;
 
             json.MasterDetailList = new List<JsonMasterDetail>();
             foreach (var item in MasterDetailSelectorVM.MasterDetailList)
@@ -195,6 +211,7 @@ namespace huypq.SmtCodeGen
             ControllerPath = json.ControllerPath;
             DtoPath = json.DtoPath;
             EntityPath = json.EntityPath;
+            DataModelPath = json.DataModelPath;
 
             int masterDetailListCount = json.MasterDetailList.Count;
             var masterDetailList = new List<MasterDetail>(masterDetailListCount);
@@ -247,6 +264,7 @@ namespace huypq.SmtCodeGen
             public string ControllerPath { get; set; }
             public string DtoPath { get; set; }
             public string EntityPath { get; set; }
+            public string DataModelPath { get; set; }
             public List<JsonMasterDetail> MasterDetailList { get; set; }
             public List<JsonTableSetting> TableSettingList { get; set; }
             public List<DbTable> DbTableList { get; set; }

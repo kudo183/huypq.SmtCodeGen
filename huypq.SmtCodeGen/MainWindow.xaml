@@ -39,22 +39,28 @@
                     <Button Content="Gen" Tag="ViewModel" Click="GenerateButton_Click"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="5">
+                    <TextBlock Width="120" Text="DataModel Path: "/>
+                    <TextBox Text="{Binding DataModelPath, UpdateSourceTrigger=PropertyChanged}" Width="400"/>
+                    <Button Content="Open" Tag="DataModel" Click="OpenButton_Click"/>
+                    <Button Content="Gen" Tag="DataModel" Click="GenerateButton_Click"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="5">
                     <TextBlock Width="120" Text="Text Path: "/>
                     <TextBox Text="{Binding TextPath, UpdateSourceTrigger=PropertyChanged}" Width="400"/>
                     <Button Content="Open" Tag="Text" Click="OpenButton_Click"/>
                     <Button Content="Gen" Tag="Text" Click="GenerateButton_Click"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="5">
-                    <TextBlock Width="120" Text="Controller Path: "/>
-                    <TextBox Text="{Binding ControllerPath, UpdateSourceTrigger=PropertyChanged}" Width="400"/>
-                    <Button Content="Open" Tag="Controller" Click="OpenButton_Click"/>
-                    <Button Content="Gen" Tag="Controller" Click="GenerateButton_Click"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="5">
                     <TextBlock Width="120" Text="Dto Path: "/>
                     <TextBox Text="{Binding DtoPath, UpdateSourceTrigger=PropertyChanged}" Width="400"/>
                     <Button Content="Open" Tag="Dto" Click="OpenButton_Click"/>
                     <Button Content="Gen" Tag="Dto" Click="GenerateButton_Click"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <TextBlock Width="120" Text="Controller Path: "/>
+                    <TextBox Text="{Binding ControllerPath, UpdateSourceTrigger=PropertyChanged}" Width="400"/>
+                    <Button Content="Open" Tag="Controller" Click="OpenButton_Click"/>
+                    <Button Content="Gen" Tag="Controller" Click="GenerateButton_Click"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="5">
                     <TextBlock Width="120" Text="Entity Path: "/>
