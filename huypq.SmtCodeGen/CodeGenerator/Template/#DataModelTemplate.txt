@@ -38,6 +38,7 @@ namespace Client.DataModel
         public override <EntityName>Dto ToDto()
         {
             var dto = new <EntityName>Dto();
+            dto.State = State;
             <ToDto>
 
             ToDtoPartial(ref dto);
