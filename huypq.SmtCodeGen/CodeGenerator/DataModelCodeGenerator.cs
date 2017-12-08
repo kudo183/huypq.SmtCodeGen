@@ -145,7 +145,7 @@ namespace huypq.SmtCodeGen
             var i = 1;
             foreach (var item in columnSettings)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "public {0} {1} {{ get {{ return _{1}; }} set {{ _{1} = value; OnPropertyChanged(); }} }}", item.DbColumn.DataType, item.GetColumnNameForCodeGen());
+                sb.AppendLineExWithTabAndFormat(baseTab, "public {0} {1} {{ get {{ return _{1}; }} set {{ SetField(ref _{1}, value); }} }}", item.DbColumn.DataType, item.GetColumnNameForCodeGen());
                 i++;
             }
 
@@ -201,7 +201,7 @@ namespace huypq.SmtCodeGen
                 sb.AppendLineExWithTabAndFormat(baseTab, "(o{0} != {0}) ||", item.GetColumnNameForCodeGen());
             }
 
-            var l = "||".Length + Constant.LineEnding.Length;
+            var l = " ||".Length + Constant.LineEnding.Length;
             sb.Remove(sb.Length - l, l);
 
             sb.AppendLineEx(";");
@@ -243,7 +243,7 @@ namespace huypq.SmtCodeGen
             sb.AppendLineEx();
             foreach (var item in foreignKeys)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "public object {0}DataSource {{ get {{ return _{0}DataSource; }} set {{ _{0}DataSource = value; OnPropertyChanged(); }} }}", item.GetColumnNameForCodeGen());
+                sb.AppendLineExWithTabAndFormat(baseTab, "public object {0}DataSource {{ get {{ return _{0}DataSource; }} set {{ SetField(ref _{0}DataSource, value); }} }}", item.GetColumnNameForCodeGen());
             }
 
             return sb.ToString();
@@ -286,7 +286,7 @@ namespace huypq.SmtCodeGen
         private static bool IsSkippedProperty(string propertyName)
         {
             if (propertyName == "ID"
-                ||propertyName == "TenantID"
+                || propertyName == "TenantID"
                 || propertyName == "CreateTime"
                 || propertyName == "LastUpdateTime")
             {

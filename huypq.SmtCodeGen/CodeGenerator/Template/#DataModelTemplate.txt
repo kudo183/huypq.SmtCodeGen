@@ -7,7 +7,7 @@ namespace Client.DataModel
     {
         partial void ToDtoPartial(ref <EntityName>Dto dto);
         partial void FromDtoPartial(<EntityName>Dto dto);
-		
+
         <DefaultValues>
 
         <PrivateFields>
