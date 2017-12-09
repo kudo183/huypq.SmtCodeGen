@@ -48,6 +48,7 @@ namespace Client.DataModel
 
         public override void FromDto(<EntityName>Dto dto)
         {
+            State = dto.State;
             <FromDto>
 
             FromDtoPartial(dto);
