@@ -176,6 +176,7 @@ namespace huypq.SmtCodeGen
                 var ts = new JsonTableSetting();
                 ts.ColumnSettingList = new List<JsonColumnSetting>();
                 ts.TableName = item.TableName;
+                ts.DisplayTextColumn = item.DisplayTextColumn;
                 foreach (var column in item.ColumnSettings)
                 {
                     ts.ColumnSettingList.Add(new JsonColumnSetting()
@@ -250,6 +251,7 @@ namespace huypq.SmtCodeGen
                     });
                 }
                 table.TableName = json.TableSettingList[i].TableName;
+                table.DisplayTextColumn = json.TableSettingList[i].DisplayTextColumn;
                 tableSettings.Add(table);
             }
             TableSettingsVM.TableSettings = tableSettings;
@@ -285,6 +287,7 @@ namespace huypq.SmtCodeGen
         class JsonTableSetting
         {
             public string TableName { get; set; }
+            public string DisplayTextColumn { get; set; }
             public List<JsonColumnSetting> ColumnSettingList { get; set; }
         }
         class JsonColumnSetting

@@ -191,6 +191,21 @@ namespace huypq.SmtCodeGen
             }
         }
 
+        private string displayTextColumn;
+
+        public string DisplayTextColumn
+        {
+            get { return displayTextColumn; }
+            set
+            {
+                if (displayTextColumn != value)
+                {
+                    displayTextColumn = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         private DbTable dbTable;
 
         public DbTable DbTable

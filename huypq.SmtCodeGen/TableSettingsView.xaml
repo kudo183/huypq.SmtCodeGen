@@ -14,21 +14,32 @@
                  SelectedItem="{Binding SelectedTableSetting}"
                  ItemsSource="{Binding TableSettings}"
                  DisplayMemberPath="TableName"/>
-        <DataGrid Grid.Column="1" x:Name="tableSetingGrid"
+        <StackPanel Grid.Column="1" Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="DisplayTextColumn: " Margin="5" VerticalAlignment="Center"/>
+                <ComboBox DataContext="{Binding SelectedTableSetting}" Margin="5" Width="120"
+                          ItemsSource="{Binding ColumnSettings}"
+                          DisplayMemberPath="ColumnName"
+                          SelectedValuePath="ColumnName"
+                          SelectedValue="{Binding DisplayTextColumn}"
+                          />
+            </StackPanel>
+            <DataGrid Grid.Column="1" x:Name="tableSetingGrid"
                   DataContext="{Binding SelectedTableSetting}"
                   ItemsSource="{Binding ColumnSettings}"
                   AutoGenerateColumns="True"
                   AutoGeneratingColumn="tableSetingGrid_AutoGeneratingColumn">
-            <DataGrid.Resources>
-                <Style TargetType="{x:Type DataGridRow}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ColumnName}" Value="ID">
-                            <Setter Property="IsEnabled" Value="False"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </DataGrid.Resources>
-        </DataGrid>
+                <DataGrid.Resources>
+                    <Style TargetType="{x:Type DataGridRow}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ColumnName}" Value="ID">
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.Resources>
+            </DataGrid>
+        </StackPanel>
         <GridSplitter Grid.Column="1" Width="2" VerticalAlignment="Stretch" HorizontalAlignment="Left"/>
     </Grid>
 </UserControl>

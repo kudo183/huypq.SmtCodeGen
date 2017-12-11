@@ -68,6 +68,14 @@ namespace huypq.SmtCodeGen
                     {
                         result.Append(FromDto(table.ColumnSettings, baseTab));
                     }
+                    else if (trimmed == "<SetPropertiesDependency>")
+                    {
+                        result.Append(SetPropertiesDependency(table.DisplayTextColumn, baseTab));
+                    }
+                    else if (trimmed == "<DisplayText>")
+                    {
+                        result.Append(DisplayText(table.DisplayTextColumn, baseTab));
+                    }
                     else
                     {
                         if (table.TableName == "SmtUser")
@@ -278,6 +286,36 @@ namespace huypq.SmtCodeGen
             foreach (var item in columnSettings)
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "{0} = dto.{0};", item.GetColumnNameForCodeGen());
+            }
+
+            return sb.ToString();
+        }
+
+        private static string SetPropertiesDependency(string displayTextColumn, string baseTab)
+        {
+            if (string.IsNullOrEmpty(displayTextColumn))
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder();
+
+            sb.AppendLineExWithTabAndFormat(baseTab, "SetDependentProperty(nameof({0}), new List<string>(){{nameof(DisplayText)}});", displayTextColumn);
+
+            return sb.ToString();
+        }
+
+        private static string DisplayText(string displayTextColumn, string baseTab)
+        {
+            var sb = new StringBuilder();
+
+            if (string.IsNullOrEmpty(displayTextColumn))
+            {
+                sb.AppendLineExWithTab(baseTab, "_displayText = base.DisplayText;");
+            }
+            else
+            {
+                sb.AppendLineExWithTabAndFormat(baseTab, "_displayText = {0}.ToString();", displayTextColumn);
             }
 
             return sb.ToString();
