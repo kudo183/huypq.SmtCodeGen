@@ -32,7 +32,7 @@
                 <DataGrid.Resources>
                     <Style TargetType="{x:Type DataGridRow}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ColumnName}" Value="ID">
+                            <DataTrigger Binding="{Binding DbColumn.IsPrimaryKey}" Value="true">
                                 <Setter Property="IsEnabled" Value="False"/>
                             </DataTrigger>
                         </Style.Triggers>
