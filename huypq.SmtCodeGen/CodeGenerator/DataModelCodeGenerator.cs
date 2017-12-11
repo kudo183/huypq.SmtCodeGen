@@ -228,7 +228,12 @@ namespace huypq.SmtCodeGen
 
             foreach (var item in foreignKeys)
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "public {0}DataModel {1}Navigation {{ get; set; }}", item.DbColumn.ForeignKeyTableName, item.GetColumnNameForCodeGen());
+                sb.AppendLineExWithTabAndFormat(baseTab, "{0}DataModel _{1}Navigation;", item.DbColumn.ForeignKeyTableName, item.GetColumnNameForCodeGen());
+            }
+            sb.AppendLineEx();
+            foreach (var item in foreignKeys)
+            {
+                sb.AppendLineExWithTabAndFormat(baseTab, "public {0}DataModel {1}Navigation {{ get {{ return _{1}Navigation; }} set {{ SetField(ref _{1}Navigation, value); }} }}", item.DbColumn.ForeignKeyTableName, item.GetColumnNameForCodeGen());
             }
 
             return sb.ToString();
