@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Security;
 using System.Text;
 
 namespace huypq.SmtCodeGen
 {
     public static class DatabaseUtils
     {
-        private static string serverName = ".";
         private static Dictionary<string, string> _typeMapping = new Dictionary<string, string>()
         {
             {"bigint", "long" },
@@ -46,10 +46,16 @@ namespace huypq.SmtCodeGen
             //{"xml", "System.Data.SqlTypes.SqlXml" }
         };
 
-        public static List<DbTable> FromDB(string dbName)
+        public static List<DbTable> FromDB(string dbName, string serverName, string user = null, SecureString pass = null)
         {
             var tables = new List<DbTable>();
-             var dicReferenceTable = new Dictionary<string, List<Reference>>();
+            var dicReferenceTable = new Dictionary<string, List<Reference>>();
+
+            var serverConnection = new Microsoft.SqlServer.Management.Common.ServerConnection(serverName);
+            if (string.IsNullOrEmpty(user) == false)
+            {
+                serverConnection = new Microsoft.SqlServer.Management.Common.ServerConnection(serverName, user, pass);
+            }
 
             var server = new Microsoft.SqlServer.Management.Smo.Server(serverName);
             var db = new Microsoft.SqlServer.Management.Smo.Database(server, dbName);

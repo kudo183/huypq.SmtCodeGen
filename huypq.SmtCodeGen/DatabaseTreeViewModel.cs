@@ -1,14 +1,13 @@
-﻿using SimpleDataGrid;
+﻿using huypq.wpf.Utils;
+using SimpleDataGrid;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace huypq.SmtCodeGen
 {
-    public class DbTable : INotifyPropertyChanged
+    public class DbTable : BindableObject
     {
         public string TableName { get; set; }
 
@@ -29,34 +28,10 @@ namespace huypq.SmtCodeGen
         public int ReferenceLevel { get; set; }
 
         private bool isSelected = true;
-
-        public bool IsSelected
-        {
-            get { return isSelected; }
-            set
-            {
-                isSelected = value;
-                OnPropertyChanged();
-            }
-        }
+        public bool IsSelected { get { return isSelected; } set { SetField(ref isSelected, value); } }
 
         private bool isExpanded;
-
-        public bool IsExpanded
-        {
-            get { return isExpanded; }
-            set
-            {
-                isExpanded = value; OnPropertyChanged();
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        public bool IsExpanded { get { return isExpanded; } set { SetField(ref isExpanded, value); } }
     }
 
     public class Reference
@@ -117,37 +92,19 @@ namespace huypq.SmtCodeGen
         public string ForeignKeyTableName { get; set; }
     }
 
-    public class DatabaseTreeVM : INotifyPropertyChanged
+    public class DatabaseTreeVM : BindableObject
     {
-        private string dBName;
+        private string dBServer;
+        public string DBServer { get { return dBServer; } set { SetField(ref dBServer, value); } }
 
-        public string DBName
-        {
-            get { return dBName; }
-            set
-            {
-                if (dBName != value)
-                {
-                    dBName = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        private string user;
+        public string User { get { return user; } set { SetField(ref user, value); } }
+
+        private string dBName;
+        public string DBName { get { return dBName; } set { SetField(ref dBName, value); } }
 
         private DateTime connectTime;
-
-        public DateTime ConnectTime
-        {
-            get { return connectTime; }
-            set
-            {
-                if (connectTime != value)
-                {
-                    connectTime = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        public DateTime ConnectTime { get { return connectTime; } set { SetField(ref connectTime, value); } }
 
         private List<DbTable> dbTables;
 
@@ -156,9 +113,8 @@ namespace huypq.SmtCodeGen
             get { return dbTables; }
             set
             {
-                dbTables = value;
                 var temp = new List<DbTable>();
-                foreach (var item in dbTables)
+                foreach (var item in value)
                 {
                     item.PropertyChanged -= Item_PropertyChanged;
                     item.PropertyChanged += Item_PropertyChanged;
@@ -168,7 +124,7 @@ namespace huypq.SmtCodeGen
                     }
                 }
                 selectedTables.Reset(temp);
-                OnPropertyChanged();
+                SetFieldWithoutCheckEqual(ref dbTables, value);
             }
         }
 
@@ -189,32 +145,11 @@ namespace huypq.SmtCodeGen
         }
 
         private ObservableCollectionEx<DbTable> selectedTables;
-        public ObservableCollectionEx<DbTable> SelectedTables
-        {
-            get
-            {
-                return selectedTables;
-            }
-            set
-            {
-                if (selectedTables != value)
-                {
-                    selectedTables = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        public ObservableCollectionEx<DbTable> SelectedTables { get { return selectedTables; } set { SetField(ref selectedTables, value); } }
 
         public DatabaseTreeVM()
         {
             selectedTables = new ObservableCollectionEx<DbTable>();
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

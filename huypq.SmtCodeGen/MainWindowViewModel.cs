@@ -145,6 +145,8 @@ namespace huypq.SmtCodeGen
         {
             var json = new JsonViewModel();
 
+            json.DBServer = DatabaseTreeVM.DBServer;
+            json.User = DatabaseTreeVM.User;
             json.DBName = DatabaseTreeVM.DBName;
             json.DbTableList = DatabaseTreeVM.DbTables;
             json.ConnectTime = DatabaseTreeVM.ConnectTime;
@@ -202,6 +204,8 @@ namespace huypq.SmtCodeGen
             var text = System.IO.File.ReadAllText(path);
             var json = Newtonsoft.Json.JsonConvert.DeserializeObject<JsonViewModel>(text);
 
+            DatabaseTreeVM.DBServer = json.DBServer;
+            DatabaseTreeVM.User = json.User;
             DatabaseTreeVM.DBName = json.DBName;
             DatabaseTreeVM.DbTables = json.DbTableList;
             DatabaseTreeVM.ConnectTime = json.ConnectTime;
@@ -259,6 +263,8 @@ namespace huypq.SmtCodeGen
 
         class JsonViewModel
         {
+            public string DBServer { get; set; }
+            public string User { get; set; }
             public string DBName { get; set; }
             public string ViewPath { get; set; }
             public string ViewModelPath { get; set; }

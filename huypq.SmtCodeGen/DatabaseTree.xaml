@@ -12,12 +12,26 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Margin="5" Text="DB Name: "/>
-            <TextBox Margin="5" Text="{Binding DBName, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
-            <Button Margin="5" x:Name="btnConnect" Content="Connect" IsDefault="True" Click="btnConnect_Click"/>
-            <TextBlock Text="{Binding DbTables.Count}" Foreground="Blue" VerticalAlignment="Center"/>
-            <TextBlock Text=" table(s)" VerticalAlignment="Center"/>
+        <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Margin="5" Text="DB Server: " Width="60"/>
+                <TextBox Margin="5" Text="{Binding DBServer, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Margin="5" Text="User: " Width="60"/>
+                <TextBox Margin="5" Text="{Binding User, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Margin="5" Text="Pass: " Width="60"/>
+                <PasswordBox x:Name="passBox" Margin="5" Width="150"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Margin="5" Text="DB Name: " Width="60"/>
+                <TextBox Margin="5" Text="{Binding DBName, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                <Button Margin="5" x:Name="btnConnect" Content="Connect" IsDefault="True" Click="btnConnect_Click"/>
+                <TextBlock Text="{Binding DbTables.Count}" Foreground="Blue" VerticalAlignment="Center"/>
+                <TextBlock Text=" table(s)" VerticalAlignment="Center"/>
+            </StackPanel>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <TextBlock Text="Connect time (UTC):  " VerticalAlignment="Center"/>

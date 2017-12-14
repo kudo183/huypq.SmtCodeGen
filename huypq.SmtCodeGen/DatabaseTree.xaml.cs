@@ -18,7 +18,8 @@ namespace huypq.SmtCodeGen
         {
             var vm = DataContext as DatabaseTreeVM;
             vm.ConnectTime = System.DateTime.UtcNow;
-            vm.DbTables = new List<DbTable>(DatabaseUtils.FromDB(vm.DBName));
+
+            vm.DbTables = new List<DbTable>(DatabaseUtils.FromDB(vm.DBName, vm.DBServer, vm.User, passBox.SecurePassword));
         }
 
         private void btnSelectAll_Click(object sender, RoutedEventArgs e)
