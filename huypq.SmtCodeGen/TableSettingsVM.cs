@@ -389,6 +389,14 @@ namespace huypq.SmtCodeGen
             }
         }
 
+        public bool IsNeedNavigationData
+        {
+            get
+            {
+                return dataGridColumnType == "DataGridForeignKeyColumn";
+            }
+        }
+
         private ObservableCollection<string> dataGridColumnTypeList;
 
         public ObservableCollection<string> DataGridColumnTypeList

@@ -5,6 +5,9 @@ using huypq.wpf.Utils;
 using SimpleDataGrid;
 using SimpleDataGrid.ViewModel;
 using Client.DataModel;
+using System.Collections.Generic;
+using huypq.SmtShared;
+using System.Linq;
 
 namespace Client.ViewModel
 {
@@ -14,8 +17,10 @@ namespace Client.ViewModel
         partial void LoadReferenceDataPartial();
         partial void ProcessDataModelBeforeAddToEntitiesPartial(<EntityName>DataModel dataModel);
         partial void ProcessNewAddedDataModelPartial(<EntityName>DataModel dataModel);
+        partial void AfterLoadPartial();
 
         <DeclareHeaderFilters>
+        <DeclareNavigationDictionaries>
 
         public <EntityName>ViewModel() : base()
         {
@@ -24,6 +29,13 @@ namespace Client.ViewModel
             InitFilterPartial();
 
             <AddHeaderFiltersToHeaderFilterCollection>
+        }
+
+        protected override void AfterLoad()
+        {
+            <AfterLoad>
+
+            AfterLoadPartial();
         }
 
         public override void LoadReferenceData()

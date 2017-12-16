@@ -29,6 +29,10 @@ namespace huypq.SmtCodeGen
                     {
                         result.Append(DeclareHeaderFilters(table.ColumnSettings, baseTab));
                     }
+                    else if (trimmed == "<DeclareNavigationDictionaries>")
+                    {
+                        result.Append(DeclareNavigationDictionaries(table.ColumnSettings, baseTab));
+                    }
                     else if (trimmed == "<InitHeaderFilters>")
                     {
                         result.Append(InitHeaderFilters(table.ColumnSettings, table.TableName, baseTab));
@@ -36,6 +40,10 @@ namespace huypq.SmtCodeGen
                     else if (trimmed == "<AddHeaderFiltersToHeaderFilterCollection>")
                     {
                         result.Append(AddHeaderFiltersToHeaderFilterCollection(table.ColumnSettings, baseTab));
+                    }
+                    else if (trimmed == "<AfterLoad>")
+                    {
+                        result.Append(AfterLoad(table.ColumnSettings, baseTab));
                     }
                     else if (trimmed == "<LoadReferenceDatas>")
                     {
@@ -76,6 +84,24 @@ namespace huypq.SmtCodeGen
             foreach (var item in columns)
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "HeaderFilterBaseModel _{0}Filter;", item.GetColumnNameForCodeGen());
+            }
+
+            return sb.ToString();
+        }
+
+        private static string DeclareNavigationDictionaries(IEnumerable<ColumnSetting> columns, string baseTab)
+        {
+            var needNavigationData = columns.Where(p => p.DbColumn.IsForeignKey && p.IsNeedNavigationData == true);
+            if (needNavigationData.Count() == 0)
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder();
+
+            foreach (var item in needNavigationData)
+            {
+                sb.AppendLineExWithTabAndFormat(baseTab, "Dictionary<int, {0}DataModel> _{1}s;", item.DbColumn.ForeignKeyTableName, item.GetColumnNameForCodeGen());
             }
 
             return sb.ToString();
@@ -150,6 +176,31 @@ namespace huypq.SmtCodeGen
                 sb.AppendLineExWithTabAndFormat(baseTab, "AddHeaderFilter(_{0}Filter);", item.GetColumnNameForCodeGen());
             }
 
+            return sb.ToString();
+        }
+
+        private static string AfterLoad(IEnumerable<ColumnSetting> columns, string baseTab)
+        {
+            var needNavigationData = columns.Where(p => p.DbColumn.IsForeignKey && p.IsNeedNavigationData == true);
+            if (needNavigationData.Count() == 0)
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder();
+
+            foreach (var item in needNavigationData)
+            {
+                sb.AppendLineExWithTabAndFormat(baseTab, "_{0}s = DataService.GetByListInt<{1}Dto, {1}DataModel>(nameof(IDto.ID), Entities.Select(p => p.{0}).ToList()).ToDictionary(p => p.ID);", item.GetColumnNameForCodeGen(), item.DbColumn.ForeignKeyTableName);
+            }
+            sb.AppendLineExWithTab(baseTab, "foreach (var dataModel in Entities)");
+            sb.AppendLineExWithTab(baseTab, "{");
+            var tab1 = baseTab + Constant.Tab;
+            foreach (var item in needNavigationData)
+            {
+                sb.AppendLineExWithTabAndFormat(tab1, "dataModel.{0}Navigation = _{0}s[dataModel.{0}];", item.GetColumnNameForCodeGen());
+            }
+            sb.AppendLineExWithTab(baseTab, "}");
             return sb.ToString();
         }
 
