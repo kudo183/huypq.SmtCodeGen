@@ -36,9 +36,13 @@ namespace huypq.SmtCodeGen
                     {
                         result.Append(InitEntityProperties(table.ColumnSettings, baseTab));
                     }
-                    else if (trimmed == "<OverrideUpdateEntity>")
+                    else if (trimmed == "<OverrideUpdateEntityEFCore>")
                     {
-                        result.Append(OverrideUpdateEntity(table, baseTab));
+                        result.Append(OverrideUpdateEntityEFCore(table, baseTab));
+                    }
+                    else if (trimmed == "<OverrideUpdateEntityEFFull>")
+                    {
+                        result.Append(OverrideUpdateEntityEFFull(table, baseTab));
                     }
                     else
                     {
@@ -133,7 +137,7 @@ namespace huypq.SmtCodeGen
             return sb.ToString();
         }
 
-        private static string OverrideUpdateEntity(TableSetting tableSetting, string baseTab)
+        private static string OverrideUpdateEntityEFCore(TableSetting tableSetting, string baseTab)
         {
             if (tableSetting.ColumnSettings.Count() == 0)
             {
@@ -145,10 +149,35 @@ namespace huypq.SmtCodeGen
             if (list.Count > 0)
             {
                 var tab1 = baseTab + Constant.Tab;
-                sb.AppendLineEx();
+
                 sb.AppendLineExWithTabAndFormat(baseTab, "protected override void UpdateEntity(SqlDbContext context, {0} entity)", tableSetting.TableName);
                 sb.AppendLineExWithTab(baseTab, "{");
                 sb.AppendLineExWithTabAndFormat(tab1, "var entry = context.{0}.Update(entity);", tableSetting.TableName);
+                foreach (var item in list)
+                {
+                    sb.AppendLineExWithTabAndFormat(tab1, "entry.Property(p => p.{0}).IsModified = false;", item.ColumnName);
+                }
+                sb.AppendLineExWithTab(baseTab, "}");
+            }
+            return sb.ToString();
+        }
+
+        private static string OverrideUpdateEntityEFFull(TableSetting tableSetting, string baseTab)
+        {
+            if (tableSetting.ColumnSettings.Count() == 0)
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder();
+            var list = tableSetting.ColumnSettings.Where(item => item.IsReadOnly == true && item.DbColumn.IsIdentity == false && item.IsSmtColumn() == false).ToList();
+            if (list.Count > 0)
+            {
+                var tab1 = baseTab + Constant.Tab;
+
+                sb.AppendLineExWithTabAndFormat(baseTab, "protected override void UpdateEntity(SqlDbContext context, {0} entity)", tableSetting.TableName);
+                sb.AppendLineExWithTab(baseTab, "{");
+                sb.AppendLineExWithTabAndFormat(tab1, "var entry = context.Entry(entity);");
                 foreach (var item in list)
                 {
                     sb.AppendLineExWithTabAndFormat(tab1, "entry.Property(p => p.{0}).IsModified = false;", item.ColumnName);

@@ -112,22 +112,18 @@ namespace huypq.SmtCodeGen
                     columns.Add(entityProperty);
 
                     //hascolumntype
-                    if (sqlDataType == "datetime2"
+                    if (sqlDataType == "decimal"
+                        || sqlDataType == "numeric"
+                        || sqlDataType == "datetime2"
                         || sqlDataType == "datetimeoffset"
                         || sqlDataType == "time")
                     {
                         hasColumnTypes.Add(new HasColumnType()
                         {
                             PropertyName = item.Name,
-                            TypeName = sqlDataType + "(" + item.DataType.NumericScale + ")"
-                        });
-                    }
-                    else if (sqlDataType == "decimal" || sqlDataType == "numeric")
-                    {
-                        hasColumnTypes.Add(new HasColumnType()
-                        {
-                            PropertyName = item.Name,
-                            TypeName = sqlDataType + "(" + item.DataType.NumericPrecision + "," + item.DataType.NumericScale + ")"
+                            TypeName = sqlDataType,
+                            NumericPrecision = item.DataType.NumericPrecision,
+                            NumericScale = item.DataType.NumericScale
                         });
                     }
 
@@ -167,11 +163,8 @@ namespace huypq.SmtCodeGen
                     DefaultValues = new ObservableCollection<DefaultValue>(defaultValues),
                     HasColumnTypes = new ObservableCollection<HasColumnType>(hasColumnTypes)
                 };
-                if (table.Name == "SmtDeletedItem"
-                    || table.Name == "SmtTable"
-                    || table.Name == "SmtTenant"
-                    || table.Name == "SmtUser"
-                    || table.Name == "SmtUserClaim")
+
+                if (table.Name.StartsWith("Smt"))
                 {
                     t.IsSelected = false;
                 }
@@ -179,6 +172,7 @@ namespace huypq.SmtCodeGen
                 {
                     t.IsSelected = true;
                 }
+
                 tables.Add(t);
             }
 

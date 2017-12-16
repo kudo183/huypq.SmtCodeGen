@@ -14,6 +14,7 @@ namespace huypq.SmtCodeGen
         public static void GenDbContextAndEntitiesClass(IEnumerable<TableSetting> tables, string outputPath)
         {
             var result = new StringBuilder();
+            result.AppendLineEx("//user tepmlate tag <ModelBuilderConfigEFFull> to generate context class for EF Full, <ModelBuilderConfigEFCore> to generate context class for EF Core.");
             var classKeyword = " class ";
             var contextName = "";
             foreach (var line in System.IO.File.ReadLines(System.IO.Path.Combine(outputPath, DbContextTemplateFileName)))
@@ -31,9 +32,13 @@ namespace huypq.SmtCodeGen
                 var trimmedEnd = line.TrimEnd();
                 var trimmed = trimmedEnd.TrimStart();
                 var baseTab = trimmedEnd.Substring(0, trimmedEnd.Length - trimmed.Length);
-                if (trimmed == "<ModelBuilderConfig>")
+                if (trimmed == "<ModelBuilderConfigEFCore>")
                 {
-                    result.Append(ModelBuilderConfig(tables, baseTab));
+                    result.Append(ModelBuilderConfigEFCore(tables, baseTab));
+                }
+                else if (trimmed == "<ModelBuilderConfigEFFull>")
+                {
+                    result.Append(ModelBuilderConfigEFFull(tables, baseTab));
                 }
                 else if (trimmed == "<DbSetProperties>")
                 {
@@ -185,7 +190,7 @@ namespace huypq.SmtCodeGen
             return sb.ToString();
         }
 
-        private static string ModelBuilderConfig(IEnumerable<TableSetting> tables, string baseTab)
+        private static string ModelBuilderConfigEFCore(IEnumerable<TableSetting> tables, string baseTab)
         {
             if (tables.Count() == 0)
             {
@@ -253,7 +258,7 @@ namespace huypq.SmtCodeGen
 
                 foreach (var hasColumnType in table.DbTable.HasColumnTypes)
                 {
-                    sb.AppendLineExWithTabAndFormat(tab1, "entity.Property(p => p.{0}).HasColumnType(\"{1}\");", hasColumnType.PropertyName, hasColumnType.TypeName);
+                    sb.AppendLineExWithTabAndFormat(tab1, "entity.Property(p => p.{0}).HasColumnType(\"{1}\");", hasColumnType.PropertyName, hasColumnType.GetEFCoreColumnType());
                 }
 
                 foreach (var requiredMaxLength in table.DbTable.RequiredMaxLengths)
@@ -298,6 +303,92 @@ namespace huypq.SmtCodeGen
                 sb.AppendLineEx();
             }
 
+            sb.Remove(sb.Length - Constant.LineEnding.Length, Constant.LineEnding.Length);
+            return sb.ToString();
+        }
+
+        private static string ModelBuilderConfigEFFull(IEnumerable<TableSetting> tables, string baseTab)
+        {
+            if (tables.Count() == 0)
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder();
+            var tab1 = baseTab + Constant.Tab;
+            var tab2 = tab1 + Constant.Tab;
+            foreach (var table in tables)
+            {
+                var UpperedTableName = DatabaseUtils.UpperFirstLetter(table.TableName);
+                var prefix = string.Format("modelBuilder.Entity<{0}>()", UpperedTableName);
+
+                if (table.TableName != UpperedTableName)
+                {
+                    sb.AppendLineExWithTabAndFormat(baseTab, "{0}.ToTable(\"{1}\");", prefix, table.TableName);
+                }
+
+                foreach (var index in table.DbTable.Indexes)
+                {
+                    switch (index.IndexType)
+                    {
+                        case 0:
+                            sb.AppendLineExWithTabAndFormat(baseTab, "{0}.HasIndex(p => p.{1});", prefix, index.PropertyName);
+                            break;
+                        case 1:
+                            sb.AppendLineExWithTabAndFormat(baseTab, "{0}.HasKey(p => p.{1});", prefix, Constant.PrimaryKey);
+                            break;
+                        case 2:
+                            sb.AppendLineExWithTabAndFormat(baseTab, "{0}.HasIndex(p => p.{1}).IsUnique();", prefix, index.PropertyName);
+                            break;
+                    }
+                }
+
+                var pkColumn = table.ColumnSettings.First(p => p.DbColumn.IsIdentity);
+                if (pkColumn.DbColumn.ColumnName != Constant.PrimaryKey)
+                {
+                    sb.AppendLineExWithTabAndFormat(baseTab, "{0}.Property(p => p.ID).HasColumnName(\"{1}\");", prefix, pkColumn.DbColumn.ColumnName);
+                }
+
+                foreach (var hasColumnType in table.DbTable.HasColumnTypes)
+                {
+                    sb.AppendLineExWithTabAndFormat(baseTab, "{0}.Property(p => p.{1}).HasColumnType(\"{2}\"){3};", prefix, hasColumnType.PropertyName, hasColumnType.TypeName, hasColumnType.GetEFFullColumnPrecision());
+                }
+
+                foreach (var requiredMaxLength in table.DbTable.RequiredMaxLengths)
+                {
+                    sb.AppendTabAndFormat(baseTab, "{0}.Property(p => p.{1})", prefix, requiredMaxLength.PropertyName);
+                    if (requiredMaxLength.NeedIsRequired == true)
+                    {
+                        sb.Append(".IsRequired()");
+                    }
+                    if (requiredMaxLength.MaxLength > 0)
+                    {
+                        sb.AppendFormat(".HasMaxLength({0})", requiredMaxLength.MaxLength);
+                    }
+                    sb.AppendLineEx(";");
+                }
+
+                foreach (var foreignKey in table.DbTable.ForeignKeys)
+                {
+                    sb.AppendTabAndFormat(baseTab, "{0}.HasRequired(d => d.{1}Navigation)", prefix, foreignKey.PropertyName);
+                    sb.AppendFormat(".WithMany(p => p.{0}{1}Navigation)", UpperedTableName, foreignKey.PropertyName);
+                    sb.AppendFormat(".HasForeignKey(d => d.{0})", foreignKey.PropertyName);
+                    if (foreignKey.DeleteAction == 0)
+                    {
+                        sb.Append(".WillCascadeOnDelete(false)");
+                    }
+                    else if (foreignKey.DeleteAction == 1)
+                    {
+                        //set null
+                    }
+                    else if (foreignKey.DeleteAction == 2)
+                    {
+                        sb.Append(".WillCascadeOnDelete(true)");
+                    }
+                    sb.AppendLineEx(";");
+                }
+                sb.AppendLineEx();
+            }
             sb.Remove(sb.Length - Constant.LineEnding.Length, Constant.LineEnding.Length);
             return sb.ToString();
         }

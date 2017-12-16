@@ -97,7 +97,7 @@ namespace Server.Entities
 
             });
 
-            <ModelBuilderConfig>
+            <ModelBuilderConfigEFCore>
 
             OnModelCreatingPartial(modelBuilder);
         }
