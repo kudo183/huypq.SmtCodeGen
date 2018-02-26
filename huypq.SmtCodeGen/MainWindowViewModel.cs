@@ -121,6 +121,21 @@ namespace huypq.SmtCodeGen
             }
         }
 
+        private string angular2Path;
+
+        public string Angular2Path
+        {
+            get { return angular2Path; }
+            set
+            {
+                if (angular2Path != value)
+                {
+                    angular2Path = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public IEnumerable<CultureInfo> LanguageNameList { get; set; }
 
         public ObservableCollection<string> Messages { get; set; }
@@ -158,6 +173,7 @@ namespace huypq.SmtCodeGen
             json.ViewModelPath = viewModelPath;
             json.ViewPath = viewPath;
             json.DataModelPath = dataModelPath;
+            json.Angular2Path = angular2Path;
 
             json.MasterDetailList = new List<JsonMasterDetail>();
             foreach (var item in MasterDetailSelectorVM.MasterDetailList)
@@ -194,7 +210,7 @@ namespace huypq.SmtCodeGen
                 }
                 json.TableSettingList.Add(ts);
             }
-            
+
             string output = Newtonsoft.Json.JsonConvert.SerializeObject(json, Newtonsoft.Json.Formatting.Indented);
             System.IO.File.WriteAllText(path, output);
         }
@@ -216,6 +232,7 @@ namespace huypq.SmtCodeGen
             ControllerPath = json.ControllerPath;
             DtoPath = json.DtoPath;
             EntityPath = json.EntityPath;
+            Angular2Path = json.Angular2Path;
             DataModelPath = json.DataModelPath;
 
             int masterDetailListCount = json.MasterDetailList.Count;
@@ -272,6 +289,7 @@ namespace huypq.SmtCodeGen
             public string ControllerPath { get; set; }
             public string DtoPath { get; set; }
             public string EntityPath { get; set; }
+            public string Angular2Path { get; set; }
             public string DataModelPath { get; set; }
             public List<JsonMasterDetail> MasterDetailList { get; set; }
             public List<JsonTableSetting> TableSettingList { get; set; }

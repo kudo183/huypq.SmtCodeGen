@@ -1,0 +1,31 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-test-gen',
+  styles: [`
+    .item {
+        cursor: pointer;
+    }
+
+    .active {
+        background: blue;
+    }
+  `],
+  template: `
+    <h-split-panel [isVertical]="false">
+      <div *hSplitPanel="20">
+          <div class="item" *ngFor="let item of items" [ngClass]="{active:selectedItem===item}" (click)="selectedItem=item;">{{item}}</div>
+      </div>
+      <div *hSplitPanel="80">
+          <ng-container [ngSwitch]="selectedItem">
+              <NgSwitchCases>
+          </ng-container>
+      </div>
+    </h-split-panel>
+    `
+})
+
+export class TestGenComponent {
+  <DeclareItems>
+  selectedItems;
+}

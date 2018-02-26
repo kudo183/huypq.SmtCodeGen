@@ -96,6 +96,9 @@ namespace huypq.SmtCodeGen
                 case "Entity":
                     GenEntity(vm.EntityPath);
                     break;
+                case "Angular2":
+                    GenAngular2(vm.Angular2Path);
+                    break;
                 case "ComplexView":
                     GenComplexView(vm.ViewPath);
                     break;
@@ -151,6 +154,9 @@ namespace huypq.SmtCodeGen
                 case "Entity":
                     OpenPath(vm.EntityPath);
                     break;
+                case "Angular2":
+                    OpenPath(vm.Angular2Path);
+                    break;
             }
         }
 
@@ -164,6 +170,7 @@ namespace huypq.SmtCodeGen
             GenController(vm.ControllerPath);
             GenEntity(vm.EntityPath);
             GenComplexView(vm.ViewPath);
+            GenAngular2(vm.Angular2Path);
         }
 
         private void OpenPath(string path)
@@ -225,6 +232,15 @@ namespace huypq.SmtCodeGen
             vm.Messages.Add(string.Format("{0} | Generating Complex View ...", DateTime.Now));
 
             ComplexViewCodeGenerator.GenComplexViewCode(vm.MasterDetailSelectorVM.MasterDetailList, vm.TableSettingsVM.TableSettings, path);
+        }
+
+        private void GenAngular2(string path)
+        {
+            vm.Messages.Add(string.Format("{0} | Generating Angular 2 ...", DateTime.Now));
+
+            Angular2HtmlCodeGenerator.GenAngular2Html(vm.TableSettingsVM.TableSettings, path);
+
+            Angular2TSCodeGenerator.GenAngular2TS(vm.TableSettingsVM.TableSettings, path);
         }
     }
 }

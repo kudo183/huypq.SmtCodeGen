@@ -1,0 +1,29 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { HTopMenuModule, HSimpleGridModule, HComboBoxModule, HNumberModule, HWindowModule, HSplitPanelModule, HDraggableModule } from '../shared';
+
+<Imports>
+
+<Exports>
+
+@NgModule({
+  imports: [
+    CommonModule,
+    FormsModule,
+    HTopMenuModule,
+    HSimpleGridModule,
+    HComboBoxModule,
+    HNumberModule,
+    HWindowModule,
+    HSplitPanelModule,
+    HDraggableModule
+  ],
+  declarations: [
+    <Declarations_exports>
+  ],
+  exports: [
+    <Declarations_exports>
+  ]
+})
+export class GenModule { }

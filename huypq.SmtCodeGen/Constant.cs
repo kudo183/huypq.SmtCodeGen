@@ -5,5 +5,6 @@
         public const string LineEnding = "\r\n";
         public const string Tab = "    ";
         public const string PrimaryKey = "ID";
+        public const string JsTab = "  ";
     }
 }

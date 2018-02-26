@@ -68,6 +68,12 @@
                     <Button Content="Open" Tag="Entity" Click="OpenButton_Click"/>
                     <Button Content="Gen" Tag="Entity" Click="GenerateButton_Click"/>
                 </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <TextBlock Width="120" Text="Angular 2 Path: "/>
+                    <TextBox Text="{Binding Angular2Path, UpdateSourceTrigger=PropertyChanged}" Width="400"/>
+                    <Button Content="Open" Tag="Angular2" Click="OpenButton_Click"/>
+                    <Button Content="Gen" Tag="Angular2" Click="GenerateButton_Click"/>
+                </StackPanel>
             </StackPanel>
             <Grid Background="BlanchedAlmond" Grid.Row="1">
                 <Grid.RowDefinitions>

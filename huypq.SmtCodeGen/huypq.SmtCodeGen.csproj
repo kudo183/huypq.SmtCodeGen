@@ -75,6 +75,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CodeGenerator\Angular2TSCodeGenerator.cs" />
+    <Compile Include="CodeGenerator\Angular2HtmlCodeGenerator.cs" />
     <Compile Include="CodeGenerator\ComplexViewCodeGenerator.cs" />
     <Compile Include="CodeGenerator\DataModelCodeGenerator.cs" />
     <Compile Include="CodeGenerator\TextManagerCodeGenerator.cs" />
@@ -185,6 +187,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="CodeGenerator\Template\#DataModelTemplate.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CodeGenerator\Template\#Angular2HtmlTemplate.html.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CodeGenerator\Template\#Angular2TSTemplate.ts.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
