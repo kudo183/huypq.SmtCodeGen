@@ -125,7 +125,7 @@ namespace huypq.SmtCodeGen
             if (columnSetting.DataGridColumnType == "DataGridComboBoxColumnExt")
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "<h-column [type]=\"EditorTypeEnum.HComboBox\" cellValueProperty=\"{0}\" [cellValueType]=\"DataTypeEnum.Int\" itemsSourceName=\"{0}Source\" itemTextPath=\"displayText\" itemValuePath=\"id\">", lowerFirstCharColumnName);
-                sb.AppendLineExWithTabAndFormat(tab1, "<h-header headerText=\"{0}\" [filterOperatorType]=\"FilterOperatorTypeEnum.NUMBER\" [filterType]=\"EditorTypeEnum.TextBox\"></h-header>", columnName);
+                sb.AppendLineExWithTabAndFormat(tab1, "<h-header headerText=\"{0}\" [filterOperatorType]=\"FilterOperatorTypeEnum.NUMBER\" [filterType]=\"EditorTypeEnum.HComboBox\" itemTextPath=\"displayText\" itemValuePath=\"id\"></h-header>", columnName);
                 sb.AppendTab(baseTab, "</h-column>");
                 return sb.ToString();
             }
@@ -133,7 +133,7 @@ namespace huypq.SmtCodeGen
             if (columnSetting.DataGridColumnType == "DataGridForeignKeyColumn")
             {
                 sb.AppendLineExWithTabAndFormat(baseTab, "<h-column [type]=\"EditorTypeEnum.HForeignKeyPicker\" cellValueProperty=\"{0}\" [cellValueType]=\"DataTypeEnum.Int\" itemValuePath=\"id\" [component]=\"{0}Window\">", lowerFirstCharColumnName);
-                sb.AppendLineExWithTabAndFormat(tab1, "<h-header headerText=\"{0}\" [filterOperatorType]=\"FilterOperatorTypeEnum.NUMBER\" [filterType]=\"EditorTypeEnum.HComboBox\" itemTextPath=\"displayText\" itemValuePath=\"id\"></h-header>", columnName);
+                sb.AppendLineExWithTabAndFormat(tab1, "<h-header headerText=\"{0}\" [filterOperatorType]=\"FilterOperatorTypeEnum.NUMBER\" [filterType]=\"EditorTypeEnum.TextBox\"></h-header>", columnName);
                 sb.AppendTab(baseTab, "</h-column>");
                 return sb.ToString();
             }

@@ -194,6 +194,10 @@
   <ItemGroup>
     <Resource Include="CodeGenerator\Template\#Angular2TSTemplate.ts.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CodeGenerator\Template\#Angular2IndexTemplate.ts.txt" />
+    <Resource Include="CodeGenerator\Template\#Angular2TestGenTemplate.ts.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
