@@ -132,7 +132,7 @@ namespace huypq.SmtCodeGen
 
             if (columnSetting.DataGridColumnType == "DataGridForeignKeyColumn")
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "<h-column [type]=\"EditorTypeEnum.HForeignKeyPicker\" cellValueProperty=\"{0}\" [cellValueType]=\"DataTypeEnum.Int\" itemValuePath=\"id\" [component]=\"{0}Window\">", lowerFirstCharColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "<h-column [type]=\"EditorTypeEnum.HForeignKeyPicker\" cellValueProperty=\"{0}\" [cellValueType]=\"DataTypeEnum.Int\" itemValuePath=\"id\" itemTextPath=\"displayText\" itemName=\"{0}Navigation\" [component]=\"{0}Window\">", lowerFirstCharColumnName);
                 sb.AppendLineExWithTabAndFormat(tab1, "<h-header headerText=\"{0}\" [filterOperatorType]=\"FilterOperatorTypeEnum.NUMBER\" [filterType]=\"EditorTypeEnum.TextBox\"></h-header>", columnName);
                 sb.AppendTab(baseTab, "</h-column>");
                 return sb.ToString();
@@ -153,12 +153,12 @@ namespace huypq.SmtCodeGen
                 case "DataGridCheckBoxColumnExt":
                     editorType = "CheckBox";
                     dataType = "Bool";
-                    filterOperatorType = "Number";
+                    filterOperatorType = "NUMBER";
                     break;
                 case "DataGridRightAlignTextColumn":
                     editorType = "HNumber";
                     dataType = "Int";
-                    filterOperatorType = "Number";
+                    filterOperatorType = "NUMBER";
                     break;
             }
             sb.AppendLineExWithTabAndFormat(baseTab, "<h-column [type]=\"EditorTypeEnum.{0}\" cellValueProperty=\"{1}\" [cellValueType]=\"DataTypeEnum.{2}\">", editorType, lowerFirstCharColumnName, dataType);
