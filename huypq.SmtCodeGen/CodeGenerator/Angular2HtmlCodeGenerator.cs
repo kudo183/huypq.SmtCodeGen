@@ -120,11 +120,13 @@ namespace huypq.SmtCodeGen
             var dataType = "";
             var filterOperatorType = "";
             var tab1 = baseTab + Constant.Tab;
+            var isReadOnly = columnSetting.IsReadOnly ? " [isReadOnly]=\"true\"" : "";
+            var isTabStop = columnSetting.IsTabStop ? "" : " [isTabStop]=\"false\"";
 
             var sb = new StringBuilder();
             if (columnSetting.DataGridColumnType == "DataGridComboBoxColumnExt")
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "<h-column [type]=\"EditorTypeEnum.HComboBox\" cellValueProperty=\"{0}\" [cellValueType]=\"DataTypeEnum.Int\" itemsSourceName=\"{0}Source\" itemTextPath=\"displayText\" itemValuePath=\"id\">", lowerFirstCharColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "<h-column [type]=\"EditorTypeEnum.HComboBox\" cellValueProperty=\"{0}\" [cellValueType]=\"DataTypeEnum.Int\" itemsSourceName=\"{0}Source\" itemTextPath=\"displayText\" itemValuePath=\"id\"{1}{2}>", lowerFirstCharColumnName, isReadOnly, isTabStop);
                 sb.AppendLineExWithTabAndFormat(tab1, "<h-header headerText=\"{0}\" [filterOperatorType]=\"FilterOperatorTypeEnum.NUMBER\" [filterType]=\"EditorTypeEnum.HComboBox\" itemTextPath=\"displayText\" itemValuePath=\"id\"></h-header>", columnName);
                 sb.AppendTab(baseTab, "</h-column>");
                 return sb.ToString();
@@ -132,7 +134,7 @@ namespace huypq.SmtCodeGen
 
             if (columnSetting.DataGridColumnType == "DataGridForeignKeyColumn")
             {
-                sb.AppendLineExWithTabAndFormat(baseTab, "<h-column [type]=\"EditorTypeEnum.HForeignKeyPicker\" cellValueProperty=\"{0}\" [cellValueType]=\"DataTypeEnum.Int\" itemValuePath=\"id\" itemTextPath=\"displayText\" itemName=\"{0}Navigation\" [component]=\"{0}Window\">", lowerFirstCharColumnName);
+                sb.AppendLineExWithTabAndFormat(baseTab, "<h-column [type]=\"EditorTypeEnum.HForeignKeyPicker\" cellValueProperty=\"{0}\" [cellValueType]=\"DataTypeEnum.Int\" itemValuePath=\"id\" itemTextPath=\"displayText\" itemName=\"{0}Navigation\" [component]=\"{0}Window\"{1}{2}>", lowerFirstCharColumnName, isReadOnly, isTabStop);
                 sb.AppendLineExWithTabAndFormat(tab1, "<h-header headerText=\"{0}\" [filterOperatorType]=\"FilterOperatorTypeEnum.NUMBER\" [filterType]=\"EditorTypeEnum.TextBox\"></h-header>", columnName);
                 sb.AppendTab(baseTab, "</h-column>");
                 return sb.ToString();
@@ -161,7 +163,7 @@ namespace huypq.SmtCodeGen
                     filterOperatorType = "NUMBER";
                     break;
             }
-            sb.AppendLineExWithTabAndFormat(baseTab, "<h-column [type]=\"EditorTypeEnum.{0}\" cellValueProperty=\"{1}\" [cellValueType]=\"DataTypeEnum.{2}\">", editorType, lowerFirstCharColumnName, dataType);
+            sb.AppendLineExWithTabAndFormat(baseTab, "<h-column [type]=\"EditorTypeEnum.{0}\" cellValueProperty=\"{1}\" [cellValueType]=\"DataTypeEnum.{2}\"{3}{4}>", editorType, lowerFirstCharColumnName, dataType, isReadOnly, isTabStop);
             sb.AppendLineExWithTabAndFormat(tab1, "<h-header headerText=\"{0}\" [filterOperatorType]=\"FilterOperatorTypeEnum.{1}\" [filterType]=\"EditorTypeEnum.{2}\"></h-header>", columnName, filterOperatorType, editorType);
             sb.AppendTab(baseTab, "</h-column>");
             return sb.ToString();
