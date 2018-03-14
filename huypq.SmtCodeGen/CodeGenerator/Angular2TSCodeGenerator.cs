@@ -214,16 +214,18 @@ namespace huypq.SmtCodeGen
         {
             var sb = new StringBuilder();
 
+            var tab1 = baseTab + Constant.JsTab;
+            var tab2 = tab1 + Constant.JsTab;
+
             var needReferenceDataColumn = columnSettings.Where(p => p.IsNeedReferenceData).ToList();
 
             if (needReferenceDataColumn.Count() == 0)
             {
-                sb.AppendLineExWithTab(baseTab, "this.onLoad(undefined);");
+                sb.AppendLineExWithTab(baseTab, "this.partialMethodService.loadReferenceDataPartial(this.className, [this]).subscribe(event => {");
+                sb.AppendLineExWithTab(tab1, "if (this.autoLoad === true) { this.onLoad(undefined); }");
+                sb.AppendLineExWithTab(baseTab, "});");
                 return sb.ToString();
             }
-
-            var tab1 = baseTab + Constant.JsTab;
-            var tab2 = tab1 + Constant.JsTab;
 
             var columnNameArray = needReferenceDataColumn.Select(p => $"'{p.DbColumn.ForeignKeyTableName}'").Aggregate((i, j) => $"{i}, {j}");
 
@@ -240,7 +242,7 @@ namespace huypq.SmtCodeGen
             }
 
             sb.AppendLineExWithTab(tab1, "this.partialMethodService.loadReferenceDataPartial(this.className, [this]).subscribe(event => {");
-            sb.AppendLineExWithTab(tab2, "this.onLoad(undefined);");
+            sb.AppendLineExWithTab(tab2, "if (this.autoLoad === true) { this.onLoad(undefined); }");
             sb.AppendLineExWithTab(tab1, "});");
             sb.AppendLineExWithTab(baseTab, "});");
             return sb.ToString();
