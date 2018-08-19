@@ -105,6 +105,19 @@ namespace huypq.SmtCodeGen
                 case "All":
                     GenAllCode();
                     break;
+                case "Client":
+                    GenView(vm.ViewPath);
+                    GenViewModel(vm.ViewModelPath);
+                    GenDataModel(vm.DataModelPath);
+                    GenText(vm.TextPath);
+                    GenDto(vm.DtoPath);
+                    GenComplexView(vm.ViewPath);
+                    break;
+                case "Server":
+                    GenDto(vm.DtoPath);
+                    GenController(vm.ControllerPath);
+                    GenEntity(vm.EntityPath);
+                    break;
             }
 
             vm.Messages.Add(string.Format("{0} | Done.", DateTime.Now));

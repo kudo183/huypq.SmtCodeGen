@@ -24,7 +24,9 @@
                 <StackPanel Orientation="Horizontal">
                     <Button Content="Save" Width="150" FontWeight="Bold" Margin="5" Click="SaveButton_Click"/>
                     <Button Content="Load" Width="150" FontWeight="Bold" Margin="5" Click="LoadButton_Click"/>
-                    <Button Content="GenAll" Tag="All" Width="150" FontWeight="Bold" Margin="5" Click="GenerateButton_Click"/>
+                    <Button Content="GenAll" Tag="All" Width="80" FontWeight="Bold" Margin="5" Click="GenerateButton_Click"/>
+                    <Button Content="GenClient" Tag="Client" Width="80" FontWeight="Bold" Margin="5" Click="GenerateButton_Click"/>
+                    <Button Content="GenServer" Tag="Server" Width="80" FontWeight="Bold" Margin="5" Click="GenerateButton_Click"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="5">
                     <TextBlock Width="120" Text="View Path: "/>
