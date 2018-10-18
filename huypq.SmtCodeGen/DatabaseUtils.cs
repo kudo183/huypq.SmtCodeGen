@@ -94,7 +94,7 @@ namespace huypq.SmtCodeGen
                 {
                     var sqlDataType = item.DataType.Name;
                     var dotnetType = _typeMapping[sqlDataType];
-                    if (item.Nullable == true && dotnetType != "string")
+                    if (item.Nullable == true && dotnetType != "string" && dotnetType != "byte[]")
                         dotnetType = dotnetType + "?";
 
                     var entityProperty = new DbTableColumn()
