@@ -241,6 +241,8 @@ namespace huypq.SmtCodeGen
                                     case "int?":
                                     case "long":
                                     case "long?":
+                                    case "System.Int16":
+                                    case "byte":
                                         columnSetting.DataGridColumnTypeList.Add("DataGridRightAlignTextColumn");
                                         break;
                                     case "System.DateTime":
@@ -255,6 +257,9 @@ namespace huypq.SmtCodeGen
                                     case "System.TimeSpan?":
                                     case "string":
                                         columnSetting.DataGridColumnTypeList.Add("DataGridTextColumnExt");
+                                        break;
+                                    case "byte[]":
+                                        columnSetting.DataGridColumnTypeList.Add("DataGridByteArrayColumn");
                                         break;
                                 }
                             }
@@ -588,6 +593,8 @@ namespace huypq.SmtCodeGen
                     case "int?":
                     case "long":
                     case "long?":
+                    case "System.Int16":
+                    case "byte":
                         DataGridColumnTypeList.Add("DataGridRightAlignTextColumn");
                         DataGridColumnType = "DataGridRightAlignTextColumn";
                         break;
@@ -606,6 +613,10 @@ namespace huypq.SmtCodeGen
                     case "string":
                         DataGridColumnTypeList.Add("DataGridTextColumnExt");
                         DataGridColumnType = "DataGridTextColumnExt";
+                        break;
+                    case "byte[]":
+                        DataGridColumnTypeList.Add("DataGridByteArrayColumn");
+                        DataGridColumnType = "DataGridByteArrayColumn";
                         break;
                 }
             }
