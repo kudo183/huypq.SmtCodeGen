@@ -57,7 +57,7 @@ namespace huypq.SmtCodeGen
                 serverConnection = new Microsoft.SqlServer.Management.Common.ServerConnection(serverName, user, pass);
             }
 
-            var server = new Microsoft.SqlServer.Management.Smo.Server(serverName);
+            var server = new Microsoft.SqlServer.Management.Smo.Server(serverConnection);
             var db = new Microsoft.SqlServer.Management.Smo.Database(server, dbName);
             db.Refresh();
             foreach (Microsoft.SqlServer.Management.Smo.Table table in db.Tables)
