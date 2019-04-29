@@ -161,6 +161,9 @@ namespace huypq.SmtCodeGen
             get { return dbTables; }
             set
             {
+                if (value == null)
+                    return;
+
                 var temp = new List<DbTable>();
                 foreach (var item in value)
                 {
