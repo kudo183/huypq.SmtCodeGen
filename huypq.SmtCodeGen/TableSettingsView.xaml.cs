@@ -27,11 +27,9 @@ namespace huypq.SmtCodeGen
         {
             switch (e.PropertyName)
             {
-                case nameof(ColumnSetting.DbColumn):
-                case nameof(ColumnSetting.OldOrder):
-                case nameof(ColumnSetting.DataGridColumnTypeList):
-                case nameof(ColumnSetting.IsNeedReferenceData):
-                    e.Cancel = true;
+                case nameof(ColumnSetting.Width):
+                case nameof(ColumnSetting.IsTabStop):
+                case nameof(ColumnSetting.IsReadOnly):
                     break;
                 case nameof(ColumnSetting.ColumnName):
                     e.Column.IsReadOnly = true;
@@ -65,6 +63,9 @@ namespace huypq.SmtCodeGen
                         column.ItemsSource = orderByOptions;
                         e.Column = column;
                     }
+                    break;
+                default:
+                    e.Cancel = true;
                     break;
             }
         }
