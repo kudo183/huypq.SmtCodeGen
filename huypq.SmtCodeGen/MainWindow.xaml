@@ -25,8 +25,8 @@
                     <Button Content="Save" Width="150" FontWeight="Bold" Margin="5" Click="SaveButton_Click"/>
                     <Button Content="Load" Width="150" FontWeight="Bold" Margin="5" Click="LoadButton_Click"/>
                     <Button Content="GenAll" Tag="All" Width="80" FontWeight="Bold" Margin="5" Click="GenerateButton_Click"/>
-                    <Button Content="GenClient" Tag="Client" Width="80" FontWeight="Bold" Margin="5" Click="GenerateButton_Click"/>
-                    <Button Content="GenServer" Tag="Server" Width="80" FontWeight="Bold" Margin="5" Click="GenerateButton_Click"/>
+                    <Button Content="GenClient" Tag="Client" Width="80" FontWeight="Bold" Margin="5" Click="GenerateButton_Click" ToolTip="gen View, ViewModel, DataModel, Text, Dto, ComplexView"/>
+                    <Button Content="GenServer" Tag="Server" Width="80" FontWeight="Bold" Margin="5" Click="GenerateButton_Click" ToolTip="gen Dto, Controller, Entity"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="5">
                     <TextBlock Width="120" Text="View Path: "/>
@@ -97,7 +97,7 @@
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Table Settings: " FontWeight="Bold"/>
-                    <Button Content="Reset" Click="ResetTableSettingsButton_Click"/>
+                    <Button Content="Reset All" Click="ResetTableSettingsButton_Click"/>
                     <Button Content="Reset Selected" Click="ResetSelectedTableSettingsButton_Click"/>
                 </StackPanel>
                 <local:TableSettingsView Grid.Row="1" Margin="3" x:Name="tableSettingsView" DataContext="{Binding TableSettingsVM}"/>

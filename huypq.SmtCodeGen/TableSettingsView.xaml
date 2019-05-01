@@ -14,7 +14,11 @@
                  SelectedItem="{Binding SelectedTableSetting}"
                  ItemsSource="{Binding TableSettings}"
                  DisplayMemberPath="TableName"/>
-        <StackPanel Grid.Column="1" Orientation="Vertical">
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="DisplayTextColumn: " Margin="5" VerticalAlignment="Center"/>
                 <ComboBox DataContext="{Binding SelectedTableSetting}" Margin="5" Width="120"
@@ -24,7 +28,7 @@
                           SelectedValue="{Binding DisplayTextColumn}"
                           />
             </StackPanel>
-            <DataGrid Grid.Column="1" x:Name="tableSetingGrid"
+            <DataGrid Grid.Row="1" x:Name="tableSetingGrid" VerticalScrollBarVisibility="Auto"
                   DataContext="{Binding SelectedTableSetting}"
                   ItemsSource="{Binding ColumnSettings}"
                   AutoGenerateColumns="True"
@@ -39,7 +43,7 @@
                     </Style>
                 </DataGrid.Resources>
             </DataGrid>
-        </StackPanel>
+        </Grid>
         <GridSplitter Grid.Column="1" Width="2" VerticalAlignment="Stretch" HorizontalAlignment="Left"/>
     </Grid>
 </UserControl>

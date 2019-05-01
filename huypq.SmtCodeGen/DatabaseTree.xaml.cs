@@ -17,9 +17,15 @@ namespace huypq.SmtCodeGen
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
             var vm = DataContext as DatabaseTreeVM;
-            vm.ConnectTime = System.DateTime.UtcNow;
-
-            vm.DbTables = new List<DbTable>(DatabaseUtils.FromDB(vm.DBName, vm.DBServer, vm.User, passBox.SecurePassword));
+            try
+            {
+                vm.DbTables = new List<DbTable>(DatabaseUtils.FromDB(vm.DBName, vm.DBServer, vm.User, passBox.SecurePassword));
+                vm.ConnectTime = System.DateTime.UtcNow;
+            }
+            catch (System.Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message, "Cannot connect DB", System.Windows.MessageBoxButton.OK);
+            }
         }
 
         private void btnSelectAll_Click(object sender, RoutedEventArgs e)
