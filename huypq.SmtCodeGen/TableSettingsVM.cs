@@ -48,6 +48,7 @@ namespace huypq.SmtCodeGen
                 var tableSetting = tableSettings.FirstOrDefault(p => p.TableName == item.TableName);
                 if (tableSetting != null)
                 {
+                    Logger.Instance.Write($"     update {item.TableName}");
                     tableSetting.DbTable = item;
                 }
                 else
@@ -229,59 +230,30 @@ namespace huypq.SmtCodeGen
                 if (dbTable != value)
                 {
                     dbTable = value;
-                    Logger.Instance.Write($"     update {dbTable.TableName}");
                     foreach (var item in dbTable.Columns)
                     {
                         var columnSetting = columnSettings.FirstOrDefault(p => p.ColumnName == item.ColumnName);
                         if (columnSetting != null)
                         {
-                            if (item.IsIdentity == true && (columnSetting.DbColumn == null || columnSetting.DbColumn.IsIdentity == false))
+                            if (columnSetting.DbColumn != null)
                             {
-                                columnSetting.DataGridColumnTypeList.Clear();
-                                Logger.Instance.Write($"          update IsIdentity");
-                                columnSetting.DataGridColumnTypeList.Add("DataGridTextColumnExt");
-                            }
-                            else if (item.IsForeignKey == true && (columnSetting.DbColumn == null || columnSetting.DbColumn.IsForeignKey == false))
-                            {
-                                columnSetting.DataGridColumnTypeList.Clear();
-                                Logger.Instance.Write($"          update IsForeignKey");
-                                columnSetting.DataGridColumnTypeList.Add("DataGridComboBoxColumnExt");
-                                columnSetting.DataGridColumnTypeList.Add("DataGridForeignKeyColumn");
-                                columnSetting.DataGridColumnTypeList.Add("DataGridTextColumnExt");
-                            }
-                            else if (columnSetting.DbColumn == null || item.DataType != columnSetting.DbColumn.DataType)
-                            {
-                                columnSetting.DataGridColumnTypeList.Clear();
-                                Logger.Instance.Write($"          update DataType old: {(columnSetting.DbColumn == null ? "null" : columnSetting.DbColumn.DataType)}  new: {item.DataType}");
-                                switch (item.DataType)
+                                if (item.IsIdentity != columnSetting.DbColumn.IsIdentity)
                                 {
-                                    case "int":
-                                    case "int?":
-                                    case "long":
-                                    case "long?":
-                                    case "System.Int16":
-                                    case "byte":
-                                        columnSetting.DataGridColumnTypeList.Add("DataGridRightAlignTextColumn");
-                                        break;
-                                    case "System.DateTime":
-                                    case "System.DateTime?":
-                                        columnSetting.DataGridColumnTypeList.Add("DataGridDateColumn");
-                                        break;
-                                    case "bool":
-                                    case "bool?":
-                                        columnSetting.DataGridColumnTypeList.Add("DataGridCheckBoxColumnExt");
-                                        break;
-                                    case "System.TimeSpan":
-                                    case "System.TimeSpan?":
-                                    case "string":
-                                        columnSetting.DataGridColumnTypeList.Add("DataGridTextColumnExt");
-                                        break;
-                                    case "byte[]":
-                                        columnSetting.DataGridColumnTypeList.Add("DataGridByteArrayColumn");
-                                        break;
+                                    Logger.Instance.Write($"          update {item.ColumnName} IsIdentity {item.IsIdentity}");
+                                }
+                                else if (item.IsForeignKey != columnSetting.DbColumn.IsForeignKey)
+                                {
+                                    Logger.Instance.Write($"          update {item.ColumnName} IsForeignKey { item.IsForeignKey}");
+                                }
+                                else if (item.DataType != columnSetting.DbColumn.DataType)
+                                {
+                                    Logger.Instance.Write($"          update {item.ColumnName} DataType old: {(columnSetting.DbColumn == null ? "null" : columnSetting.DbColumn.DataType)}  new: {item.DataType}");
                                 }
                             }
+
                             columnSetting.DbColumn = item;
+                            columnSetting.DataGridColumnTypeList.Clear();
+                            columnSetting.InitColumnSettingFromDbColumn();
                         }
                         else
                         {
