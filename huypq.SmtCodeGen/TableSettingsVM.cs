@@ -54,6 +54,15 @@ namespace huypq.SmtCodeGen
                     TableSettings.Add(new TableSetting() { TableName = item.TableName, DbTable = item });
                 }
             }
+
+            //remove tableSetting not exist in dbTables
+            for (int i = 0; i < tableSettings.Count; i++)
+            {
+                if (tables.Any(p => p.TableName == tableSettings[i].TableName) == false)
+                {
+                    tableSettings.RemoveAt(i);
+                }
+            }
         }
 
         private ObservableCollection<TableSetting> tableSettings;
