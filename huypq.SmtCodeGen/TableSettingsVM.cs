@@ -43,20 +43,6 @@ namespace huypq.SmtCodeGen
         private void UpdateTableSettings()
         {
             Logger.Instance.Write("UpdateTableSettings");
-            foreach (var item in tables)
-            {
-                var tableSetting = tableSettings.FirstOrDefault(p => p.TableName == item.TableName);
-                if (tableSetting != null)
-                {
-                    Logger.Instance.Write($"     update {item.TableName}");
-                    tableSetting.DbTable = item;
-                }
-                else
-                {
-                    TableSettings.Add(new TableSetting() { TableName = item.TableName, DbTable = item });
-                    Logger.Instance.Write($"     add    {item.TableName}");
-                }
-            }
 
             //remove tableSetting not exist in dbTables
             for (int i = 0; i < tableSettings.Count; i++)
@@ -66,6 +52,22 @@ namespace huypq.SmtCodeGen
                     Logger.Instance.Write($"     remove {tableSettings[i].TableName}");
                     tableSettings.RemoveAt(i);
                     i--;
+                }
+            }
+
+            for (int i = 0; i < tables.Count; i++)
+            {
+                var item = tables[i];
+                var tableSetting = tableSettings.FirstOrDefault(p => p.TableName == item.TableName);
+                if (tableSetting != null)
+                {
+                    Logger.Instance.Write($"     update {item.TableName}");
+                    tableSetting.DbTable = item;
+                }
+                else
+                {
+                    TableSettings.Insert(i, new TableSetting() { TableName = item.TableName, DbTable = item });
+                    Logger.Instance.Write($"     add    {item.TableName}");
                 }
             }
         }
@@ -230,8 +232,21 @@ namespace huypq.SmtCodeGen
                 if (dbTable != value)
                 {
                     dbTable = value;
-                    foreach (var item in dbTable.Columns)
+
+                    //remove colummSetting not exist in dbTable.Columns
+                    for (int i = 0; i < columnSettings.Count; i++)
                     {
+                        if (dbTable.Columns.Any(p => p.ColumnName == columnSettings[i].ColumnName) == false)
+                        {
+                            Logger.Instance.Write($"          remove {columnSettings[i].ColumnName}");
+                            columnSettings.RemoveAt(i);
+                            i--;
+                        }
+                    }
+
+                    for (int i = 0; i < dbTable.Columns.Count; i++)
+                    {
+                        var item = dbTable.Columns[i];
                         var columnSetting = columnSettings.FirstOrDefault(p => p.ColumnName == item.ColumnName);
                         if (columnSetting != null)
                         {
@@ -259,20 +274,13 @@ namespace huypq.SmtCodeGen
                         {
                             var column = new ColumnSetting() { ColumnName = item.ColumnName, DbColumn = item };
                             column.InitColumnSettingFromDbColumn();
-                            column.Order = ColumnSettings.Count;
-                            ColumnSettings.Add(column);
+                            column.Order = i;
+                            columnSettings.Insert(i, column);
+                            for (int j = i + 1; j < columnSettings.Count; j++)
+                            {
+                                columnSettings[j].Order = j;
+                            }
                             Logger.Instance.Write($"          add    {item.ColumnName}");
-                        }
-                    }
-
-                    //remove colummSetting not exist in dbTable.Columns
-                    for (int i = 0; i < columnSettings.Count; i++)
-                    {
-                        if (dbTable.Columns.Any(p => p.ColumnName == columnSettings[i].ColumnName) == false)
-                        {
-                            Logger.Instance.Write($"          remove {columnSettings[i].ColumnName}");
-                            columnSettings.RemoveAt(i);
-                            i--;
                         }
                     }
                     OnPropertyChanged();
