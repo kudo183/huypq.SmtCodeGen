@@ -127,7 +127,7 @@ namespace huypq.SmtCodeGen
                     break;
             }
 
-            vm.Messages.Add(string.Format("{0} | Done.", DateTime.Now));
+            Logger.Instance.Write(string.Format("{0} | Done.", DateTime.Now));
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
@@ -195,141 +195,141 @@ namespace huypq.SmtCodeGen
 
         private void OpenPath(string path)
         {
-            vm.Messages.Add(string.Format("{0} | OpenPath: {1} ...", DateTime.Now, path));
+            Logger.Instance.Write(string.Format("{0} | OpenPath: {1} ...", DateTime.Now, path));
             try
             {
                 System.Diagnostics.Process.Start(path);
             }
             catch (Exception ex)
             {
-                vm.Messages.Add(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
+                Logger.Instance.Write(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
             }
         }
 
         private void GenView(string path)
         {
-            vm.Messages.Add(string.Format("{0} | Generating View ...", DateTime.Now));
+            Logger.Instance.Write(string.Format("{0} | Generating View ...", DateTime.Now));
             try
             {
                 ViewCodeGenerator.GenViewCode(vm.TableSettingsVM.TableSettings, path);
-                vm.Messages.Add(string.Format("{0} | Done", DateTime.Now));
+                Logger.Instance.Write(string.Format("{0} | Done", DateTime.Now));
             }
             catch (Exception ex)
             {
-                vm.Messages.Add(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
+                Logger.Instance.Write(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
             }
         }
 
         private void GenViewModel(string path)
         {
-            vm.Messages.Add(string.Format("{0} | Generating ViewModel ...", DateTime.Now));
+            Logger.Instance.Write(string.Format("{0} | Generating ViewModel ...", DateTime.Now));
             try
             {
                 ViewModelCodeGenerator.GenViewModelCode(vm.TableSettingsVM.TableSettings, path);
-                vm.Messages.Add(string.Format("{0} | Done", DateTime.Now));
+                Logger.Instance.Write(string.Format("{0} | Done", DateTime.Now));
             }
             catch (Exception ex)
             {
-                vm.Messages.Add(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
+                Logger.Instance.Write(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
             }
         }
 
         private void GenDataModel(string path)
         {
-            vm.Messages.Add(string.Format("{0} | Generating DataModel ...", DateTime.Now));
+            Logger.Instance.Write(string.Format("{0} | Generating DataModel ...", DateTime.Now));
             try
             {
                 DataModelCodeGenerator.GenDataModelClass(vm.TableSettingsVM.TableSettings, path);
-                vm.Messages.Add(string.Format("{0} | Done", DateTime.Now));
+                Logger.Instance.Write(string.Format("{0} | Done", DateTime.Now));
             }
             catch (Exception ex)
             {
-                vm.Messages.Add(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
+                Logger.Instance.Write(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
             }
         }
 
         private void GenText(string path)
         {
-            vm.Messages.Add(string.Format("{0} | Generating Text ...", DateTime.Now));
+            Logger.Instance.Write(string.Format("{0} | Generating Text ...", DateTime.Now));
             try
             {
                 TextManagerCodeGenerator.GenTextManagerCode(vm.TableSettingsVM.TableSettings, path);
-                vm.Messages.Add(string.Format("{0} | Done", DateTime.Now));
+                Logger.Instance.Write(string.Format("{0} | Done", DateTime.Now));
             }
             catch (Exception ex)
             {
-                vm.Messages.Add(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
+                Logger.Instance.Write(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
             }
         }
 
         private void GenDto(string path)
         {
-            vm.Messages.Add(string.Format("{0} | Generating Dto ...", DateTime.Now));
+            Logger.Instance.Write(string.Format("{0} | Generating Dto ...", DateTime.Now));
             try
             {
                 DtosCodeGenerator.GenDtosClass(vm.TableSettingsVM.TableSettings, path);
-                vm.Messages.Add(string.Format("{0} | Done", DateTime.Now));
+                Logger.Instance.Write(string.Format("{0} | Done", DateTime.Now));
             }
             catch (Exception ex)
             {
-                vm.Messages.Add(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
+                Logger.Instance.Write(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
             }
         }
 
         private void GenController(string path)
         {
-            vm.Messages.Add(string.Format("{0} | Generating Controller ...", DateTime.Now));
+            Logger.Instance.Write(string.Format("{0} | Generating Controller ...", DateTime.Now));
             try
             {
                 ControllersCodeGenerator.GenControllersClass(vm.TableSettingsVM.TableSettings, path);
-                vm.Messages.Add(string.Format("{0} | Done", DateTime.Now));
+                Logger.Instance.Write(string.Format("{0} | Done", DateTime.Now));
             }
             catch (Exception ex)
             {
-                vm.Messages.Add(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
+                Logger.Instance.Write(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
             }
         }
 
         private void GenEntity(string path)
         {
-            vm.Messages.Add(string.Format("{0} | Generating Entity ...", DateTime.Now));
+            Logger.Instance.Write(string.Format("{0} | Generating Entity ...", DateTime.Now));
             try
             {
                 EntitiesCodeGenerator.GenDbContextAndEntitiesClass(vm.TableSettingsVM.TableSettings, path);
-                vm.Messages.Add(string.Format("{0} | Done", DateTime.Now));
+                Logger.Instance.Write(string.Format("{0} | Done", DateTime.Now));
             }
             catch (Exception ex)
             {
-                vm.Messages.Add(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
+                Logger.Instance.Write(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
             }
         }
 
         private void GenComplexView(string path)
         {
-            vm.Messages.Add(string.Format("{0} | Generating Complex View ...", DateTime.Now));
+            Logger.Instance.Write(string.Format("{0} | Generating Complex View ...", DateTime.Now));
             try
             {
                 ComplexViewCodeGenerator.GenComplexViewCode(vm.MasterDetailSelectorVM.MasterDetailList, vm.TableSettingsVM.TableSettings, path);
-                vm.Messages.Add(string.Format("{0} | Done", DateTime.Now));
+                Logger.Instance.Write(string.Format("{0} | Done", DateTime.Now));
             }
             catch (Exception ex)
             {
-                vm.Messages.Add(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
+                Logger.Instance.Write(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
             }
         }
 
         private void GenAngular2(string path)
         {
-            vm.Messages.Add(string.Format("{0} | Generating Angular 2 ...", DateTime.Now));
+            Logger.Instance.Write(string.Format("{0} | Generating Angular 2 ...", DateTime.Now));
             try
             {
                 Angular2HtmlCodeGenerator.GenAngular2Html(vm.TableSettingsVM.TableSettings, path);
                 Angular2TSCodeGenerator.GenAngular2TS(vm.TableSettingsVM.TableSettings, path);
-                vm.Messages.Add(string.Format("{0} | Done", DateTime.Now));
+                Logger.Instance.Write(string.Format("{0} | Done", DateTime.Now));
             }
             catch (Exception ex)
             {
-                vm.Messages.Add(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
+                Logger.Instance.Write(string.Format("{0} | Exception:  {1}", DateTime.Now, ex.Message));
             }
         }
     }
