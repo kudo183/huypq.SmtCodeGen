@@ -269,6 +269,17 @@ namespace huypq.SmtCodeGen
                             columnSetting.DbColumn = item;
                             columnSetting.DataGridColumnTypeList.Clear();
                             columnSetting.InitColumnSettingFromDbColumn();
+                            if (columnSetting.Order != i)
+                            {
+                                columnSettings.Remove(columnSetting);
+                                columnSettings.Insert(i, columnSetting);
+                                Logger.Instance.Write($"          update {item.ColumnName} Order old {columnSetting.Order}  new {i}");
+                                columnSetting.Order = i;
+                                for (int j = i + 1; j < columnSettings.Count; j++)
+                                {
+                                    columnSettings[j].Order = j;
+                                }
+                            }
                         }
                         else
                         {
