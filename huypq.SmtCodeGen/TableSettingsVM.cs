@@ -42,6 +42,7 @@ namespace huypq.SmtCodeGen
 
         private void UpdateTableSettings()
         {
+            Logger.Instance.Write("UpdateTableSettings");
             foreach (var item in tables)
             {
                 var tableSetting = tableSettings.FirstOrDefault(p => p.TableName == item.TableName);
@@ -52,6 +53,7 @@ namespace huypq.SmtCodeGen
                 else
                 {
                     TableSettings.Add(new TableSetting() { TableName = item.TableName, DbTable = item });
+                    Logger.Instance.Write($"     add    {item.TableName}");
                 }
             }
 
@@ -60,7 +62,9 @@ namespace huypq.SmtCodeGen
             {
                 if (tables.Any(p => p.TableName == tableSettings[i].TableName) == false)
                 {
+                    Logger.Instance.Write($"     remove {tableSettings[i].TableName}");
                     tableSettings.RemoveAt(i);
+                    i--;
                 }
             }
         }
@@ -225,25 +229,30 @@ namespace huypq.SmtCodeGen
                 if (dbTable != value)
                 {
                     dbTable = value;
+                    Logger.Instance.Write($"     update {dbTable.TableName}");
                     foreach (var item in dbTable.Columns)
                     {
                         var columnSetting = columnSettings.FirstOrDefault(p => p.ColumnName == item.ColumnName);
                         if (columnSetting != null)
                         {
-                            columnSetting.DbColumn = item;
-                            columnSetting.DataGridColumnTypeList.Clear();
-                            if (item.IsIdentity)
+                            if (item.IsIdentity == true && (columnSetting.DbColumn == null || columnSetting.DbColumn.IsIdentity == false))
                             {
+                                columnSetting.DataGridColumnTypeList.Clear();
+                                Logger.Instance.Write($"          update IsIdentity");
                                 columnSetting.DataGridColumnTypeList.Add("DataGridTextColumnExt");
                             }
-                            else if (item.IsForeignKey)
+                            else if (item.IsForeignKey == true && (columnSetting.DbColumn == null || columnSetting.DbColumn.IsForeignKey == false))
                             {
+                                columnSetting.DataGridColumnTypeList.Clear();
+                                Logger.Instance.Write($"          update IsForeignKey");
                                 columnSetting.DataGridColumnTypeList.Add("DataGridComboBoxColumnExt");
                                 columnSetting.DataGridColumnTypeList.Add("DataGridForeignKeyColumn");
                                 columnSetting.DataGridColumnTypeList.Add("DataGridTextColumnExt");
                             }
-                            else
+                            else if (columnSetting.DbColumn == null || item.DataType != columnSetting.DbColumn.DataType)
                             {
+                                columnSetting.DataGridColumnTypeList.Clear();
+                                Logger.Instance.Write($"          update DataType old: {(columnSetting.DbColumn == null ? "null" : columnSetting.DbColumn.DataType)}  new: {item.DataType}");
                                 switch (item.DataType)
                                 {
                                     case "int":
@@ -272,6 +281,7 @@ namespace huypq.SmtCodeGen
                                         break;
                                 }
                             }
+                            columnSetting.DbColumn = item;
                         }
                         else
                         {
@@ -279,9 +289,20 @@ namespace huypq.SmtCodeGen
                             column.InitColumnSettingFromDbColumn();
                             column.Order = ColumnSettings.Count;
                             ColumnSettings.Add(column);
+                            Logger.Instance.Write($"          add    {item.ColumnName}");
                         }
                     }
 
+                    //remove colummSetting not exist in dbTable.Columns
+                    for (int i = 0; i < columnSettings.Count; i++)
+                    {
+                        if (dbTable.Columns.Any(p => p.ColumnName == columnSettings[i].ColumnName) == false)
+                        {
+                            Logger.Instance.Write($"          remove {columnSettings[i].ColumnName}");
+                            columnSettings.RemoveAt(i);
+                            i--;
+                        }
+                    }
                     OnPropertyChanged();
                 }
             }

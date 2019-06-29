@@ -76,6 +76,7 @@
     <Compile Include="DatabaseUtils.cs" />
     <Compile Include="CodeGenerator\EntitiesCodeGenerator.cs" />
     <Compile Include="FileUtils.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="StringBuilderExtension.cs" />
     <Compile Include="TableSettingsView.xaml.cs">

@@ -17,6 +17,8 @@ namespace huypq.SmtCodeGen
 
         public MainWindow()
         {
+            Logger.Instance.Init((msg) => { vm.Messages.Add(msg); }, () => { vm.Messages.Clear(); });
+
             FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata()
             {
                 DefaultValue = System.Windows.Markup.XmlLanguage.GetLanguage(System.Threading.Thread.CurrentThread.CurrentCulture.Name)
@@ -65,6 +67,11 @@ namespace huypq.SmtCodeGen
                 vm.LoadJson(ofd.FileName);
                 masterDetailSelector.UpdateUI();
             }
+        }
+
+        private void ClearLogButton_Click(object sender, RoutedEventArgs e)
+        {
+            Logger.Instance.Clear();
         }
 
         private void GenerateButton_Click(object sender, RoutedEventArgs e)

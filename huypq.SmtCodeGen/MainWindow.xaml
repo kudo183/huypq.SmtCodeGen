@@ -27,6 +27,7 @@
                     <Button Content="GenAll" Tag="All" Width="80" FontWeight="Bold" Margin="5" Click="GenerateButton_Click"/>
                     <Button Content="GenClient" Tag="Client" Width="80" FontWeight="Bold" Margin="5" Click="GenerateButton_Click" ToolTip="gen View, ViewModel, DataModel, Text, Dto, ComplexView"/>
                     <Button Content="GenServer" Tag="Server" Width="80" FontWeight="Bold" Margin="5" Click="GenerateButton_Click" ToolTip="gen Dto, Controller, Entity"/>
+                    <Button Content="Clear Log" Width="150" FontWeight="Bold" Margin="5" Click="ClearLogButton_Click"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="5">
                     <TextBlock Width="120" Text="View Path: "/>
@@ -96,7 +97,9 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Table Settings: " FontWeight="Bold"/>
+                    <TextBlock Text="Table Settings: (" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding TableSettingsVM.TableSettings.Count}" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <TextBlock Text=") " FontWeight="Bold" VerticalAlignment="Center"/>
                     <Button Content="Reset All" Click="ResetTableSettingsButton_Click"/>
                     <Button Content="Reset Selected" Click="ResetSelectedTableSettingsButton_Click"/>
                 </StackPanel>
