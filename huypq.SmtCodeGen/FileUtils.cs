@@ -33,7 +33,7 @@ namespace huypq.SmtCodeGen
                 return;
             }
 
-            foreach (var item in System.IO.Directory.EnumerateFiles(path, end))
+            foreach (var item in System.IO.Directory.EnumerateFiles(path))
             {
                 if (item.EndsWith(exclude) == true)
                 {
